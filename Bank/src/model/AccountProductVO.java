@@ -2,7 +2,13 @@ package model;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 
+@Getter
+@Setter
+@ToString
 public class AccountProductVO {
 	private int accountProductId; // 가입상품번호
 	private String accountNo; // 계좌번호
