@@ -1,5 +1,13 @@
 package model;
 
-public class AccountVO {
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
+public class AccountVO {
+	private String accountNo; // 계좌번호
+	private int memberNo; // 회원번호
+	private String accountPwd; // 계좌비밀번호
+	private BigDecimal balance; // 잔액
+	private char status; // 잠금여부(Y,N)
+	private LocalDateTime createDate; // 개설일
 }

@@ -27,8 +27,6 @@ public class ConnectionHelper {
                 Class.forName("com.mysql.cj.jdbc.Driver"); // 드라이버 이름 최신 버전
                 conn = DriverManager.getConnection(
                         "jdbc:mysql://localhost:3306/bankDB", "root", "1234");
-				System.out.println("11111111111111111");
-
             } else if (dsn.equals("oracle")) {
                 Class.forName("oracle.jdbc.OracleDriver");
                 conn = DriverManager.getConnection("jdbc:oracle:thin:@127.0.0.1:1521:xe", "root", "1234");
