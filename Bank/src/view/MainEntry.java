@@ -1,6 +1,6 @@
 package view;
 
-import dbConn.util.ConnectionHelper;
+import controller.MemberController;
 
 public class MainEntry {
 	public static void main(String[] args) {
@@ -13,7 +13,9 @@ public class MainEntry {
 			├── MypageMenu.java
 			└── AdminMenu.java
 		 */
-		ConnectionHelper.getConnection("mysql"); // server 뜨면 성공
+		MemberController.connect();
+	    MemberController.MainMenu();
+	    MemberController.close();
 		
 	}
 
