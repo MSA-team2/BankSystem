@@ -17,5 +17,4 @@ public class MemberVO {
 	private String phone; // 전화번호
 	private char rockYn; // 잠금여부 (Y,N)
 	private int role; // 관리자 여부(0,1) 0: 일반회원 / 1: 관리자
-
 }
