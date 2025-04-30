@@ -4,7 +4,6 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.Scanner;
 
 import dbConn.util.CloseHelper;
@@ -83,20 +82,25 @@ public class MemberController {
 	            if (rs.next()) {
 	            	MemberVO memberVo = new MemberVO();
 	                
-//	            	memberVo.setMemberNo(rs.getInt("member_no"));
-//	            	memberVo.setName(rs.getString("name"));
-//	            	memberVo.setMemberId(rs.getString("member_id"));
-//	            	memberVo.setRole(rs.getInt("role"));
-//
-//	                System.out.println(memberVo.getName() + "님, 환영합니다!");
-//
-//	                // 일반 회원 -> 마이페이지
-//	                if (memberVo.role == 0) {
-//	                	// MypageController.MypageMenu(vo);
-//                	// 관리자 -> 관리자 페이지
-//	                } else if (memberVo.role == 1) {
-//	                    // AdminController.AdminMenu();
-//	                }
+			memberVo.setMemberNo(rs.getInt("member_no"));
+	            	memberVo.setName(rs.getString("name"));
+	            	memberVo.setJumin(rs.getString("jumin"));
+	            	memberVo.setMemberId(rs.getString("member_id"));
+	            	memberVo.setPassword(rs.getString("password"));
+	            	memberVo.setAddress(rs.getString("address"));
+	            	memberVo.setPhone(rs.getString("phone"));
+	            	memberVo.setRockYn(rs.getString("lock_yn").charAt(0));
+	            	memberVo.setRole(rs.getInt("role"));
+
+	                System.out.println(memberVo.getName() + "님, 환영합니다!");	
+
+	                // 일반 회원 -> 마이페이지
+	                if (memberVo.role == 0) {
+	                	// MypageController.MypageMenu(vo);
+               		// 관리자 -> 관리자 페이지
+	                } else if (memberVo.role == 1) {
+	                    // AdminController.AdminMenu();
+	                }
 	                return; // 로그인 성공 → 메서드 종료
 	            } else {
 	                System.out.println("아이디 또는 비밀번호가 올바르지 않습니다.");
