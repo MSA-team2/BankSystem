@@ -82,41 +82,52 @@ public class MemberController {
 	        // 주민번호 자리수 체크
 	        String jumin = null;
 	        while (true) {
-	        	jumin = getInput("주민번호: ");
+	        	jumin = getInput("주민번호(ex 120304-1234567): ");
 	        	if (jumin == null) return;
 	        	if (checkJumin(jumin)) {
 	        		break;
 	        	}
 	        }
-	        
-	        // 아이디 중복체크
-	        String memberId = null;
+	        // 아이디 중복 체크
+	        String id = null;
 	        while (true) {
-	            memberId = getInput("아이디: ");
-	            if (memberId == null) return;
+	        	id = getInput("아이디: ");
+	            if (id == null) return;
 
-	            if (checkId(memberId)) {
+	            if (checkId(id)) {
 	                System.out.println("이미 사용 중인 아이디입니다. 다른 아이디를 입력해주세요.");
 	            } else {
 	                System.out.println("사용 가능한 아이디입니다.");
 	                break; // 중복 아니면 while 탈출
 	            }
 	        }
-	        
-	        // 비밀번호 확인 받기
-	        String password = getInput("비밀번호: ");
-	        if (password == null) return;
+	        // 비밀번호 유효성 체크
+	        String pwd = null;
+	        String pwdConfirm = null;
+	        while (true) {
+	        	pwd = getInput("비밀번호(영문+숫자 8자리이상): ");
+	        	if (pwd == null) return;
+	        	if (!checkPwd(pwd)) continue;
 
+	        	pwdConfirm = getInput("비밀번호 확인: ");
+	        	if (pwdConfirm == null) return;
+	        	
+	        	if (!confirmPwd(pwd, pwdConfirm)) continue;
+	        	break;
+	        }
 	        String address = getInput("주소: ");
 	        if (address == null) return;
-
+	        
 	        // 전화번호 자리수 체크
+	        // 수정필요....
 	        String phone = null;
 	        while (true) {
+	        	phone = getInput("전화번호 입력(ex 010-1234-5678): ");
 	        	if (phone == null) return;
 	        	
-	        	if (checkPhone(phone)) {
-	        		System.out.println("이미 사용 중인 핸드폰 번호 입니다. 다른 번호를 입력해주세요");
+	        	if (!checkPhone(phone)) continue;
+	        	if (confirmPhone(phone)) {
+	        		System.out.println("이미 가입된 핸드폰 번호 입니다. 다른 번호를 입력해주세요");
 	        	} else {
 	        		System.out.println("사용 가능한 번호 입니다.");
 	        		break;
@@ -125,8 +136,8 @@ public class MemberController {
 			
 			ps.setString(1, name);
 			ps.setString(2, jumin);
-			ps.setString(3, memberId);
-			ps.setString(4, password);
+			ps.setString(3, id);
+			ps.setString(4, pwd);
 			ps.setString(5, address);
 			ps.setString(6, phone);
 			
@@ -207,7 +218,7 @@ public class MemberController {
 	    } // while
 	}
 	
-	// 아이디 찾기
+	// 3. 아이디 찾기
 	public static void findId() {
 		System.out.println("\n======== 아이디 찾기 ========");
 		System.out.print("이름: ");
@@ -241,14 +252,14 @@ public class MemberController {
 		}
 	}
 	
-	// 비밀번호 찾기 -> 새 비밀번호로 변경
+	// 4. 비밀번호 찾기 -> 새 비밀번호로 변경
 	public static void findPwd() {
 		System.out.println("\n======= 비밀번호 찾기 =======");
+		System.out.print("아이디: ");
+		String id = sc.nextLine();
+		
 		System.out.print("이름: ");
 		String name = sc.nextLine();
-		
-		System.out.println("아이디: ");
-		String id = sc.nextLine();
 		
 		String jumin = null;
         while (true) {
@@ -259,48 +270,49 @@ public class MemberController {
         	}
         }
         
-        String checkId = "SELECT * FROM MEMBER WHERE name = ? AND member_id = ? AND jumin = ?";
-        String newPwd = "UPDATE SET password = ? WHERE member_id = ?";
+        String checkId = "SELECT * FROM MEMBER WHERE member_id = ? AND name = ? AND jumin = ?";
         
         try {
 			ps = conn.prepareStatement(checkId);
-        	ps.setString(1, name);
-        	ps.setString(2, id);
+        	ps.setString(1, id);
+        	ps.setString(2, name);
         	ps.setString(3, jumin);
-			ps.executeQuery();
+			rs = ps.executeQuery();
 			
-			// 
+			// 회원 정보 있을시 비밀번호 재설정
 			if (rs.next()) {
-				try {
-					ps = conn.prepareStatement(newPwd);
-					
-					System.out.print("새 비밀번호 설정: ");
-		        	ps.setString(1, sc.nextLine());
-		        	ps.setString(2, id);
-		        	
-					ps.executeUpdate();
-					
+				System.out.println("회원 정보가 확인되었습니다.");
+				System.out.print("새 비밀번호 설정: ");
+				String newPwd = sc.nextLine();
+
+				String updatePwd = "UPDATE MEMBER SET password = ? WHERE member_id = ?";
+				ps = conn.prepareStatement(updatePwd);
+				
+	        	ps.setString(1, newPwd);
+	        	ps.setString(2, id);
+	        	
+				int result = ps.executeUpdate();
+
+				if (result == 1) {
 					System.out.println("비밀번호가 재설정 되었습니다.");
 					System.out.println("메인메뉴로 이동합니다.");
-				} catch (SQLException e) {
-					e.printStackTrace();
+				} else {
+					System.out.println("비밀번호 변경에 실패했습니다.");
 				}
 			} else {
-				
+				System.out.println("입력한 정보가 일치하지 않습니다.");
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-
-	}
-	
-	// 비밀번호 5회이상 틀릴시
+	} // end MainMenu()
+	// ============================================================
+	// ----- 비밀번호 5회이상 틀릴시 ----- //
 	public static void lockPwd() {
 		
 	}
-	
 
-	// 입력중 돌아가기
+	// -----  입력중 돌아가기 ----- //
 	public static String getInput(String info) {
 	    System.out.print(info);
 	    String input = sc.nextLine().trim();
@@ -308,12 +320,12 @@ public class MemberController {
 	    return input;
 	}
 
-	// 아이디 중복체크
-	public static boolean checkId(String memberId) {
+	// ----- 아이디 중복체크----- //
+	public static boolean checkId(String id) {
 		String sql = "SELECT member_id FROM MEMBER WHERE member_id = ?";
 		try {
 			ps = conn.prepareStatement(sql);
-            ps.setString(1, memberId);
+            ps.setString(1, id);
             rs = ps.executeQuery();
 			
             if (rs.next()) {
@@ -325,7 +337,7 @@ public class MemberController {
 		return false;
 	}
 	
-	// 주민번호 자리수 체크
+	// ----- 주민번호 자리수 체크 ----- //
 	public static boolean checkJumin(String jumin) {
 		// 	 6   -   7
 		// 920123-1204543
@@ -334,7 +346,7 @@ public class MemberController {
 	        return false;
 	    }
 
-	    // 2. 하이픈 제거
+	    // 하이픈 제거
 	    jumin = jumin.replace("-", ""); // → "9201231234567"
 		
 	    // 자리수 체크
@@ -350,7 +362,7 @@ public class MemberController {
 	        return false;
 	    }
 
-	    // 생년월일 유효성 체크 (선택)
+	    // 생년월일 유효성 체크
 	    try {
 	        String birth = jumin.substring(0, 6);
 	        String century = (genderCode == '1' || genderCode == '2') ? "19" : "20";
@@ -362,11 +374,53 @@ public class MemberController {
 	    return true;
 	}
 	
-	// 전화번호 자리수 체크
+	// ----- 비밀번호 유효성 체크 ----- //
+	public static boolean checkPwd(String pwd) {
+		if (pwd.length() < 8) {
+	        System.out.println("비밀번호는 최소 8자 이상이어야 합니다.");
+	        return false;
+	    }
+	    if (!pwd.matches(".*[a-zA-Z].*")) {
+	        System.out.println("비밀번호에는 영문자가 포함되어야 합니다.");
+	        return false;
+	    }
+	    if (!pwd.matches(".*[0-9].*")) {
+	        System.out.println("비밀번호에는 숫자가 포함되어야 합니다.");
+	        return false;
+	    }
+	    return true;
+	}
+	
+	// ----- 비밀번호 일치 확인 ----- //
+	public static boolean confirmPwd(String pwd, String pwdConfirm) {
+		if (!pwd.equals(pwdConfirm)) {
+	        System.out.println("비밀번호가 일치하지 않습니다.");
+	        return false;
+	    }
+	    return true;
+	}
+	
+	// ----- 전화번호 유효성 체크 ----- //
 	public static boolean checkPhone(String phone) {
-		
-		
+		if (!phone.matches("\\d{3}-\\d{4}-\\d{4}")) {
+	        System.out.println("형식은 010-0000-0000 이어야 합니다.");
+	        return false;
+	    }
 		return true;
+	}
+	
+	// ----- 전화번호 중복 체크 ----- //
+	public static boolean confirmPhone(String phone) {
+		String sql = "SELECT phone FROM MEMBER WHERE phone = ?";
+	    try {
+	        ps = conn.prepareStatement(sql);
+	        ps.setString(1, phone);
+	        rs = ps.executeQuery();
+	        return rs.next();  // 중복
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	        return true;
+	    }
 	}
 	
 }
