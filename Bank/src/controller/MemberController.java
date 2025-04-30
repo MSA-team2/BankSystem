@@ -19,7 +19,7 @@ public class MemberController {
 	// connect
 	public static void connect() {
 		try {
-			conn = ConnectionHelper.getConnection("mysql");
+			conn = ConnectionSingletonHelper.getConnection("mysql");
 			conn.setAutoCommit(true); // 자동커밋 켬
 			
 		} catch (Exception e) {
