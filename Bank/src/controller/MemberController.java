@@ -7,7 +7,7 @@ import java.sql.SQLException;
 import java.util.Scanner;
 
 import dbConn.util.CloseHelper;
-import dbConn.util.ConnectionHelper;
+import dbConn.util.ConnectionSingletonHelper;
 import model.MemberVO;
 
 public class MemberController {
@@ -42,11 +42,11 @@ public class MemberController {
 		MemberVO vo = new MemberVO();
 		
 		while(true) {
-			System.out.println("\n======= 투게더 은행 =======");
+			System.out.println("\n======== 투게더 은행 ========");
 			System.out.println("\t1. 로그인");
 			System.out.println("\t2. 회원가입");
 			System.out.println("\t0. 종료");
-			System.out.println("=========================");
+			System.out.println("===========================");
 			System.out.print("메뉴 선택: ");
 			int menu = sc.nextInt();
 			sc.nextLine();
@@ -64,7 +64,7 @@ public class MemberController {
 	public static void loginMember() {
 		
 	    while (true) {
-	        System.out.println("\n======= 로그인 =======");
+	        System.out.println("\n========== 로그인 ==========");
 	        System.out.print("아이디: ");
 	        String id = sc.nextLine();
 
@@ -80,29 +80,31 @@ public class MemberController {
 	            rs = ps.executeQuery();
 
 	            if (rs.next()) {
-	            	MemberVO memberVo = new MemberVO();
+	            	MemberVO member = new MemberVO();
 	                
-			memberVo.setMemberNo(rs.getInt("member_no"));
-	            	memberVo.setName(rs.getString("name"));
-	            	memberVo.setJumin(rs.getString("jumin"));
-	            	memberVo.setMemberId(rs.getString("member_id"));
-	            	memberVo.setPassword(rs.getString("password"));
-	            	memberVo.setAddress(rs.getString("address"));
-	            	memberVo.setPhone(rs.getString("phone"));
-	            	memberVo.setRockYn(rs.getString("lock_yn").charAt(0));
-	            	memberVo.setRole(rs.getInt("role"));
-
-	                System.out.println(memberVo.getName() + "님, 환영합니다!");	
-
-	                // 일반 회원 -> 마이페이지
-	                if (memberVo.role == 0) {
-	                	// UserController.MainMenu(memberVo);
-               		// 관리자 -> 관리자 페이지
-	                } else if (memberVo.role == 1) {
-	                    // AdminController.AdminMenu();
+	            	member.setMemberNo(rs.getInt("member_no"));
+	            	member.setName(rs.getString("name"));
+	            	member.setJumin(rs.getString("jumin"));
+	            	member.setMemberId(rs.getString("member_id"));
+	            	member.setPassword(rs.getString("password"));
+	            	member.setAddress(rs.getString("address"));
+	            	member.setPhone(rs.getString("phone"));
+	            	member.setRockYn(rs.getString("lock_yn").charAt(0));
+	            	member.setRole(rs.getInt("role"));
+	            	
+	            	SessionManager.login(member);
+	            	
+	                System.out.println("[" + member.getName() + "] 님, 환영합니다!");	                
+	             
+	                if (SessionManager.isAdmin()) { // 관리자
+	                	// AdminController.AdminMenu();	          
+	                } else { // 일반 회원 
+	                	// 사용자 메뉴
+	                	// UserController.MemberMenu();	                    
 	                }
-	                return; // 로그인 성공 → 메서드 종료
+	                return; // 로그인 성공 -> 메서드 종료	                
 	            } else {
+	            	// 추가사항: 아이디/비밀번호 찾기
 	                System.out.println("아이디 또는 비밀번호가 올바르지 않습니다.");
 	                System.out.print("다시 시도하시겠습니까? (Y/N): ");
 	                
