@@ -173,7 +173,8 @@ public class MemberController {
 	            	member.setPassword(rs.getString("password"));
 	            	member.setAddress(rs.getString("address"));
 	            	member.setPhone(rs.getString("phone"));
-	            	member.setRockYn(rs.getString("lock_yn").charAt(0));
+	            	member.setStatus(rs.getString("status").charAt(0));
+	            	member.setRole(rs.getInt("lock_cnt"));
 	            	member.setRole(rs.getInt("role"));
 	            	
 	            	SessionManager.login(member);
@@ -231,6 +232,7 @@ public class MemberController {
         	
         	if (rs.next()) {
         		System.out.println(rs.getString("name") + "님의 아이디는 " + rs.getString("member_id") +  " 입니다.");
+        		System.out.println("메인메뉴로 이동합니다.");
         	} else {
         		System.out.println("일치하는 정보가 없습니다.");
         	}
@@ -267,22 +269,25 @@ public class MemberController {
         	ps.setString(3, jumin);
 			ps.executeQuery();
 			
+			// 
 			if (rs.next()) {
 				try {
 					ps = conn.prepareStatement(newPwd);
-		        	ps.setString(1, name);
+					
+					System.out.print("새 비밀번호 설정: ");
+		        	ps.setString(1, sc.nextLine());
 		        	ps.setString(2, id);
 		        	
 					ps.executeUpdate();
 					
+					System.out.println("비밀번호가 재설정 되었습니다.");
+					System.out.println("메인메뉴로 이동합니다.");
 				} catch (SQLException e) {
 					e.printStackTrace();
 				}
 			} else {
 				
 			}
-			
-        	
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -305,7 +310,7 @@ public class MemberController {
 
 	// 아이디 중복체크
 	public static boolean checkId(String memberId) {
-		String sql = "SELECT MEMBER_ID FROM MEMBER WHERE MEMBER_ID = ?";
+		String sql = "SELECT member_id FROM MEMBER WHERE member_id = ?";
 		try {
 			ps = conn.prepareStatement(sql);
             ps.setString(1, memberId);
