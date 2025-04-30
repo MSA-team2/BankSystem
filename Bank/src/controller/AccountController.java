@@ -139,6 +139,7 @@ public class AccountController {
 			if(result > 0) {
 				System.out.println("계좌가 성공적으로 개설되었습니다.");
 				System.out.println("계좌번호: " + sb.toString());
+				conn.commit();
 			}else {
 				System.out.println("계좌 생성에 실패하였습니다. 다시 시도해주시기 바랍니다.");
 			}
