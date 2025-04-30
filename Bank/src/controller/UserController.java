@@ -43,14 +43,17 @@ public class UserController {
 
 		}
 		case 7: {
-			// 로그아웃
+			System.out.println("로그아웃 되었습니다.");
+			SessionManager.logout();
+			MemberController.MainMenu();
 			break;
 
 		}
 		case 0: {
 			// 메인화면
 			System.out.println("메인화면으로 돌아갑니다.");
-			//MemberController.MainMenu();
+			SessionManager.logout();
+			MemberController.MainMenu();
 			break;
 
 		}
