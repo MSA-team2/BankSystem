@@ -96,7 +96,7 @@ public class MemberController {
 
 	                // 일반 회원 -> 마이페이지
 	                if (memberVo.role == 0) {
-	                	// MypageController.MypageMenu(vo);
+	                	// UserController.MainMenu(memberVo);
                		// 관리자 -> 관리자 페이지
 	                } else if (memberVo.role == 1) {
 	                    // AdminController.AdminMenu();
