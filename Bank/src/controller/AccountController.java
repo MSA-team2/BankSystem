@@ -3,9 +3,13 @@ package controller;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
+import java.time.LocalDate;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Random;
 import java.util.Scanner;
 
@@ -69,23 +73,28 @@ public class AccountController {
 
 		System.out.println("===== 계좌 개설 =====");
 		System.out.println("=== 상품 선택 ===");
-
+		
+		Map<Integer, Integer> map = new HashMap<Integer, Integer>();
+		
 		try {
 			String sql1 = "select * from product";
 			pstmt = conn.prepareStatement(sql1);
 			rs = pstmt.executeQuery();
 
-			// 어떤 상품이 있는지 콘솔에 뿌리기
+			// 어떤 상품이 있는지 콘솔에 뿌리기 & 상품 id와 이름 map에 저장
 			while (rs.next()) {
 				int product_id = rs.getInt("product_id");
 				String product_name = rs.getString("product_name");
 				double interest_rate = rs.getDouble("interest_rate");
-				System.out.println(product_id + ". " + product_name + " (" + interest_rate + ")");
+				int period_months = rs.getInt("period_months");
+				map.put(product_id, period_months);		// map에 저장
+				
+				System.out.println(product_id + ". " + product_name + " (금리 " + interest_rate + "%)");
 			}
 			System.out.print("번호 선택: ");
 
 			// 번호 입력에 따른 계좌 번호 생성 시작
-			createAccount();
+			createAccount(map);
 			
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -93,51 +102,86 @@ public class AccountController {
 	}
 	
 	// 계좌 생성 메서드
-	public static void createAccount() {
+	public static void createAccount(Map map) {
 		MemberVO currentUser = SessionManager.getCurrentUser();
 		
 		try {
+			// 계좌번호 생성
 			StringBuilder sb = new StringBuilder();
 			Random rand = new Random();
 			int randomNumber = rand.nextInt(9999) + 1;
 			String account_uniqNumber = String.format("%04d", randomNumber);
-			switch (sc.nextInt()) {
-			case 1: {
-				sb.append("300-");
-				sb.append(currentUser.getPhone().substring(7)+"-");
-				sb.append(account_uniqNumber);
-				break;
-			}
-			case 2: {
-				sb.append("200-");
-				sb.append(currentUser.getPhone().substring(7)+"-");
-				sb.append(account_uniqNumber);
-				break;
-			}
-			case 3: {
+			int product_no = sc.nextInt();
+			System.out.println("\n\n");
+			long deposit_amount = 0;
+			switch (product_no) {
+			case 1: {	// 입출금
 				sb.append("100-");
-				sb.append(currentUser.getPhone().substring(7)+"-");
+				sb.append(currentUser.getPhone().substring(9)+"-");
 				sb.append(account_uniqNumber);
+				break;
+			}
+			case 2, 3, 7: {		// 예금
+				sb.append("200-");
+				sb.append(currentUser.getPhone().substring(9)+"-");
+				sb.append(account_uniqNumber);
+				break;
+			}
+			case 4, 5, 6, 8, 9, 10: {	// 적금
+				sb.append("300-");
+				sb.append(currentUser.getPhone().substring(9)+"-");
+				sb.append(account_uniqNumber);
+				System.out.println("매월 얼마를 납입할 지 입력해주세요");
+				deposit_amount = sc.nextLong();
 				break;
 			}
 			}
 			String account_no = sb.toString();
+			
+			
 			System.out.print("초기 입금액: ");
 			long balance = sc.nextLong();
-			System.out.println("\n계좌 비밀번호 (4자리): ");
-			String account_password = sc.next();
 			
-			String sql2 = "INSERT INTO ACCOUNT (ACCOUNT_NO, MEMBER_NO, ACCOUNT_PWD, BALANCE, STATUS) VALUES (?, ?, ?, ?, ?)";
-			pstmt = conn.prepareStatement(sql2);
+			String account_password;
+			String account_password_check;
+			while(true) {
+				System.out.print("\n계좌 비밀번호 (4자리): ");
+				account_password = sc.next();
+				System.out.print("계좌 비밀번호 확인: ");
+				account_password_check = sc.next();
+				if(account_password.equals(account_password_check)) break;
+				else {
+					System.out.println("비밀번호가 일치하지 않습니다. 다시 입력해주세요");
+					continue;
+				}
+			}
+			
+			// 계좌 등록
+			String sql = "INSERT INTO ACCOUNT (account_no, member_no, product_id, account_pwd,"
+					+ " balance, status, lock_cnt, created_date, deposit_amount, maturity_date) "
+					+ "VALUES (?, ?, ?, ?, ?, 'Y', 0, NOW(), ?, ?)";
+			pstmt = conn.prepareStatement(sql);
 			pstmt.setString(1, account_no);
 			pstmt.setInt(2, currentUser.getMemberNo());
-			pstmt.setString(3, account_password);
-			pstmt.setLong(4, balance);
-			pstmt.setString(5, "Y");
+			pstmt.setInt(3, product_no);
+			pstmt.setString(4, account_password);
+			pstmt.setLong(5, balance);
+			if(account_no.substring(0,3).equals("300")) {
+				pstmt.setLong(6, deposit_amount);	// 납입금액
+			}else {
+				pstmt.setNull(6, java.sql.Types.BIGINT); 
+			}
+			if(account_no.substring(0,3).equals("200") || account_no.substring(0,3).equals("300")) {
+				int maturity_months = (int) map.get(product_no);
+			    LocalDate maturityDate = LocalDate.now().plusMonths(maturity_months);
+			    pstmt.setDate(7, Date.valueOf(maturityDate));
+			} else {
+			    pstmt.setNull(7, java.sql.Types.DATE);
+			}
 			int result = pstmt.executeUpdate();
 			
 			if(result > 0) {
-				System.out.println("계좌가 성공적으로 개설되었습니다.");
+				System.out.println("계좌 개설에 성공하였습니다.");
 				System.out.println("계좌번호: " + sb.toString());
 				conn.commit();
 			}else {
@@ -148,5 +192,5 @@ public class AccountController {
 			e.printStackTrace();
 		}
 	}
-
+	
 }
