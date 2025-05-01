@@ -119,9 +119,8 @@ public class MemberController {
 	        if (address == null) return;
 	        
 	        // 전화번호 자리수 체크
-	        // 수정필요....
 	        String phone = null;
-	        while (true) {
+	        while (true) {      	
 	        	phone = getInput("전화번호 입력(ex 010-1234-5678): ");
 	        	if (phone == null) return;
 	        	
@@ -413,6 +412,9 @@ public class MemberController {
 	public static boolean confirmPhone(String phone) {
 		String sql = "SELECT phone FROM MEMBER WHERE phone = ?";
 	    try {
+	    	if (rs != null) rs.close();
+	    	if (ps != null) ps.close();
+	    	
 	        ps = conn.prepareStatement(sql);
 	        ps.setString(1, phone);
 	        rs = ps.executeQuery();
