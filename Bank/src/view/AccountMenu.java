@@ -22,7 +22,7 @@ public class AccountMenu {
 	}
 	
 	public BigDecimal inputInitialBalance() {
-		System.out.print("초기 입금액: ");
+		System.out.print("입금액: ");
 		return sc.nextBigDecimal();
 	}
 	
@@ -44,10 +44,17 @@ public class AccountMenu {
 	
 	public void successMakeAccount(AccountVO vo) {
 		System.out.println("계좌 개설에 성공하였습니다!");
-		if(vo.getMaturity_date() == null) {
-			System.out.println("계좌번호: " + vo.getAccountNo() + "\n잔액: " + vo.getBalance() +"\n만기일: 없음");
+		if(vo.getDeposit_amount() == null && vo.getMaturity_date() == null) {
+			System.out.println("계좌번호: " + vo.getAccountNo() + "\n잔액: " + vo.getBalance() +"원\n만기일: 없음");
+		}else if(vo.getDeposit_amount() == null) {
+			System.out.println("계좌번호: " + vo.getAccountNo() + "\n잔액: " 
+					+ vo.getBalance() + "원\n개설일: " + vo.getCreateDate() +"\n만기일: "+ vo.getMaturity_date()
+					+ "\n만기시 예상금액: " + vo.getMaturity_amount() + "원");
 		}else {
-			System.out.println("계좌번호: " + vo.getAccountNo() + "\n잔액: " + vo.getBalance() +"\n만기일: "+ vo.getMaturity_date());
+			
+		System.out.println("계좌번호: " + vo.getAccountNo() + "\n개설일: " + vo.getCreateDate() 
+		+"\n만기일: "+ vo.getMaturity_date() + "\n매월 납입금: " + vo.getDeposit_amount()
+		+ "\n만기시 예상금액: " + vo.getMaturity_amount() + "원");
 		}
 	}
 

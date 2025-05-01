@@ -40,10 +40,9 @@ public class AccountController {
 		int product_no = view.productShow(product);
 		BigDecimal balance = new BigDecimal("0");
 		BigDecimal deposit = new BigDecimal("0");
-		if (product_no == 1) {
+		if (product_no <= 3 || product_no == 7) {	// 입출금 기본금, 예금 예치금 입력
 			balance = view.inputInitialBalance();
-		}else {
-			balance = view.inputInitialBalance();
+		}else {	// 적금 입력
 			deposit = view.inputDepositAmount();
 		}
 

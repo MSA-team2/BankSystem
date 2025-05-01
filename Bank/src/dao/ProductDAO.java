@@ -29,7 +29,7 @@ public class ProductDAO {
 				ProductVO p = new ProductVO();
 				p.setProductId(rs.getInt("product_id"));
 				p.setProductName(rs.getString("product_name"));
-				p.setInterestRate(rs.getDouble("interest_rate"));
+				p.setInterestRate(rs.getBigDecimal("interest_rate"));
 				p.setPeriodMonths(rs.getInt("period_months"));
 				list.add(p);
 			}
@@ -55,7 +55,7 @@ public class ProductDAO {
 			if (rs.next()) {
 				p.setProductId(rs.getInt("product_id"));
 				p.setProductName(rs.getString("product_name"));
-				p.setInterestRate(rs.getDouble("interest_rate"));
+				p.setInterestRate(rs.getBigDecimal("interest_rate"));
 				p.setPeriodMonths(rs.getInt("period_months"));
 			}
 		} catch (Exception e) {
