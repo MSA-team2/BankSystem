@@ -4,6 +4,8 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
+import view.FirstMainMenu;
+
 // 사용자 메뉴
 public class UserController {
 	public static void MemberMenu() {
@@ -48,13 +50,13 @@ public class UserController {
 				// 로그아웃
 				System.out.println("로그아웃 되었습니다.");
 				SessionManager.logout();
-				MemberController.MainMenu();
+				new FirstMainMenu().mainMenu();
 				break;
 			}
 			case 0: {
 				// 메인화면
 				System.out.println("메인화면으로 돌아갑니다.");
-				MemberController.MainMenu();
+				new FirstMainMenu().mainMenu();
 				break;
 			}
 			default:

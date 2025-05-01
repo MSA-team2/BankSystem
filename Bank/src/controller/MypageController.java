@@ -1,13 +1,14 @@
 package controller;
 
 import model.MemberVO;
+import view.FirstMainMenu;
 
 public class MypageController {
 
 	public static void UserInfo() {
 
 		if (SessionManager.isLoggedIn() == false) {
-			MemberController.MainMenu();
+			new FirstMainMenu().mainMenu();
 
 		} else {
 			MemberVO user = SessionManager.getCurrentUser();
