@@ -211,8 +211,6 @@ public class MemberController {
 	            e.printStackTrace();
 	        } catch (NumberFormatException e) {
 				e.printStackTrace();
-			} catch (IOException e) {
-				e.printStackTrace();
 			}
 	    } // while
 	}
