@@ -74,8 +74,6 @@ public class MemberController {
 		String sql = "INSERT INTO MEMBER (name, jumin, member_id, password, address, phone)"
 						+ "VALUES(?, ?, ?, ?, ?, ?)";
 		try {
-			ps = conn.prepareStatement(sql);
-			
 			String name = getInput("이름: ");
 	        if (name == null) return;
 
@@ -118,9 +116,12 @@ public class MemberController {
 	        String address = getInput("주소: ");
 	        if (address == null) return;
 	        
+//	        String phone = getInput("전화번호(ex 010-1234-5678): ");
+//	        if (phone == null) return;
+	        
 	        // 전화번호 자리수 체크
 	        String phone = null;
-	        while (true) {      	
+	        while (true) { 	
 	        	phone = getInput("전화번호 입력(ex 010-1234-5678): ");
 	        	if (phone == null) return;
 	        	
@@ -132,7 +133,8 @@ public class MemberController {
 	        		break;
 	        	}
 	        }
-			
+	        	
+	        ps = conn.prepareStatement(sql);
 			ps.setString(1, name);
 			ps.setString(2, jumin);
 			ps.setString(3, id);
@@ -198,7 +200,6 @@ public class MemberController {
 	                }
 	                return; // 로그인 성공 -> 메서드 종료	                
 	            } else {
-	            	// 추가사항: 아이디/비밀번호 찾기
 	                System.out.println("아이디 또는 비밀번호가 올바르지 않습니다.");
 	                System.out.print("다시 시도하시겠습니까? (Y/N): ");
 	                
