@@ -1,167 +1,80 @@
 package controller;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.time.LocalDateTime;
 import java.util.Scanner;
 
-import dbConn.util.CloseHelper;
-import dbConn.util.ConnectionHelper;
-import model.AccountVO;
 import model.MemberVO;
+import service.AdminMemberService;
+import util.Validator;
 
 public class AdminMemberController {
 	
-	public static void editMember() throws SQLException {
-		MemberVO loginMember = SessionManager.getCurrentUser();
-		System.out.println("===== 회원 정보 수정 =====");
-		System.out.println("회원 이름 : " + loginMember.getName());
-		System.out.println("주민번호 : " + loginMember.getJumin());
-		System.out.println("");
-		
-		System.out.println("===== 현재 정보 =====");
-		System.out.println("이름 : " + loginMember.getName());
-		System.out.println("전화번호 : " + loginMember.getPhone());
-		System.out.println("주소 : " + loginMember.getAddress());
-		
-		System.out.println("수정할 정보를 입력하세요.");
-		System.out.print("새 전화번호 : ");
-		String newPhone = sc.next();
-		
-		System.out.print("새 주소");
-		String newAddress = sc.next();
-		
-		PreparedStatement pstmt = conn.prepareStatement(
-				"update member"
-				+ "set phone = ?,"
-				+ "address = ?"
-				+ "wherer member_no = ?");
-		
-		pstmt.setString(1, newPhone);
-		pstmt.setString(2, newAddress);
-		pstmt.setInt(3, loginMember.getMemberNo());
-		
-		pstmt.executeUpdate();
-		
-		System.out.print("회원정보가 수정되었습니다.");
-	}
+	private final Scanner sc = new Scanner(System.in);
+	private final AdminMemberService adminMemberService = new AdminMemberService();
 	
-	public static void findMember() {
-		MemberVO loginMember = SessionManager.getCurrentUser();
-		System.out.println("===== 회원 검색 =====");
-		System.out.print("회원 이름 : ");
-		String findMemberName = sc.next();
-		
-		System.out.print("주민번호 : ");
-		String findMemberJumin = sc.next();
-		
-		PreparedStatement pstmt;
-		try {
-			pstmt = conn.prepareStatement(
-					"select * from member where name = ? and jumin = ?");
-			pstmt.setString(1, findMemberName);
-			pstmt.setString(2, findMemberJumin);
-			pstmt.setInt(3, loginMember.getMemberNo());
-			
-			pstmt.executeUpdate();
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
+	public void editMember() {
+        System.out.println("===== 회원 정보 수정 =====");
+        System.out.print("회원 이름 : ");
+        String inputName = sc.nextLine();
 
-		System.out.print("회원정보가 수정되었습니다.");
-	}
+        System.out.print("주민번호 : ");
+        String inputJumin = sc.nextLine();
 
-	public static void validationMember() throws SQLException {
-		if (!SessionManager.isLoggedIn()) {
-			System.out.println("로그인이 필요합니다.");
-			return;
-		}
+        System.out.print("새 전화번호 : ");
+        String newPhone = sc.nextLine();
 
-		if (!SessionManager.isAdmin()) {
-			System.out.println("관리자가 아닙니다.");
-			return;
-		}
-	}
+        System.out.print("새 주소 : ");
+        String newAddress = sc.nextLine();
 
-	public static void showAccountByMember() throws SQLException {
-		MemberVO loginMember = SessionManager.getCurrentUser();
-		System.out.println("===== 계좌 잠금 관리 =====");
-		System.out.println("회원 이름 : " + loginMember.getName());
-		System.out.println("주민번호 : " + loginMember.getJumin());
+        String result = adminMemberService.updateMemberInfo(inputName, inputJumin, newPhone, newAddress);
+        System.out.println(result);
+    }
 
-		PreparedStatement pstmt = conn.prepareStatement("select ROW_NUMBER() OVER (ORDER BY account_no desc) AS 번호,"
-				+ " a.account_no," + " b.name," + " d.product_name, " + " a.status" + " a.created_date"
-				+ " from account a " + "join member b on a.member_no = m.member_no "
-				+ "join product p on c.product_id = p.product_id " + "where a.member_no = ?");
-		ResultSet rs = pstmt.executeQuery();
+    public void findMember() {
+        System.out.println("===== 회원 검색 =====");
+        System.out.print("회원 이름 : ");
+        String name = sc.nextLine();
 
-		System.out.println("번호" + "\t" + "계좌번호" + "\t" + "계좌주" + "\t" + "상품명" + "\t" + "계좌상태" + "\t" + "개설일");
+        System.out.print("주민번호 : ");
+        String jumin = sc.nextLine();
 
-		while (rs.next()) {
-			String sort = rs.getString("번호");
-			int account_no = rs.getInt("a.account_no");
-			int name = rs.getInt("b.name");
-			String product_name = rs.getString("d.product_name");
-			String status = rs.getString("status");
-			String created_date = rs.getString("created_date");
+        MemberVO member = adminMemberService.findMemberByNameAndJumin(name, jumin);
+        if (member == null) {
+            System.out.println("[!] 회원을 찾을 수 없습니다.");
+            return;
+        }
 
-			System.out.println(sort + "\t" + account_no + "\t" + account_no + "\t" + name + "\t" + product_name + "\t"
-					+ status + "\t" + created_date);
-		}
-	}
+        System.out.println("===== 회원 정보 =====");
+        System.out.println("이름 : " + member.getName());
+        System.out.println("주민번호 : " + member.getJumin());
+        System.out.println("전화번호 : " + member.getPhone());
+        System.out.println("주소 : " + member.getAddress());
+    }
 
-	public static void updateAccount() throws SQLException {
-		System.out.println("상태를 변경할 계좌번호를 입력해주세요");
-		System.out.println("예시) xxx-xxxx-xxxx");
-		System.out.println("예시) 100-2542-2222");
-		System.out.print(">> ");
+    public void manageAccountLock() {
+        if (!SessionManager.isAdmin()) {
+            System.out.println("[!] 관리자만 접근할 수 있는 기능입니다.");
+            return;
+        }
 
-		String inputAccountNumber = sc.next();
-		if (isValidHyphenPhoneNumber(inputAccountNumber)) {
-			System.out.println("올바르지 않은 계좌번호 양식입니다.");
-			return;
-		}
-		
-		AccountVO findAccount = getAccountInfo(inputAccountNumber);
+        System.out.println("===== 계좌 잠금 관리 =====");
+        System.out.print("회원 이름 : ");
+        String name = sc.nextLine();
 
-		System.out.println("현재 상태: " + findAccount.getStatus());
-		System.out.print("(N: 잠금, Y: 정상): ");
-		String statusCode = sc.next();
+        System.out.print("주민번호 : ");
+        String jumin = sc.nextLine();
 
-		PreparedStatement pstmt = conn.prepareStatement("update account " + "set status = ?");
+        System.out.print("잠금/해제할 계좌번호를 입력하세요: ");
+        String accountNo = sc.nextLine();
 
-		pstmt.setString(1, statusCode);
-		pstmt.executeUpdate();
+        if (!Validator.isValidHyphenAccountNumber(accountNo)) {
+            System.out.println("[!] 잘못된 계좌번호 형식입니다. 예) 100-1234-5678");
+            return;
+        }
 
-		findAccount = getAccountInfo(inputAccountNumber);
-		System.out.println("계좌가 " + findAccount.getStatus() + "상태로 변경되었습니다.");
-	}
+        System.out.print("변경할 상태 (Y/N): ");
+        char status = sc.nextLine().toUpperCase().charAt(0);
 
-	public static AccountVO getAccountInfo(String AccountNumber) throws SQLException {
-		PreparedStatement pstmt = conn.prepareStatement("select * from account where account_no = ?");
-		pstmt.setString(1, AccountNumber);
-		ResultSet rs = pstmt.executeQuery();
-
-		rs.next();
-		AccountVO ao = new AccountVO();
-
-		ao.setAccountNo(rs.getString("account_no"));
-		ao.setMemberNo(rs.getInt("member_no"));
-		ao.setAccountPwd(rs.getString("account_no"));
-		ao.setBalance(rs.getBigDecimal("balance"));
-		ao.setStatus(rs.getString("status").charAt(0));
-		ao.setCreateDate(rs.getObject("created_date", LocalDateTime.class));
-
-		return ao;
-	}
-
-	public static boolean isValidHyphenPhoneNumber(String input) {
-		// 3-4-4 형식의 번호 (예: 101-4444-4444), 하이픈 필수
-		String pattern = "^\\d{3}-\\d{4}-\\d{4}$";
-		return input != null && input.matches(pattern);
-	}
+        String result = adminMemberService.changeAccountStatus(name, jumin, accountNo, status);
+        System.out.println(result);
+    }
 }

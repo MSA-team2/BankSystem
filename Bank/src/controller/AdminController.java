@@ -1,13 +1,12 @@
 package controller;
 
-import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Scanner;
 
 import dto.AccountSummaryDto;
-import dto.AdminMemberDto;
 import dto.DailyTransferSummaryDto;
+import model.MemberVO;
 import service.AdminService;
 import util.Validator;
 
@@ -17,7 +16,7 @@ public class AdminController {
 
 	static Scanner sc = new Scanner(System.in);
 
-	public void showDailyTransferHistory() throws SQLException {
+	public void showDailyTransferHistory() {
 		System.out.print("검색할 날짜를 입력해주세요 (예: 2025-03-15) >> ");
 		String input = sc.nextLine();
 
@@ -35,19 +34,17 @@ public class AdminController {
 		System.out.println("자금 순유입 : " + summary.getNetTotalAmount() + "원");
 	}
 
-	public void selectAllMember() throws SQLException {
-		List<AdminMemberDto> list = adminService.getAllMembers();
+	public void findAllMembers() {
+		List<MemberVO> list = adminService.getAllMembers();
 
 		System.out.println("===== 전체 회원 조회 =====");
 		System.out.println("이름" + "주민번호" + "비밀번호" + "주소" + "전화번호" + "계좌잠금여부" + "역할");
 
-		for (MemberDto dto : list) {
+		for (MemberVO dto : list) {
 			System.out.println(dto.getName() + "\t" + dto.getJumin() + "\t" + dto.getMemberId() + "\t"
-					+ dto.getPassword() + "\t" + dto.getAddress() + "\t" + dto.getPhone() + "\t" + dto.getLockYn()
+					+ dto.getPassword() + "\t" + dto.getAddress() + "\t" + dto.getPhone() + "\t" + dto.getStatus()
 					+ "\t" + (dto.getRole() == 1 ? "Admin" : "User"));
 		}
-	}
-
 	}
 
 	public void selectAllAccounts() {

@@ -6,7 +6,9 @@ import java.time.LocalDateTime;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
+@Setter
 @Getter
 @NoArgsConstructor
 public class AccountSummaryDto {
@@ -17,15 +19,4 @@ public class AccountSummaryDto {
 	private char status;
 	private LocalDateTime createdDate;
 	
-	@Builder
-	private AccountSummaryDto(String accountNo, String name, String accountPwd, BigDecimal balance, char status,
-			LocalDateTime createdDate) {
-		super();
-		this.accountNo = accountNo;
-		this.name = name;
-		this.accountPwd = accountPwd;
-		this.balance = balance;
-		this.status = status;
-		this.createdDate = createdDate;
-	}
 }

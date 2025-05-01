@@ -5,6 +5,7 @@ import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.time.LocalDate;
 
 import dbConn.util.ConnectionHelper;
@@ -18,11 +19,11 @@ public class TransactionDAO {
                      "       SUM(AMOUNT) AS AMOUNT, " +
                      "       SUM(CASE " +
                      "            WHEN TRANSACTION_TYPE = 'DEPOSIT' THEN AMOUNT " +
-                     "            WHEN TRANSACTION_TYPE = 'WITHDRAWAL' THEN -AMOUNT " +
+                     "            WHEN TRANSACTION_TYPE = 'WITHDRAW' THEN -AMOUNT " +
                      "            ELSE 0 " +
                      "       END) AS NET_AMOUNT " +
                      "FROM TRANSACTION_HISTORY " +
-                     "WHERE TRANSACTION_DATE = ? " +
+                     "WHERE TRANSACTION_DATE >= ? AND TRANSACTION_DATE < ? " +
                      "GROUP BY TRANSACTION_TYPE";
 
         Connection conn = null;
@@ -40,7 +41,8 @@ public class TransactionDAO {
             conn.setAutoCommit(false);
 
             pstmt = conn.prepareStatement(sql);
-            pstmt.setDate(1, Date.valueOf(date));
+            pstmt.setTimestamp(1, Timestamp.valueOf(date.atStartOfDay())); // 2025-04-24 00:00:00
+            pstmt.setTimestamp(2, Timestamp.valueOf(date.plusDays(1).atStartOfDay())); // 2025-04-25 00:00:00
             rs = pstmt.executeQuery();
 
             while (rs.next()) {
@@ -52,7 +54,7 @@ public class TransactionDAO {
                 if ("DEPOSIT".equals(type)) {
                     depositCount = count;
                     depositAmount = amount;
-                } else if ("WITHDRAWAL".equals(type)) {
+                } else if ("WITHDRAW".equals(type)) {
                     withdrawCount = count;
                     withdrawAmount = amount;
                 }
@@ -82,13 +84,14 @@ public class TransactionDAO {
             }
         }
 
-        return DailyTransferSummaryDto.builder()
-                .date(date)
-                .depositCount(depositCount)
-                .depositAmount(depositAmount)
-                .withdrawCount(withdrawCount)
-                .withdrawAmount(withdrawAmount)
-                .netTotalAmount(netTotalAmount)
-                .build();
+        DailyTransferSummaryDto dailyTransferSummaryDto = new DailyTransferSummaryDto();
+        dailyTransferSummaryDto.setDate(date);
+        dailyTransferSummaryDto.setDepositCount(depositCount);
+        dailyTransferSummaryDto.setDepositAmount(depositAmount);
+        dailyTransferSummaryDto.setWithdrawCount(withdrawCount);
+        dailyTransferSummaryDto.setWithdrawAmount(withdrawAmount);
+        dailyTransferSummaryDto.setNetTotalAmount(netTotalAmount);
+        
+        return dailyTransferSummaryDto;
     }
 }
