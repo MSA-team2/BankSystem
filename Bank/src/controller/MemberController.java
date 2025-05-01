@@ -1,6 +1,5 @@
 package controller;
 
-import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -10,7 +9,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.Scanner;
 
 import dbConn.util.CloseHelper;
-import dbConn.util.ConnectionSingletonHelper;
+import dbConn.util.ConnectionHelper;
 import model.MemberVO;
 
 public class MemberController {
@@ -22,7 +21,7 @@ public class MemberController {
 	// connect
 	public static void connect() {
 		try {
-			conn = ConnectionSingletonHelper.getConnection("mysql");
+			conn = ConnectionHelper.getConnection("mysql");
 			conn.setAutoCommit(true); // 자동커밋 켬
 			
 		} catch (Exception e) {

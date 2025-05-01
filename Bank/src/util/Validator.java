@@ -5,10 +5,10 @@ import java.time.format.DateTimeParseException;
 
 public class Validator {
 	/**
-     * 하이픈이 포함된 3-4-4 형식의 전화번호 유효성 검사
+     * 하이픈이 포함된 3-4-4 형식의 계좌번호 유효성 검사
      * 예: 010-1234-5678
      */
-    public static boolean isValidHyphenPhoneNumber(String input) {
+    public static boolean isValidHyphenAccountNumber(String input) {
         String pattern = "^\\d{3}-\\d{4}-\\d{4}$";
         return input != null && input.matches(pattern);
     }
