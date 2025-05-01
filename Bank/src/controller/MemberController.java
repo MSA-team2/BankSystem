@@ -411,13 +411,11 @@ public class MemberController {
 	// ----- 전화번호 중복 체크 ----- //
 	public static boolean confirmPhone(String phone) {
 		String sql = "SELECT phone FROM MEMBER WHERE phone = ?";
-	    try {
-	    	if (rs != null) rs.close();
-	    	if (ps != null) ps.close();
-	    	
-	        ps = conn.prepareStatement(sql);
-	        ps.setString(1, phone);
-	        rs = ps.executeQuery();
+		try {
+	        PreparedStatement ps = conn.prepareStatement(sql);
+			ps.setString(1, phone);
+			
+	        ResultSet rs = ps.executeQuery();
 	        return rs.next();  // 중복
 	    } catch (SQLException e) {
 	        e.printStackTrace();
