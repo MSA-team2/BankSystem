@@ -46,15 +46,16 @@ public class UserController {
 			}
 			case 7: {
 				// 로그아웃
+				System.out.println("로그아웃 되었습니다.");
+				SessionManager.logout();
+				MemberController.MainMenu();
 				break;
-
 			}
 			case 0: {
 				// 메인화면
 				System.out.println("메인화면으로 돌아갑니다.");
-				//MemberController.MainMenu();
+				MemberController.MainMenu();
 				break;
-
 			}
 			default:
 				System.out.println("올바른 숫자를 입력해주세요.");
@@ -65,7 +66,7 @@ public class UserController {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-
 		
 	}
+	
 }
