@@ -15,60 +15,6 @@ import model.AccountVO;
 import model.MemberVO;
 
 public class AdminMemberController {
-	static Scanner sc = new Scanner(System.in);
-	static PreparedStatement pstmt = null;
-	static ResultSet rs = null;
-	static Connection conn = null;
-	static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-
-	// connect
-	public static void connect() {
-		try {
-			conn = ConnectionHelper.getConnection("mysql");
-			conn.setAutoCommit(true);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-
-	// close
-	public static void close() {
-		try {
-			CloseHelper.close(rs);
-			CloseHelper.close(pstmt);
-			CloseHelper.close(conn);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-
-//	public static void menu() throws SQLException, IOException {
-//
-//		while (true) {
-//			System.out.println("===== 회원 관리 =====");
-//			System.out.println("1. 계좌 잠금 관리");
-//			System.out.println("2. 회원 검색");
-//			System.out.println("2. 회원 정보 수정");
-//			System.out.println("4. 이전 메뉴");
-//			System.out.println("5. 로그아웃");
-//			System.out.println("6. 메인화면");
-//			System.out.print("원하는 메뉴 선택하세요. : ");
-//
-//			switch (sc.nextInt()) {
-//			case 0:
-//				selectMember();
-//				break;
-//
-//			case 1:
-//				selectAccount();
-//				break;
-//
-//			case 2:
-//				showDailyTransferHistory();
-//				break;
-//			}
-//		}
-//	}
 	
 	public static void editMember() throws SQLException {
 		MemberVO loginMember = SessionManager.getCurrentUser();
