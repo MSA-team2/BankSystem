@@ -1,6 +1,5 @@
 package controller;
 
-import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -12,34 +11,9 @@ import dbConn.util.ConnectionSingletonHelper;
 import model.MemberVO;
 
 public class MemberController {
-	static Scanner sc = new Scanner(System.in);
-	static Connection conn = null;
-	static PreparedStatement ps = null;
-	static ResultSet rs = null;
-	
-	// connect
-	public static void connect() {
-		try {
-			conn = ConnectionSingletonHelper.getConnection("mysql");
-			conn.setAutoCommit(true); // 자동커밋 켬
-			
-		} catch (Exception e) {
-			e.printStackTrace();
-		} 
-	} 
-	// close
-	public static void close() {
-		try {
-			CloseHelper.close(rs);
-			CloseHelper.close(ps);
-			CloseHelper.close(conn);
-			
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
+	private final Scanner sc = new Scanner(System.in);
 	// 첫화면
-	public static void MainMenu() {
+	public void MainMenu() {
 		MemberVO vo = new MemberVO();
 		
 		while(true) {
@@ -62,9 +36,14 @@ public class MemberController {
 	}
 	
 	// 로그인
-	public static void loginMember() {
-		
+	public void loginMember() {
+		Connection conn = null;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		UserController user = new UserController();
+
 	    while (true) {
+			
 	        System.out.println("\n========== 로그인 ==========");
 	        System.out.print("아이디: ");
 	        String id = sc.nextLine();
@@ -75,6 +54,9 @@ public class MemberController {
 	        String sql = "SELECT * FROM MEMBER WHERE member_id = ? AND password = ?";
 
 	        try {
+	        	conn = ConnectionSingletonHelper.getConnection("mysql");
+				conn.setAutoCommit(false); // 자동커밋 켬
+				
 	            ps = conn.prepareStatement(sql);
 	            ps.setString(1, id);
 	            ps.setString(2, pwd);
@@ -90,7 +72,7 @@ public class MemberController {
 	            	member.setPassword(rs.getString("password"));
 	            	member.setAddress(rs.getString("address"));
 	            	member.setPhone(rs.getString("phone"));
-	            	member.setRockYn(rs.getString("lock_yn").charAt(0));
+	            	member.setRockYn(rs.getString("status").charAt(0));
 	            	member.setRole(rs.getInt("role"));
 	            	
 	            	SessionManager.login(member);
@@ -101,7 +83,7 @@ public class MemberController {
 	                	// AdminController.AdminMenu();	          
 	                } else { // 일반 회원 
 	                	// 사용자 메뉴
-	                	UserController.MemberMenu();	                    
+	                	user.MemberMenu();	                    
 	                }
 	                return; // 로그인 성공 -> 메서드 종료	                
 	            } else {
@@ -121,13 +103,18 @@ public class MemberController {
 	}
 	
 	// 회원가입
-	public static void joinMember() {
+	public void joinMember() {
+		Connection conn = null;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		
 		// 입력시 중간에 나갈수 있는
 		System.out.println("\n======= 회원가입 =======");
 		System.out.println("※ 입력 중 '0'을 입력하면 메인메뉴로 돌아갑니다.");
 		String sql = "INSERT INTO MEMBER (name, jumin, member_id, password, address, phone)"
 						+ "VALUES(?, ?, ?, ?, ?, ?)";
 		try {
+			conn = ConnectionSingletonHelper.getConnection("mysql");
 			ps = conn.prepareStatement(sql);
 			
 			String name = getInput("이름: ");
@@ -169,7 +156,7 @@ public class MemberController {
 		}
 	}
 	
-	public static String getInput(String info) {
+	public String getInput(String info) {
 	    System.out.print(info);
 	    String input = sc.nextLine().trim();
 	    if (input.equals("0")) return null;

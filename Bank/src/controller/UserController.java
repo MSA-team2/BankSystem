@@ -6,7 +6,10 @@ import java.io.InputStreamReader;
 
 // 사용자 메뉴
 public class UserController {
-	public static void MemberMenu() {
+	
+	public void MemberMenu() {
+		AccountController account = new AccountController();
+		MypageController myPage = new MypageController();
 
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 
@@ -20,11 +23,12 @@ public class UserController {
 			switch (num) {
 			case 1: {
 				// 마이페이지
-				 MypageController.UserInfo();
+				 myPage.UserInfo();
 				break;
 			}
 			case 2: {
 				// 계좌 개설
+				account.insertAccount();
 				break;
 			}
 			case 3: {

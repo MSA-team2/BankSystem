@@ -10,6 +10,7 @@ import lombok.ToString;
 @Setter
 @ToString
 public class AccountProductVO {
+	public final String ClassName = "ACCOUNT_PRODUCT";
 	private int accountProductId; // 가입상품번호
 	private String accountNo; // 계좌번호
 	private int productId; // 상품번호

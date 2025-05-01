@@ -3,11 +3,12 @@ package controller;
 import model.MemberVO;
 
 public class MypageController {
-
-	public static void UserInfo() {
+	
+	public void UserInfo() {
+		MemberController member = new MemberController();
 
 		if (SessionManager.isLoggedIn() == false) {
-			MemberController.MainMenu();
+			member.MainMenu();
 
 		} else {
 			MemberVO user = SessionManager.getCurrentUser();

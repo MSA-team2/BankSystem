@@ -13,10 +13,8 @@ public class MainEntry {
 			├── MypageMenu.java
 			└── AdminMenu.java
 		 */
-		MemberController.connect();
-	    MemberController.MainMenu();
-	    MemberController.close();
-		
+		MemberController member = new MemberController();
+	    member.MainMenu();
 	}
 
 }
