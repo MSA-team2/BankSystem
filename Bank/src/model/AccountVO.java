@@ -14,6 +14,9 @@ public class AccountVO {
 	private int memberNo; // 회원번호
 	private String accountPwd; // 계좌비밀번호
 	private BigDecimal balance; // 잔액
-	private char status; // 잠금여부(Y,N)
+	private char status; // 계좌 상태
+	private int lock_cnt; // 틀린 횟수
 	private LocalDateTime createDate; // 개설일
+	private BigDecimal deposit_amount; // 납입금액
+	private LocalDateTime maturityDate; // 만기일자
 }
