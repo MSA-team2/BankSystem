@@ -1,121 +1,114 @@
 package service;
 
 import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.Scanner;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
-import controller.SessionManager;
-import controller.UserController;
 import dao.MemberDAO;
-import dbConn.util.CloseHelper;
 import dbConn.util.ConnectionHelper;
-import dbConn.util.ConnectionSingletonHelper;
 import model.MemberVO;
 
 public class MemberService {
 	private final MemberDAO md = new MemberDAO();
-	private final Scanner sc = new Scanner(System.in);
 	
-	public Scanner getScanner() {
-        return sc;
+	// 회원가입
+	public int insertMember(MemberVO member) {
+		Connection conn = ConnectionHelper.getConnection("mysql");
+		return md.insertMember(conn, member);
+	}
+
+	// 로그인
+	public MemberVO loginMember(String id, String pwd) {
+		Connection conn = ConnectionHelper.getConnection("mysql");
+		return md.loginMember(conn, id, pwd);
+	}
+
+	// 아이디 찾기
+	public String findId(String name, String jumin) {
+		Connection conn = ConnectionHelper.getConnection("mysql");
+		return md.findMemberId(conn, name, jumin);
+	}
+	
+	// 비밀번호 찾기 -> 새 비밀번호 변경
+	public int updatePwd(String id, String name, String jumin, String newPwd) {
+		Connection conn = ConnectionHelper.getConnection("mysql");
+		return md.updatePwd(conn, id, name, jumin, newPwd);
+	}
+
+	// 주민번호 유효성 체크
+	public boolean checkJumin(String jumin) {
+		if (!jumin.matches("\\d{6}-\\d{7}")) {
+            System.out.println("형식은 000000-0000000 이어야 합니다.");
+            return false;
+        }
+        jumin = jumin.replace("-", "");
+        if (!jumin.matches("\\d{13}")) {
+            System.out.println("주민번호는 숫자 13자리여야 합니다.");
+            return false;
+        }
+        char genderCode = jumin.charAt(6);
+        if (genderCode < '1' || genderCode > '4') {
+            System.out.println("성별코드가 잘못되었습니다.");
+            return false;
+        }
+        try {
+            String birth = jumin.substring(0, 6);
+            String century = (genderCode == '1' || genderCode == '2') ? "19" : "20";
+            LocalDate.parse(century + birth, DateTimeFormatter.ofPattern("yyyyMMdd"));
+        } catch (Exception e) {
+            System.out.println("생년월일이 잘못되었습니다.");
+            return false;
+        }
+        return true;
     }
 	
-	// 1. 회원가입
-	public int insertMember(MemberVO mv) {
-		Connection conn = ConnectionSingletonHelper.getConnection("mysql");
-		int result = new MemberDAO().insertMember(conn, mv);
-		
-        if (result > 0) {
-//        	commit(conn);
-        } else {
-//        	rollback(conn);
-        }
-        
-        CloseHelper.close(conn);
-        return result;
-		
-//        MemberVO mv = new MemberVO();
-//        mv.setName(name);
-//        mv.setJumin(jumin);
-//        mv.setMemberId(id);
-//        mv.setPassword(pwd);
-//        mv.setAddress(address);
-//        mv.setPhone(phone);
-        
-//        int result = md.insertMember(mv);        
-//        if (result > 0) {
-//        	System.out.println("회원가입이 완료되었습니다. 로그인 페이지로 이동합니다.");
-//		    loginMember();
-//        } else {
-//        	System.out.println("회원가입에 실패했습니다. 다시 시도해주세요.");
-//        }
-	}
-
-	// 2. 로그인
-	public MemberVO loginMember() {
-		Connection conn = ConnectionSingletonHelper.getConnection("mysql");
-		MemberVO mv = new MemberDAO().selectByMemberIdPwd(conn, id); // id 받아와..?
-		
-		CloseHelper.close(conn);
-		return mv;
-		
-		
-//	        try {
-//	            
-//
-//	            if (rs.next()) {
-//
-//	            	MemberVO member = new MemberVO();
-//	                
-//	            	member.setMemberNo(rs.getInt("member_no"));
-//	            	member.setName(rs.getString("name"));
-//	            	member.setJumin(rs.getString("jumin"));
-//	            	member.setMemberId(rs.getString("member_id"));
-//	            	member.setPassword(rs.getString("password"));
-//	            	member.setAddress(rs.getString("address"));
-//	            	member.setPhone(rs.getString("phone"));
-//	            	member.setStatus(rs.getString("status").charAt(0));
-//	            	member.setRole(rs.getInt("lock_cnt"));
-//	            	member.setRole(rs.getInt("role"));
-//	            	
-//	            	SessionManager.login(member);
-//	            	
-//	                System.out.println("[" + member.getName() + "] 님, 환영합니다!");	                
-//	             
-//	                if (SessionManager.isAdmin()) { // 관리자
-////		                	 AdminController.menu();	          
-//	                } else { // 일반 회원 
-//	                	UserController.MemberMenu();	                    
-//	                }
-//	                return; // 로그인 성공 -> 메서드 종료	                
-//	            } else {
-//	                System.out.println("아이디 또는 비밀번호가 올바르지 않습니다.");
-//	                System.out.print("다시 시도하시겠습니까? (Y/N): ");
-//	                
-//	                String retry = sc.nextLine().trim().toUpperCase();
-//	                if (!retry.equals("Y")) {
-//	                    break;
-//	                }
-//	            }
-//	        } catch (SQLException e) {
-//	            e.printStackTrace();
-//	        } catch (NumberFormatException e) {
-//				e.printStackTrace();
-//			}
-	}
-
-	public int updatePwd() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
+	// 아이디 중복 체크
+	public boolean checkId(String id) {
+        Connection conn = ConnectionHelper.getConnection("mysql");
+		return md.checkId(conn, id);
+    }
 	
-	
-	
-	// 주민번호 유효성 체크
 	// 비밀번호 유효성 체크
+	public boolean checkPwd(String pwd) {
+        return pwd.length() >= 8 && pwd.matches(".*[a-zA-Z].*") && pwd.matches(".*[0-9].*");
+    }
+	
 	// 비밀번호 일치 확인
+	public boolean confirmPwd(String pwd, String pwdConfirm) {
+        return pwd.equals(pwdConfirm);
+    }
+	
 	// 전화번호 유효성 체크
+	public boolean checkPhone(String phone) {
+        return phone.matches("\\d{3}-\\d{4}-\\d{4}");
+    }
+
+	// 전화번호 중복 체크
+	public boolean confirmPhone(String phone) {
+        Connection conn = ConnectionHelper.getConnection("mysql");
+		return md.confirmPhone(conn, phone);
+    }
+	
+	// 비밀번호 변경시 입력 정보 확인
+	public boolean validateUserInfo(String id, String name, String jumin) {
+		Connection conn = ConnectionHelper.getConnection("mysql");
+		return md.validateUserInfo(conn, id, name, jumin);
+	}
+	
+//	public void lockPwd(String id) {
+//		Connection conn = ConnectionHelper.getConnection("mysql");
+//		return md.lockPwd(conn, id);
+//	}
+	
+	 public void lockPwd(String id) {
+		 Connection conn = ConnectionHelper.getConnection("mysql");
+	     md.incrementLockCount(conn, id);
+	     int count = md.getLockCount(conn, id);
+	     if (count >= 5) {
+	    	 md.lockAccount(md, id);
+	         System.out.println("비밀번호 5회 이상 틀려 계정이 잠금되었습니다.");
+		}
+	 }
 	
 	
-	
-}
+} // MemberService
