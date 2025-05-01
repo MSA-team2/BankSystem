@@ -130,10 +130,9 @@ public class AdminController {
 		System.out.println("자금 순유입 : " + netTotalAmount + "원");
 	}
 
-	public static void selectAccount() throws SQLException {
+	public static void selectAllAccount() throws SQLException {
 		String sql = "SELECT ACCOUNT_NO, M.NAME, ACCOUNT_PWD, BALANCE, STATUS, CREATED_DATE FROM ACCOUNT A"
-				+ "JOIN MEMBER M ON A.MEMBER_NO = M.MEMBER_NO"
-				+ "JOIN ";
+				+ "JOIN MEMBER M ON A.MEMBER_NO = M.MEMBER_NO";
 
 		PreparedStatement pstmt = conn.prepareStatement(sql);
 		ResultSet rs = pstmt.executeQuery();
