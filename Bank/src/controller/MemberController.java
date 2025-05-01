@@ -1,5 +1,6 @@
 package controller;
 
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -100,7 +101,7 @@ public class MemberController {
 	                	// AdminController.AdminMenu();	          
 	                } else { // 일반 회원 
 	                	// 사용자 메뉴
-	                	// UserController.MemberMenu();	                    
+	                	UserController.MemberMenu();	                    
 	                }
 	                return; // 로그인 성공 -> 메서드 종료	                
 	            } else {
