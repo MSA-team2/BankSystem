@@ -4,12 +4,15 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
+import view.MypageMenu;
+
 // 사용자 메뉴
 public class UserController {
-	
+
 	public void MemberMenu() {
+
 		AccountController account = new AccountController();
-		MypageController myPage = new MypageController();
+		MypageMenu myPageMenu = new MypageMenu();
 
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 
@@ -19,11 +22,11 @@ public class UserController {
 		int num;
 		try {
 			num = Integer.parseInt(br.readLine());
-			
+
 			switch (num) {
 			case 1: {
 				// 마이페이지
-				 myPage.UserInfo();
+				myPageMenu.UserInfo();
 				break;
 			}
 			case 2: {
@@ -56,20 +59,19 @@ public class UserController {
 			case 0: {
 				// 메인화면
 				System.out.println("메인화면으로 돌아갑니다.");
-				//MemberController.MainMenu();
+				// MemberController.MainMenu();
 				break;
 
 			}
 			default:
 				System.out.println("올바른 숫자를 입력해주세요.");
 			}
-			
+
 		} catch (NumberFormatException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 
-		
 	}
 }
