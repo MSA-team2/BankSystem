@@ -4,7 +4,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
-import controller.MemberController;
 import controller.MypageController;
 import controller.SessionManager;
 import service.MypageService;
@@ -12,7 +11,6 @@ import service.MypageService;
 public class MemberMenu {
 
 	public static void MemberMainMenu() {
-
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 
 		// 직접 객체 생성 후 의존성 주입
@@ -59,13 +57,13 @@ public class MemberMenu {
 				// 로그아웃
 				System.out.println("로그아웃 되었습니다.");
 				SessionManager.logout();
-				MemberController.MainMenu();
+				new FirstMainMenu().mainMenu();
 				break;
 			}
 			case 0: {
 				// 메인화면
 				System.out.println("메인화면으로 돌아갑니다.");
-				MemberController.MainMenu();
+				new FirstMainMenu().mainMenu();
 				break;
 			}
 			default:
