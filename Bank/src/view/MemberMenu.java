@@ -14,9 +14,7 @@ public class MemberMenu {
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 
 		// 직접 객체 생성 후 의존성 주입
-		MypageService service = new MypageService();
-		MypageController controller = new MypageController(service);
-		MypageMenu mypageMenu = new MypageMenu(controller);
+		MypageMenu mypageMenu = new MypageMenu();
 
 		System.out.println("===== 사용자 메뉴 =====");
 		System.out.print("1.마이페이지\n2.계좌개설\n3.거래내역\n4.입금\n5.출금\n6.이체\n7.로그아웃\n0.메인화면\n선택 : ");

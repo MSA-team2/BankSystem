@@ -9,12 +9,9 @@ import controller.SessionManager;
 import model.MemberVO;
 
 public class MypageMenu {
-	private final MypageController controller;
+	private final MypageController controller = new MypageController();
 	private  BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 
-	public MypageMenu(MypageController controller) {
-		this.controller = controller;
-	}
 
 	public void UserInfo() {
 		if (SessionManager.isLoggedIn() == false) {
