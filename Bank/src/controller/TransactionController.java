@@ -26,7 +26,10 @@ public class TransactionController {
 		try {
 			// 트랜젝션 세팅
 			transactionConnect();
-			
+			if(!rs.isBeforeFirst()) {
+				System.out.println("계좌가 존재하지 않습니다.");
+				return;
+			}
 			String sqlDeposit = "update account set balance = balance + ? where account_no = ?"; 
 			pstmtDeposit = conn.prepareStatement(sqlDeposit);
 			conn.setAutoCommit(false);
@@ -56,7 +59,7 @@ public class TransactionController {
 				//System.exit(0);
 				return; 
 			}
-			else if (isValidHyphenPhoneNumber(inputAccountNumber)) {
+			else if (!isValidHyphenPhoneNumber(inputAccountNumber)) {
 				System.out.println("올바르지 않은 계좌번호 양식입니다.");
 				return;
 			}
@@ -71,11 +74,11 @@ public class TransactionController {
 			pstmtDeposit.executeUpdate();
 			
 			//트랜젝션 처리
-			String sqlTDeposit = "insert into TRANSACTION_HISTORY (account_no, account_type, amount, transaction_date, target_account) VALUES (?, ?, ?, NOW(), ?);";
+			String sqlTDeposit = "insert into TRANSACTION_HISTORY (account_no, transaction_type, amount, transaction_date, target_account) VALUES (?, ?, ?, NOW(), ?);";
 			pstmtsqlTDeposit = conn.prepareStatement(sqlTDeposit);
 			
 			pstmtsqlTDeposit.setString(1, inputAccountNumber);
-			pstmtsqlTDeposit.setString(2, "Deposit");
+			pstmtsqlTDeposit.setString(2, "입금");
 			pstmtsqlTDeposit.setInt(3, d_money);
 			pstmtsqlTDeposit.setString(4, "본인");
 			pstmtsqlTDeposit.executeUpdate();
@@ -99,6 +102,10 @@ public class TransactionController {
 		try {
 			// 트랜젝션 세팅
 			transactionConnect();
+			if(!rs.isBeforeFirst()) {
+				System.out.println("계좌가 존재하지 않습니다.");
+				return;
+			}
 			String sqlWithdraw = "update account set balance = balance - ? where account_no = ? and balance >= ?";
 			pstmtWithdraw = conn.prepareStatement(sqlWithdraw);
 			conn.setAutoCommit(false);
@@ -128,7 +135,7 @@ public class TransactionController {
 				//System.exit(0);
 				return; 
 			}
-			else if (isValidHyphenPhoneNumber(inputAccountNumber)) {
+			else if (!isValidHyphenPhoneNumber(inputAccountNumber)) {
 				System.out.println("올바르지 않은 계좌번호 양식입니다.");
 				return;
 			}
@@ -213,11 +220,11 @@ public class TransactionController {
 			}
 			
 			//트랜젝션 처리
-			String sqlTWithdraw = "insert into TRANSACTION_HISTORY (account_no, account_type, amount, transaction_date, target_account) VALUES (?, ?, ?, NOW(), ?);";
+			String sqlTWithdraw = "insert into TRANSACTION_HISTORY (account_no, transaction_type, amount, transaction_date, target_account) VALUES (?, ?, ?, NOW(), ?);";
 			PreparedStatement pstmtsqlTWithdraw = conn.prepareStatement(sqlTWithdraw);
 			
 			pstmtsqlTWithdraw.setString(1, inputAccountNumber);
-			pstmtsqlTWithdraw.setString(2, "Withdraw");
+			pstmtsqlTWithdraw.setString(2, "출금");
 			pstmtsqlTWithdraw.setInt(3, w_money);
 			pstmtsqlTWithdraw.setString(4, "본인");
 			pstmtsqlTWithdraw.executeUpdate();
@@ -241,6 +248,10 @@ public class TransactionController {
 			try {
 				// 트랜젝션 세팅
 				transactionConnect();
+				if(!rs.isBeforeFirst()) {
+					System.out.println("계좌가 존재하지 않습니다.");
+					return;
+				}
 				String sqlWithdraw = "update account set balance = balance - ? where account_no = ? and balance >= ?";
 				pstmtWithdraw = conn.prepareStatement(sqlWithdraw);
 				conn.setAutoCommit(false);
@@ -270,7 +281,7 @@ public class TransactionController {
 					//System.exit(0);
 					return; 
 				}
-				else if (isValidHyphenPhoneNumber(w_inputAccountNumber)) {
+				else if (!isValidHyphenPhoneNumber(w_inputAccountNumber)) {
 					System.out.println("올바르지 않은 계좌번호 양식입니다.");
 					return;
 				}
@@ -351,7 +362,7 @@ public class TransactionController {
 					conn.rollback();
 					conn.setAutoCommit(true);
 					return;
-				} else if (isValidHyphenPhoneNumber(d_inputAccountNumber)) {
+				} else if (!isValidHyphenPhoneNumber(d_inputAccountNumber)) {
 					System.out.println("올바르지 않은 계좌번호 양식입니다.");
 					return;
 				}
@@ -378,25 +389,26 @@ public class TransactionController {
 				// 완료한 후
 				long updatedBalance = w_balanceMap.get(w_inputAccountNumber) - w_money;
 				System.out.println(w_money + "원이 이체되었습니다. 현재 잔액 : " + updatedBalance);
+			
 			// 트랜젝션 처리
 			// 나 -> 타인 
 			PreparedStatement pstmtT_Withdraw = conn.prepareStatement(
-					 "INSERT INTO TRANSACTION_HISTORY (account_no, account_type, amount, transaction_date, target_account) VALUES (?, ?, ?, NOW(), ?)"
+					 "INSERT INTO TRANSACTION_HISTORY (account_no, transaction_type, amount, transaction_date, target_account) VALUES (?, ?, ?, NOW(), ?)"
 				    );
 			 pstmtT_Withdraw.setString(1, w_inputAccountNumber);
-			 pstmtT_Withdraw.setString(2, "T_Withdraw");
-			 pstmtT_Withdraw.setInt(3, -w_money);
-			 pstmtT_Withdraw.setString(4,"타인 이름");
+			 pstmtT_Withdraw.setString(2, "이체");
+			 pstmtT_Withdraw.setInt(3, w_money);
+			 pstmtT_Withdraw.setString(4, d_inputAccountNumber);
 			 pstmtT_Withdraw.executeUpdate();
 			
 			 //타인 -> 나
 			 PreparedStatement pstmtT_Deposit = conn.prepareStatement(
-					 "INSERT INTO TRANSACTION_HISTORY (account_no, account_type, amount, transaction_date, target_account) VALUES (?, ?, ?, NOW(), ?)"
+					 "INSERT INTO TRANSACTION_HISTORY (account_no, transaction_type, amount, transaction_date, target_account) VALUES (?, ?, ?, NOW(), ?)"
 				    );
 			 pstmtT_Deposit.setString(1, d_inputAccountNumber);
-			 pstmtT_Deposit.setString(2, "T_Deposit");
+			 pstmtT_Deposit.setString(2, "이체");
 			 pstmtT_Deposit.setInt(3, w_money);
-			 pstmtT_Deposit.setString(4, "내 이름");
+			 pstmtT_Deposit.setString(4, w_inputAccountNumber);
 			 pstmtT_Deposit.executeUpdate();
 			 
 			conn.commit();
@@ -411,7 +423,10 @@ public class TransactionController {
 	
 	public static void transactionHistroy() throws SQLException {
 		transactionConnect();
-		
+		if(!rs.isBeforeFirst()) {
+			System.out.println("계좌가 존재하지 않습니다.");
+			return;
+		}
 		//계좌 선택
 		System.out.println("------계좌 선택-------");
 		System.out.println("번호\t계좌번호\t상품명\t잔액");
@@ -430,21 +445,49 @@ public class TransactionController {
 		
 		
 		// 거래 내역
-		String sqlTSearch = "select T.TRANSACTION_DATE, T.ACCOUNT_TYPE, T.AMOUNT, T.TARGET_ACCOUNT \n"
-				+ "from TRANSACTION_HISTORY t\n"
-				+ "join account a on t.account_no = a.account_no\n"
-				+ "join member m on a.member_no = m.member_no\n"
-				+ "where t.account_no = ?";
+		String sqlTSearch = "SELECT \n"
+				+ "t.transaction_date AS 날짜, \n"
+				+ "a.account_no AS 계좌번호,\n"
+				+ "p.product_name AS 상품명,\n"
+				+ "CASE \n"
+				+ "WHEN t.transaction_type = 'DEPOSIT' THEN '입금'\n"
+				+ "WHEN t.transaction_type = 'WITHDRAW' THEN '출금'\n"
+				+ "        WHEN t.transaction_type = 'TRANSFER' THEN '이체'\n"
+				+ "        ELSE t.transaction_type\n"
+				+ "    END AS 구분, \n"
+				+ "    t.amount AS 금액, \n"
+//				+ "		a.balance AS 잔액,\n"
+				+ "    CASE \n"
+				+ "        WHEN t.transaction_type = '이체' THEN \n"
+				+ "            (SELECT m2.name \n"
+				+ "             FROM MEMBER m2 \n"
+				+ "             JOIN ACCOUNT a2 ON m2.member_no = a2.member_no \n"
+				+ "             WHERE a2.account_no = t.target_account)\n"
+				+ "        ELSE '본인'\n"
+				+ "    END AS 상대방\n"
+				+ "FROM \n"
+				+ "    TRANSACTION_HISTORY t\n"
+				+ "JOIN \n"
+				+ "    ACCOUNT a ON t.account_no = a.account_no\n"
+				+ "JOIN \n"
+				+ "    PRODUCT p ON a.product_id = p.product_id\n"
+				+ "JOIN \n"
+				+ "    MEMBER m ON a.member_no = m.member_no\n"
+				+ "WHERE \n"
+				+ "    m.member_no = ? and a.account_no = ?\n"
+				+ "ORDER BY \n"
+				+ "    t.transaction_date DESC";
 		pstmtTSearch = conn.prepareStatement(sqlTSearch);
-		pstmtTSearch.setString(1, inputAccountNumber);
+		pstmtTSearch.setInt(1, 2);
+		pstmtTSearch.setString(2, inputAccountNumber);
 		rs = pstmtTSearch.executeQuery();
 		
 		System.out.println("날짜\t구분\t금액\t상대방");
 		while(rs.next()) {
-			String date = rs.getString("TRANSACTION_DATE");
-			String transaction_type = rs.getString("account_type");
-			String amount = rs.getString("amount");
-			String name = rs.getString("target_account");
+			String date = rs.getString("날짜");
+			String transaction_type = rs.getString("구분");
+			String amount = rs.getString("금액");
+			String name = rs.getString("상대방");
 			
 			System.out.println(date+"\t"+transaction_type+"\t"+amount+"\t"+name);
 		}
@@ -460,32 +503,17 @@ public class TransactionController {
             System.out.println("로그인이 필요합니다.");
             return;
         }
+		
 		MemberVO currentUser = SessionManager.getCurrentUser(); 
 		
-		// 계좌없이 들어온 경우 (?) 
 		
 			String sqlSearch = "select ROW_NUMBER() OVER (ORDER BY account_no) AS 번호, account_no, balance, p.product_name from account a\n"
 					+ "join member b on a.member_no = b.member_no\n"
 					+ "join product p on a.product_id = p.product_id\n"
 					+ "where a.member_no = ?;";
 		pstmtSearch = conn.prepareStatement(sqlSearch);
-		pstmtSearch.setInt(1, 1);
+		pstmtSearch.setInt(1, currentUser.getMemberNo());
 		rs = pstmtSearch.executeQuery();
-	}
-	
-	// close
-	public static void close() {
-		try {
-			CloseHelper.close(rs);
-			CloseHelper.close(pstmtSearch);
-			CloseHelper.close(pstmtDeposit);
-			CloseHelper.close(pstmtWithdraw);
-			CloseHelper.close(pstmtTransfer);
-			CloseHelper.close(conn);
-			
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
 	}
 	
 	public static boolean isValidHyphenPhoneNumber(String input) {
