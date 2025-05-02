@@ -12,48 +12,7 @@ import dbConn.util.ConnectionHelper;
 import model.MemberVO;
 
 public class MemberDAO {
-	
-	public List<MemberVO> findAllMembers() {
-        List<MemberVO> list = new ArrayList<>();
-        String sql = "SELECT * FROM MEMBER ORDER BY ROLE DESC";
 
-        Connection conn = null;
-        PreparedStatement pstmt = null;
-        ResultSet rs = null;
-        
-        try {
-        	conn = ConnectionHelper.getConnection("mysql");
-        	pstmt = conn.prepareStatement(sql);
-        	rs = pstmt.executeQuery();
-
-            while (rs.next()) {
-                MemberVO member = new MemberVO();
-                member.setName(rs.getString("name"));
-                member.setJumin(rs.getString("jumin"));
-                member.setMemberId(rs.getString("member_id"));
-                member.setPassword(rs.getString("password"));
-                member.setAddress(rs.getString("address"));
-                member.setPhone(rs.getString("phone"));
-                member.setStatus(rs.getString("status").charAt(0));
-                member.setLockCnt(rs.getInt("lock_cnt"));
-                member.setRole(rs.getInt("role"));
-                
-                list.add(member);
-            }
-        } catch(SQLException e) {
-        	e.printStackTrace();
-        } finally {
-        	try {
-				rs.close();
-				pstmt.close();
-	        	conn.close();
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
-        }
-        return list;
-    }
-	
 	// 회원가입
 	public int insertMember(Connection conn, MemberVO member) {
 		// insert => 처리된 행 수
@@ -216,13 +175,64 @@ public class MemberDAO {
 			CloseHelper.close(ps);
 		}
 	}
-
+	
 	// 틀린횟수 증가 (int?)
 	public void incrementLockCount(Connection conn, String id) {
 		// TODO Auto-generated method stub
-		
 	}
+	
+	// 틀린횟수 조회
+	public int getLockCount(Connection conn, String id) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+	
+	// 잠금 상태 변경 'Y' -> 'N'
+	public void lockAccount(MemberDAO md, String id) {
+		// TODO Auto-generated method stub
+	}
+	
+	public List<MemberVO> findAllMembers() {
+        List<MemberVO> list = new ArrayList<>();
+        String sql = "SELECT * FROM MEMBER ORDER BY ROLE DESC";
 
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
+        
+        try {
+        	conn = ConnectionHelper.getConnection("mysql");
+        	pstmt = conn.prepareStatement(sql);
+        	rs = pstmt.executeQuery();
+
+            while (rs.next()) {
+                MemberVO member = new MemberVO();
+                member.setName(rs.getString("name"));
+                member.setJumin(rs.getString("jumin"));
+                member.setMemberId(rs.getString("member_id"));
+                member.setPassword(rs.getString("password"));
+                member.setAddress(rs.getString("address"));
+                member.setPhone(rs.getString("phone"));
+                member.setStatus(rs.getString("status").charAt(0));
+                member.setLockCnt(rs.getInt("lock_cnt"));
+                member.setRole(rs.getInt("role"));
+                
+                list.add(member);
+            }
+        } catch(SQLException e) {
+        	e.printStackTrace();
+        } finally {
+        	try {
+				rs.close();
+				pstmt.close();
+	        	conn.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+        }
+        return list;
+    }
+	
 	public MemberVO findMemberByNameAndJumin(String name, String jumin) {
         String sql = "SELECT * FROM MEMBER WHERE NAME = ? AND JUMIN = ?";
         
@@ -307,18 +317,6 @@ public class MemberDAO {
         }
         return 0;
     }
-	
-	// 틀린횟수 조회
-	public int getLockCount(Connection conn, String id) {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-	
-	// 잠금 상태 변경 'Y' -> 'N'
-	public void lockAccount(MemberDAO md, String id) {
-		// TODO Auto-generated method stub
-		
-	}
 	
 
     

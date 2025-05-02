@@ -26,7 +26,7 @@ public class FirstMainMenu {
 			case 1: mc.insertMember(); break;
 			case 2: mc.loginMember();; break;
 			case 3: mc.findMemberId(); break;
-			case 4: mc.findPwd(); break;
+			case 4: mc.findMemberPwd(); break;
 			case 0: System.out.println("감사합니다. 안녕히가세요"); System.exit(0); break;
 			default: System.out.println("잘못 입력하셨습니다. 다시 입력해주세요");
 			}
