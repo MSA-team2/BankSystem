@@ -14,7 +14,7 @@ public class MemberController {
 
 	// 1. 회원가입
 	public void insertMember() {
-		System.out.println("\n======= 회원가입 =======");
+		System.out.println("\n─────────── 회원가입 ───────────");
 
         System.out.println("※ 입력 중 '0'을 입력하면 메인메뉴로 돌아갑니다.");
 
@@ -33,9 +33,9 @@ public class MemberController {
             id = getInput("아이디: ");
             if (id == null) return;
             if (ms.checkId(id)) {
-                System.out.println("이미 사용 중인 아이디입니다. 다른 아이디를 입력해주세요.");
+                System.out.println("⚠️ 이미 사용 중인 아이디입니다. 다른 아이디를 입력해주세요.");
             } else {
-                System.out.println("사용 가능한 아이디입니다.");
+                System.out.println("✔️ 사용 가능한 아이디입니다.");
                 break;
             }
         }
@@ -50,7 +50,10 @@ public class MemberController {
             pwdConfirm = getInput("비밀번호 확인: ");
             if (pwdConfirm == null) return;
 
-            if (!ms.confirmPwd(pwd, pwdConfirm)) continue;
+            if (!ms.confirmPwd(pwd, pwdConfirm)) {
+            	System.out.println("⚠ 비밀번호가 일치하지 않습니다. 다시 입력해주세요.");
+            	continue;
+            }
             break;
         }
 
@@ -63,9 +66,9 @@ public class MemberController {
             if (phone == null) return;
             if (!ms.checkPhone(phone)) continue;
             if (ms.confirmPhone(phone)) {
-                System.out.println("이미 가입된 핸드폰 번호 입니다. 다른 번호를 입력해주세요");
+                System.out.println("⚠️ 이미 가입된 핸드폰 번호 입니다. 다른 번호를 입력해주세요");
             } else {
-                System.out.println("사용 가능한 번호 입니다.");
+                System.out.println("✔️ 사용 가능한 번호 입니다.");
                 break;
             }
         }
@@ -79,12 +82,13 @@ public class MemberController {
         member.setPhone(phone);
 
         int result = ms.insertMember(member);
-        System.out.println(result > 0 ? "회원가입이 완료되었습니다. 메인메뉴로 이동합니다." 
-        							  : "회원가입에 실패했습니다. 다시 시도해주세요");
+        System.out.println(result > 0 ? "✔️ 회원가입이 완료되었습니다. 메인메뉴로 이동합니다." 
+        							  : "⚠️ 회원가입에 실패했습니다. 다시 시도해주세요");
 	}
 	
 	// 로그인
 	public void loginMember() {
+		System.out.println("\n──────────── 로그인 ────────────");
 		while (true) {
             String id = getInput("아이디: ");
             String pwd = getInput("비밀번호: ");
@@ -93,7 +97,7 @@ public class MemberController {
             MemberVO member = ms.loginMember(id, pwd);
             if (member != null) {
                 SessionManager.login(member);
-                System.out.println(member.getName() + "님 환영합니다");
+                System.out.println("[" + member.getName() + "] 님 환영합니다 🙌");
                 
                 if (SessionManager.isAdmin()) { // 관리자
                     new AdminMainMenu().start();
@@ -102,7 +106,7 @@ public class MemberController {
                 }
                 break;
             } else {
-                System.out.println("아이디 또는 비밀번호가 올바르지 않습니다.");
+                System.out.println("⚠️ 아이디 또는 비밀번호가 올바르지 않습니다.");
 //                ms.lockPwd(id); // 로그인 실패 시 틀린 횟수 증가
                 System.out.print("다시 시도하시겠습니까? (Y/N): ");
                 String retry = sc.nextLine().trim().toUpperCase();
@@ -115,6 +119,7 @@ public class MemberController {
 
 	// 아이디 찾기
 	public void findMemberId() {
+		System.out.println("\n────────── 아이디 찾기 ──────────");
 		String name = getInput("이름: ");
         if (name == null) return;
 
@@ -129,12 +134,13 @@ public class MemberController {
         if (findId != null) {
             System.out.println(name + "님의 아이디는 " + findId + " 입니다.");
         } else {
-            System.out.println("일치하는 정보가 없습니다.");
+            System.out.println("⚠️ 일치하는 정보가 없습니다.");
         }
 	}
 	
 	// 비밀번호 찾기 -> 새 비밀번호 변경
 	public void findMemberPwd() {
+		System.out.println("\n───────── 비밀번호 찾기 ─────────");
 		String id = getInput("아이디: ");
         String name = getInput("이름: ");
 
@@ -147,10 +153,11 @@ public class MemberController {
         
         // 입력받은 정보가 유효한지 먼저 검증
         if (!ms.validateUserInfo(id, name, jumin)) {
-            System.out.println("정보가 일치하지 않습니다.");
+            System.out.println("⚠️ 정보가 일치하지 않습니다.");
             return;
         }
 
+        System.out.println("✔️ 회원 정보가 확인되었습니다. 새 비밀번호를 설정해주세요.");
         String newPwd;
         String newPwdConfirm;
         while (true) {
@@ -160,12 +167,15 @@ public class MemberController {
 
             newPwdConfirm = getInput("새 비밀번호 확인: ");
             if (newPwdConfirm == null) return;
-            if (!ms.confirmPwd(newPwd, newPwdConfirm)) continue;
+            if (!ms.confirmPwd(newPwd, newPwdConfirm)) {
+            	System.out.println("⚠ 비밀번호가 일치하지 않습니다. 다시 입력해주세요.");
+            	continue;
+            }
             break;
         }
 
         int result = ms.updatePwd(id, name, jumin, newPwd);
-        System.out.println(result > 0 ? "비밀번호가 재설정되었습니다." : "비밀번호 변경에 실패했습니다.");
+        System.out.println(result > 0 ? "✔️ 비밀번호가 재설정되었습니다." : "⚠️ 비밀번호 변경에 실패했습니다.");
 	}
 	
 	// 비밀번호 5회이상 틀릴시 잠금
