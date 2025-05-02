@@ -6,6 +6,7 @@ import java.sql.PreparedStatement;
 
 import controller.SessionManager;
 import dbConn.util.CloseHelper;
+import dbConn.util.ConnectionHelper;
 import dbConn.util.ConnectionSingletonHelper;
 import model.AccountVO;
 import model.MemberVO;
@@ -22,7 +23,7 @@ public class AccountDAO {
 				+ "VALUES (?, ?, ?, ?, ?, 'Y', 0, NOW(), ?, ?)";
 		try {
 			MemberVO currentUser = SessionManager.getCurrentUser();
-			conn = ConnectionSingletonHelper.getConnection("mysql");
+			conn = ConnectionHelper.getConnection("mysql");
 			conn.setAutoCommit(false);
 			
 			pstmt = conn.prepareStatement(sql);

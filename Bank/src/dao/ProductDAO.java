@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import dbConn.util.CloseHelper;
+import dbConn.util.ConnectionHelper;
 import dbConn.util.ConnectionSingletonHelper;
 import model.ProductVO;
 
@@ -15,7 +16,7 @@ public class ProductDAO {
 
 	// 상품정보
 	public List<ProductVO> getProductInfo() {
-		Connection conn = ConnectionSingletonHelper.getConnection("mysql");
+		Connection conn = ConnectionHelper.getConnection("mysql");
 		Statement stmt = null;
 		ResultSet rs = null;
 		
@@ -40,7 +41,7 @@ public class ProductDAO {
 	}
 
 	public ProductVO getProductById(int productId) {
-		Connection conn = ConnectionSingletonHelper.getConnection("mysql");
+		Connection conn = ConnectionHelper.getConnection("mysql");
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
 		

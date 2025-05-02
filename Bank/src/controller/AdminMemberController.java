@@ -6,6 +6,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Scanner;
 
@@ -208,7 +209,7 @@ public class AdminMemberController {
 		ao.setAccountPwd(rs.getString("account_no"));
 		ao.setBalance(rs.getBigDecimal("balance"));
 		ao.setStatus(rs.getString("status").charAt(0));
-		ao.setCreateDate(rs.getObject("created_date", LocalDateTime.class));
+		ao.setCreateDate(rs.getObject("created_date", LocalDate.class));
 
 		return ao;
 	}
