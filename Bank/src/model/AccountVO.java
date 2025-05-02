@@ -22,4 +22,5 @@ public class AccountVO {
 	private LocalDateTime createDate; // 개설일
 	private BigDecimal deposit_amount; // 납입금액
 	private LocalDateTime maturityDate; // 만기일자
+	private BigDecimal maturity_amount;
 }

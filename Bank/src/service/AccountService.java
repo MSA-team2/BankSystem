@@ -2,6 +2,7 @@ package service;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Random;
 
@@ -36,10 +37,10 @@ public class AccountService {
         dto.setProduct_id(productId);
         dto.setBalance(balance);
         dto.setMemberNo(SessionManager.getCurrentUser().getMemberNo());
-        dto.setCreateDate(LocalDate.now());
+        dto.setCreateDate(LocalDateTime.now());
         if(prefix.equals("300"))  dto.setDeposit_amount(deposit);
         if(prefix.equals("200") || prefix.equals("300")) {
-        	dto.setMaturity_date(LocalDate.now().plusMonths(product.getPeriodMonths()));
+        	dto.setMaturityDate(LocalDateTime.now().plusMonths(product.getPeriodMonths()));
         }
         // 이자 계산
         BigDecimal rate = product.getInterestRate();
