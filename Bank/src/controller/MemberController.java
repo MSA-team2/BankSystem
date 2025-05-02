@@ -1,16 +1,87 @@
 package controller;
 
+<<<<<<< HEAD
 import java.util.Scanner;
 
+=======
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.Scanner;
+
+import dbConn.util.CloseHelper;
+import dbConn.util.ConnectionHelper;
+>>>>>>> 2b23d7d3f10ffb9c79610e73a294c14c3edc0509
 import model.MemberVO;
 import service.MemberService;
 
 public class MemberController {
+<<<<<<< HEAD
 	private final Scanner sc = new Scanner(System.in);
 	private final MemberService ms = new MemberService();
 
 	// 회원가입
 	public void insertMember() {
+=======
+	static Scanner sc = new Scanner(System.in);
+	static Connection conn = null;
+	static PreparedStatement ps = null;
+	static ResultSet rs = null;
+	
+	// connect
+	public static void connect() {
+		try {
+			conn = ConnectionHelper.getConnection("mysql");
+			conn.setAutoCommit(true); // 자동커밋 켬
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+		} 
+	} 
+	// close
+	public static void close() {
+		try {
+			CloseHelper.close(rs);
+			CloseHelper.close(ps);
+			CloseHelper.close(conn);
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	// 첫화면
+	public static void MainMenu() {
+		MemberVO vo = new MemberVO();
+		
+		while(true) {
+			System.out.println("\n======== 투게더 은행 ========");
+			System.out.println("\t1. 회원가입");
+			System.out.println("\t2. 로그인");
+			System.out.println("\t3. 아이디 찾기");			
+			System.out.println("\t4. 비밀번호 찾기");			
+			System.out.println("\t0. 종료");
+			System.out.println("===========================");
+			System.out.print("메뉴 선택: ");
+			int menu = sc.nextInt();
+			sc.nextLine();
+			
+			switch (menu) {
+			case 1: joinMember(); break;
+			case 2: loginMember(); break;
+			case 3: findId(); break;
+			case 4: findPwd(); break;
+			case 0: System.out.println("감사합니다. 안녕히가세요"); System.exit(0); break;
+			default: System.out.println("잘못 입력하셨습니다. 다시 입력해주세요");
+			}
+		}
+	}
+	
+	// 1. 회원가입
+	public static void joinMember() {
+>>>>>>> 2b23d7d3f10ffb9c79610e73a294c14c3edc0509
 		System.out.println("\n======= 회원가입 =======");
         System.out.println("※ 입력 중 '0'을 입력하면 메인메뉴로 돌아갑니다.");
 
