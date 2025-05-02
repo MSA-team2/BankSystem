@@ -6,7 +6,7 @@ import controller.AdminMemberController;
 
 public class AdminMemberMenu {
 	private final Scanner sc = new Scanner(System.in);
-    private final AdminMemberController controller = new AdminMemberController();
+    private final AdminMemberController adminMemberController = new AdminMemberController();
 
     public void start() {
         while (true) {
@@ -16,13 +16,13 @@ public class AdminMemberMenu {
 
             switch (input) {
                 case "1":
-                    controller.manageAccountLock();
+                	adminMemberController.manageAccountLock();
                     break;
                 case "2":
-                    controller.searchMember();
+                	adminMemberController.findMember();
                     break;
                 case "3":
-                    controller.editMember();
+                	adminMemberController.editMember();
                     break;
                 case "0":
                     System.out.println("회원 관리 메뉴를 종료합니다.");

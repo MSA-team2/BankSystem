@@ -19,7 +19,7 @@ public class AdminMenu {
                     adminController.selectAllAccounts();
                     break;
                 case "2":
-                    adminController.selectAllMembers();
+                    adminController.findAllMembers();
                     break;
                 case "3":
                     adminController.showDailyTransferHistory();

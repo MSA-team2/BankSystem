@@ -1,14 +1,24 @@
-package controller;
+package view;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
-// 사용자 메뉴
-public class UserController {
-	public static void MemberMenu() {
+import controller.MemberController;
+import controller.MypageController;
+import controller.SessionManager;
+import service.MypageService;
+
+public class MemberMenu {
+
+	public static void MemberMainMenu() {
 
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+
+		// 직접 객체 생성 후 의존성 주입
+		MypageService service = new MypageService();
+		MypageController controller = new MypageController(service);
+		MypageMenu mypageMenu = new MypageMenu(controller);
 
 		System.out.println("===== 사용자 메뉴 =====");
 		System.out.print("1.마이페이지\n2.계좌개설\n3.거래내역\n4.입금\n5.출금\n6.이체\n7.로그아웃\n0.메인화면\n선택 : ");
@@ -16,11 +26,12 @@ public class UserController {
 		int num;
 		try {
 			num = Integer.parseInt(br.readLine());
-			
+
 			switch (num) {
 			case 1: {
 				// 마이페이지
-				 MypageController.UserInfo();
+				mypageMenu.UserInfo(); // 유저 정보를 보여 줌
+				mypageMenu.etcMenu(); //
 				break;
 			}
 			case 2: {
@@ -60,13 +71,12 @@ public class UserController {
 			default:
 				System.out.println("올바른 숫자를 입력해주세요.");
 			}
-			
+
 		} catch (NumberFormatException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		
+
 	}
-	
 }

@@ -4,10 +4,11 @@ import java.time.LocalDate;
 import java.util.List;
 
 import dao.AccountDAO;
+import dao.MemberDAO;
 import dao.TransactionDAO;
 import dto.AccountSummaryDto;
-import dto.AdminMemberDto;
 import dto.DailyTransferSummaryDto;
+import model.MemberVO;
 
 public class AdminService {
 	
@@ -19,8 +20,8 @@ public class AdminService {
         return transactionDAO.getDailySummary(date);
     }
 	
-	public List<AdminMemberDto> getAllMembers() {
-        return memberDAO.findAll();
+	public List<MemberVO> getAllMembers() {
+        return memberDAO.findAllMembers();
     }
 	
 	public List<AccountSummaryDto> getAllAccounts() {
