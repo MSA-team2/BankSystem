@@ -55,7 +55,6 @@ public class MemberController {
             if (pwdConfirm == null) return;
 
             if (!ms.confirmPwd(pwd, pwdConfirm)) {
-
                 System.out.println("❌ 비밀번호가 일치하지 않습니다. 다시 입력해주세요.");
                 continue;
             }
@@ -174,7 +173,6 @@ public class MemberController {
         }
         System.out.println("✅ 입력하신 정보가 확인되었습니다.");
         System.out.println("✏️ 새로운 비밀번호를 입력해주세요.");
-        
         String newPwd;
         String newPwdConfirm;
         while (true) {

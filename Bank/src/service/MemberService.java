@@ -20,7 +20,6 @@ public class MemberService {
 			// 비밀번호 암호화
 			String hashedPwd = BCrypt.hashpw(member.getPassword(), BCrypt.gensalt());
 	        member.setPassword(hashedPwd);
-			
             return md.insertMember(conn, member);
         } catch (SQLException e) {
 			e.printStackTrace();
