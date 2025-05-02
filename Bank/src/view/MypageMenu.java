@@ -4,7 +4,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
-import controller.MemberController;
 import controller.MypageController;
 import controller.SessionManager;
 import model.MemberVO;

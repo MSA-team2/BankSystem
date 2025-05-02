@@ -4,6 +4,9 @@ import java.util.Scanner;
 
 import model.MemberVO;
 import service.MemberService;
+import view.AdminMainMenu;
+import view.MemberMenu;
+import view.MypageMenu;
 
 public class MemberController {
 	private final Scanner sc = new Scanner(System.in);
@@ -91,6 +94,12 @@ public class MemberController {
             if (member != null) {
                 SessionManager.login(member);
                 System.out.println(member.getName() + "님 환영합니다");
+                
+                if (SessionManager.isAdmin()) { // 관리자
+                    new AdminMainMenu().start();
+                } else { // 일반회원
+                	new MemberMenu().MemberMainMenu();
+                }
                 break;
             } else {
                 System.out.println("아이디 또는 비밀번호가 올바르지 않습니다.");
