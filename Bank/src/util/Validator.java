@@ -4,6 +4,16 @@ import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 
 public class Validator {
+	
+	public static boolean isValidHyphenJumin(String input) {
+		/**
+		 * 하이픈이 포함된 6-7 형식의 주민번호 유효성 검사
+		 * 예: 880902-1233521
+		 */
+		String regExp = "^\\d{2}(0[1-9]|1[0-2])(0[1-9]|[12][0-9]|[3][01])\\-[1-4][0-9]{6}$";
+		return input != null && input.matches(regExp);
+	}
+	
 	/**
      * 하이픈이 포함된 3-4-4 형식의 계좌번호 유효성 검사
      * 예: 010-1234-5678
