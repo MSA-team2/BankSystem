@@ -8,10 +8,11 @@ import service.MemberService;
 public class MemberController {
 	private final Scanner sc = new Scanner(System.in);
 	private final MemberService ms = new MemberService();
-	
+
 	// 1. 회원가입
 	public void insertMember() {
 		System.out.println("\n======= 회원가입 =======");
+
         System.out.println("※ 입력 중 '0'을 입력하면 메인메뉴로 돌아갑니다.");
 
         String name = getInput("이름: ");
@@ -169,6 +170,5 @@ public class MemberController {
 	    String input = sc.nextLine().trim();
 	    return input.equals("0") ? null : input;
 	}
-	
 	
 } // MemberController
