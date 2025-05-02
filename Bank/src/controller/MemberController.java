@@ -1,5 +1,6 @@
 package controller;
 
+
 import java.util.Scanner;
 
 import model.MemberVO;
@@ -138,6 +139,7 @@ public class MemberController {
         }
 	}
 	
+
 	// 비밀번호 찾기 -> 새 비밀번호 변경
 	public void findMemberPwd() {
 		System.out.println("\n───────── 비밀번호 찾기 ─────────");
