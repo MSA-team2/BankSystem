@@ -158,14 +158,4 @@ public class AccountDAO {
 		return list;
 	}
   
-  public List<AccountDTO> findAccountsByMemberNo(int memberNo) {
-		//TODO
-		
-		Connection conn = null;
-		
-		
-		
-		
-		return null;
-	}
-	}
+}
