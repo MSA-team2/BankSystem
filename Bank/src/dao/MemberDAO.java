@@ -233,6 +233,12 @@ public class MemberDAO {
         return list;
     }
 	
+	/**
+	 * 
+	 * @param 이름
+	 * @param 주민번호
+	 * @return
+	 */
 	public MemberVO findMemberByNameAndJumin(String name, String jumin) {
         String sql = "SELECT * FROM MEMBER WHERE NAME = ? AND JUMIN = ?";
         
@@ -254,6 +260,7 @@ public class MemberDAO {
             if (rs.next()) {
             	member = new MemberVO();
             	
+            	member.setMemberNo(rs.getInt("member_no"));
                 member.setName(rs.getString("name"));
                 member.setJumin(rs.getString("jumin"));
                 member.setMemberId(rs.getString("member_id"));
@@ -279,11 +286,21 @@ public class MemberDAO {
         return member;
     }
 	
+	/**
+	 * 어드민 컨트롤러에서 회원 정보 수정 시 사용하는 메서드
+	 * 
+	 * @param 회원번호
+	 * @param 전화번호
+	 * @param 주소
+	 * @return 업데이트
+	 */
 	public int updateMemberInfo(int memberNo, String phone, String address) {
-        String sql = "UPDATE member SET phone = ?, address = ? WHERE member_no = ?";
+        String sql = "UPDATE MEMBER SET PHONE = ?, ADDRESS = ? WHERE MEMBER_NO = ?";
         
         Connection conn = null;
         PreparedStatement pstmt = null;
+        int result = 0;
+        
         try {
         	conn = ConnectionHelper.getConnection("mysql");
         	conn.setAutoCommit(false);
@@ -292,11 +309,9 @@ public class MemberDAO {
             pstmt.setString(1, phone);
             pstmt.setString(2, address);
             pstmt.setInt(3, memberNo);
-            int result = pstmt.executeUpdate();
+            result = pstmt.executeUpdate();
             
             conn.commit();
-            
-            return result;
         } catch (SQLException e) {
         	e.printStackTrace();
             if (conn != null) {
@@ -315,7 +330,7 @@ public class MemberDAO {
                 e.printStackTrace();
             }
         }
-        return 0;
+        return result;
     }
 	
 

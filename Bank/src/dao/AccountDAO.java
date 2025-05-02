@@ -13,7 +13,6 @@ import java.util.List;
 import controller.SessionManager;
 import dbConn.util.CloseHelper;
 import dbConn.util.ConnectionHelper;
-import dbConn.util.ConnectionSingletonHelper;
 import dto.AccountSummaryDto;
 import model.AccountVO;
 import model.MemberVO;
@@ -30,7 +29,7 @@ public class AccountDAO {
 	    ResultSet rs = null;
 
 	    try {
-	        conn = ConnectionSingletonHelper.getConnection("mysql");
+	        conn = ConnectionHelper.getConnection("mysql");
 	        pstmt = conn.prepareStatement(sql);
 	        rs = pstmt.executeQuery();
 
@@ -64,7 +63,7 @@ public class AccountDAO {
 	}
 
 	public AccountVO findByAccountNo(String accountNo) {
-		String sql = "SELECT * FROM account WHERE account_no = ?";
+		String sql = "SELECT * FROM ACCOUNT WHERE ACCOUNT_NO = ?";
 		try (Connection conn = ConnectionHelper.getConnection("mysql");
 				PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
