@@ -1,5 +1,6 @@
 package controller;
 
+
 import java.util.Scanner;
 
 import model.MemberVO;
@@ -85,6 +86,7 @@ public class MemberController {
 	
 	// 로그인
 	public void loginMember() {
+
 		while (true) {
             String id = getInput("아이디: ");
             String pwd = getInput("비밀번호: ");
@@ -133,6 +135,7 @@ public class MemberController {
         }
 	}
 	
+
 	// 비밀번호 찾기 -> 새 비밀번호 변경
 	public void findMemberPwd() {
 		String id = getInput("아이디: ");

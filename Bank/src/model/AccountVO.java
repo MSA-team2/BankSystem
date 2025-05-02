@@ -1,7 +1,9 @@
 package model;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -12,6 +14,7 @@ import lombok.ToString;
 public class AccountVO {
 	private String accountNo; // 계좌번호
 	private int memberNo; // 회원번호
+	private int product_id;	// 상품번호
 	private String accountPwd; // 계좌비밀번호
 	private BigDecimal balance; // 잔액
 	private char status; // 계좌 상태
@@ -19,4 +22,5 @@ public class AccountVO {
 	private LocalDateTime createDate; // 개설일
 	private BigDecimal deposit_amount; // 납입금액
 	private LocalDateTime maturityDate; // 만기일자
+	private BigDecimal maturity_amount;
 }
