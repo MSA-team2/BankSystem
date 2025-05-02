@@ -8,8 +8,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
 
-import dbConn.util.CloseHelper;
-import dbConn.util.ConnectionSingletonHelper;
+import dbConn.util.ConnectionHelper;
 import model.MemberVO;
 
 public class TransactionController {
@@ -496,7 +495,7 @@ public class TransactionController {
 	}//end transactionHistory()
 	
 	public static void transactionConnect() throws SQLException {
-		conn = ConnectionSingletonHelper.getConnection("mysql");
+		conn = ConnectionHelper.getConnection("mysql");
 		
 		// 로그인 체크
 		if (!SessionManager.isLoggedIn()) {
