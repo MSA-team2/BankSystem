@@ -4,6 +4,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import dao.AccountDAO;
+import dto.AccountProductDto;
 import model.AccountDTO;
 import model.MemberVO;
 
@@ -19,20 +20,27 @@ public class MypageService {
 		System.out.println("전화번호 : " + user.getPhone());
 		System.out.println("주소 : " + user.getAddress());
 
-		//TODO : 구현해야함
-//		List<AccountDTO> accounts = dao.findAccountsByMemberNo(user.getMemberNo());
-//
-//		if (accounts.isEmpty()) {
-//			System.out.println("보유 중인 계좌가 없습니다.");
-//			return;
-//		}
-//
-//		System.out.println("\n--- 보유 계좌---");
-//		// TODO 멤버 계좌 정보 출력하기
-//		System.out.println("계좌번호\t\t상품명\t원금\t\t이자율\t만기일\t\t총액\n");
-//		for (AccountDTO dto : accounts) {
-////			System.out.println(dto.getAccountNo()+" "+dto.getProductId()+" "+ dto.get);
-//		}
+		List<AccountProductDto> accounts = dao.findAccountProductByMemberNo(user.getMemberNo());
+		if (accounts.isEmpty()) {
+			System.out.println("보유 중인 계좌가 없습니다.");
+			return;
+		}
+
+		System.out.println("\n--- 보유 계좌 ---");
+		System.out.printf("%-20s %-20s %-8s %-15s %-15s\n",
+		        "계좌번호", "상품명", "이자율", "만기일", "총액");
+
+		for (AccountProductDto dto : accounts) {
+		    String maturity = dto.getMaturityDate() != null ? dto.getMaturityDate().toString() : "없음";
+
+		    System.out.printf("%-20s %-20s %6.2f%%   %-15s %,15d원\n",
+		            dto.getAccountNo(),
+		            dto.getProductName(),
+		            dto.getInterestRate(),
+		            maturity,
+		            dto.getBalance().intValue());
+		}
+
 	}
 
 	// 1 : (예금/적금) 중도해제

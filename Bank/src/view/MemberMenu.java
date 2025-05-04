@@ -31,6 +31,7 @@ public class MemberMenu {
 			case 1: {
 				// 마이페이지
 				mypageMenu.UserInfo(); // 유저 정보를 보여 줌
+				System.out.println();
 				mypageMenu.etcMenu(); //
 				break;
 			}
