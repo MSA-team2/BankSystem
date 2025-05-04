@@ -16,91 +16,115 @@ public class MemberDAO {
 	// 회원가입
 	public int insertMember(Connection conn, MemberVO member) {
 		// insert => 처리된 행 수
-		PreparedStatement ps = null;
-        String sql = "INSERT INTO MEMBER (name, jumin, member_id, password, address, phone)"
-        			+ "VALUES (?, ?, ?, ?, ?, ?)";
-        
-        try {
-        	ps = conn.prepareStatement(sql);
-            ps.setString(1, member.getName());
-            ps.setString(2, member.getJumin());
-            ps.setString(3, member.getMemberId());
-            ps.setString(4, member.getPassword());
-            ps.setString(5, member.getAddress());
-            ps.setString(6, member.getPhone());
-            
-            return ps.executeUpdate();
-        } catch (SQLException e) {
-			e.printStackTrace();
-			return 0;
-		} finally {
-			CloseHelper.close(ps);
-		}
+		String sql = "INSERT INTO MEMBER (name, jumin, member_id, password, address, phone)"
+					+ "VALUES (?, ?, ?, ?, ?, ?)";
+	    try (PreparedStatement ps = conn.prepareStatement(sql)) {
+	        ps.setString(1, member.getName());
+	        ps.setString(2, member.getJumin());
+	        ps.setString(3, member.getMemberId());
+	        ps.setString(4, member.getPassword());
+	        ps.setString(5, member.getAddress());
+	        ps.setString(6, member.getPhone());
+	        return ps.executeUpdate();
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	        return 0;
+	    }
     }
 	
 	// 로그인
-	public MemberVO loginMember(Connection conn, String id, String pwd) {
+	public MemberVO loginMember(Connection conn, String id, String pwd) throws SQLException {
 		// select문 => ResultSet객체 => Member객체
-		PreparedStatement ps = null;
-		ResultSet rs = null;
-        String sql = "SELECT * FROM MEMBER WHERE member_id = ? AND password = ?";
-        try {
-        	ps = conn.prepareStatement(sql);
-            ps.setString(1, id);
-            ps.setString(2, pwd);
-            
-            rs = ps.executeQuery();
-            if (rs.next()) {
-                return new MemberVO(
-                    rs.getInt("member_no"),
-                    rs.getString("name"),
-                    rs.getString("jumin"),
-                    rs.getString("member_id"),
-                    rs.getString("password"),
-                    rs.getString("address"),
-                    rs.getString("phone"),
-                    rs.getString("status").charAt(0),
-                    rs.getInt("lock_cnt"),
-                    rs.getInt("role")
-                );
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        } finally {
-        	CloseHelper.close(rs);
-        	CloseHelper.close(ps);
-        }
-        return null;
+		String sql = "SELECT * FROM MEMBER WHERE member_id = ?";
+	    try (PreparedStatement ps = conn.prepareStatement(sql)) {
+	        ps.setString(1, id);
+	        try (ResultSet rs = ps.executeQuery()) {
+	        	if (rs.next()) {
+	        	    String dbPwd = rs.getString("password");
+	        	    int lockCnt = rs.getInt("lock_cnt");
+	        	    String status = rs.getString("status");
+	        	    
+	        	    // 비밀번호 틀린 경우
+	        	    if (!dbPwd.equals(pwd)) {
+	        	        incrementLockCount(conn, id);
+	        	        if (getLockCount(conn, id) >= 5) {
+	        	            lockAccount(conn, id);
+	        	            return new MemberVO(
+	        	                    rs.getInt("member_no"),
+	        	                    rs.getString("name"),
+	        	                    rs.getString("jumin"),
+	        	                    rs.getString("member_id"),
+	        	                    rs.getString("password"),
+	        	                    rs.getString("address"),
+	        	                    rs.getString("phone"),
+	        	                    'N', // 잠금 상태
+	        	                    lockCnt,
+	        	                    rs.getInt("role")
+	        	                );
+	        	        }
+	        	        return null;
+	        	    }
+
+	        	    // 비밀번호는 맞았지만 잠금 계정
+	        	    if (lockCnt >= 5 || "N".equals(status)) {
+	        	        return new MemberVO(
+	        	            rs.getInt("member_no"),
+	        	            rs.getString("name"),
+	        	            rs.getString("jumin"),
+	        	            rs.getString("member_id"),
+	        	            rs.getString("password"),
+	        	            rs.getString("address"),
+	        	            rs.getString("phone"),
+	        	            status.charAt(0),
+	        	            lockCnt,
+	        	            rs.getInt("role")
+	        	        );
+	        	    }
+
+	        	    // 로그인 성공
+	        	    resetLockCount(conn, id);
+	        	    return new MemberVO(
+	        	        rs.getInt("member_no"),
+	        	        rs.getString("name"),
+	        	        rs.getString("jumin"),
+	        	        rs.getString("member_id"),
+	        	        rs.getString("password"),
+	        	        rs.getString("address"),
+	        	        rs.getString("phone"),
+	        	        status.charAt(0),
+	        	        lockCnt,
+	        	        rs.getInt("role")
+	        	    );
+	        	}
+	        }
+	    }
+	    return null;
     }
 
 	// 아이디 찾기
 	public String findMemberId(Connection conn, String name, String jumin) {
-		PreparedStatement ps = null;
-		ResultSet rs = null;
-        String sql = "SELECT member_id FROM MEMBER WHERE name = ? AND jumin = ?";
-        try {
-        	ps = conn.prepareStatement(sql);
-            ps.setString(1, name);
-            ps.setString(2, jumin);
-            
-            rs = ps.executeQuery();
-            if (rs.next()) return rs.getString("member_id");
-        } catch (SQLException e) {
-            e.printStackTrace();
-        } finally {
-			CloseHelper.close(rs);
-			CloseHelper.close(ps);
-		}
-        return null;
-    }
+	    String sql = "SELECT member_id FROM MEMBER WHERE name = ? AND jumin = ?";
+	    try (PreparedStatement ps = conn.prepareStatement(sql)) {
+	        ps.setString(1, name);
+	        ps.setString(2, jumin);
+
+	        try (ResultSet rs = ps.executeQuery()) {
+	            if (rs.next()) {
+	                return rs.getString("member_id");
+	            }
+	        }
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	    }
+	    return null;
+	}
+
 
 	// 비밀번호 찾기 -> 새 비밀번호 변경
     public int updatePwd(Connection conn, String id, String name, String jumin, String newPwd) {
     	// update문 => 처리된 행수(int)
-    	PreparedStatement ps = null;
         String sql = "UPDATE MEMBER SET password = ? WHERE member_id = ? AND name = ? AND jumin = ?";
-        try {
-        	ps = conn.prepareStatement(sql);
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, newPwd);
             ps.setString(2, id);
             ps.setString(3, name);
@@ -109,89 +133,97 @@ public class MemberDAO {
         } catch (SQLException e) {
             e.printStackTrace();
             return 0;
-        } finally {
-			CloseHelper.close(ps);
-		}
+        }
     }
 
     // 아이디 중복 체크
     public boolean checkId(Connection conn, String id) {
-    	PreparedStatement ps = null;
-		ResultSet rs = null;
         String sql = "SELECT member_id FROM MEMBER WHERE member_id = ?";
-        try {
-        	ps = conn.prepareStatement(sql);
+        
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, id);
-            
-            rs = ps.executeQuery();
-            return rs.next();
+            try (ResultSet rs = ps.executeQuery()) {
+                return rs.next();
+            }
         } catch (SQLException e) {
             e.printStackTrace();
             return true;
-        } finally {
-			CloseHelper.close(rs);
-			CloseHelper.close(ps);
-		}
+        }
     }
 
     // 전화번호 중복 체크
     public boolean confirmPhone(Connection conn, String phone) {
-    	PreparedStatement ps = null;
-		ResultSet rs = null;
         String sql = "SELECT phone FROM MEMBER WHERE phone = ?";
-        try {
-        	ps = conn.prepareStatement(sql);
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, phone);
             
-            rs = ps.executeQuery();
-            return rs.next();
+            try (ResultSet rs = ps.executeQuery()) {
+                return rs.next();
+            }
         } catch (SQLException e) {
             e.printStackTrace();
             return true;
-        } finally {
-			CloseHelper.close(rs);
-			CloseHelper.close(ps);
-		}
+        }
     }
 
     // 비밀번호 변경시 입력 정보 확인
 	public boolean validateUserInfo(Connection conn, String id, String name, String jumin) {
-		PreparedStatement ps = null;
-		ResultSet rs = null;
 		String sql = "SELECT 1 FROM MEMBER WHERE member_id = ? AND name = ? AND jumin = ?";
-		try {
-			ps = conn.prepareStatement(sql);
-            ps.setString(1, id);
-            ps.setString(2, name);
-            ps.setString(3, jumin);
-            
-            rs = ps.executeQuery();
-            return rs.next();
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
-        } finally {
-			CloseHelper.close(rs);
-			CloseHelper.close(ps);
-		}
-	}
-	
-	// 틀린횟수 증가 (int?)
-	public void incrementLockCount(Connection conn, String id) {
-		// TODO Auto-generated method stub
+	    try (PreparedStatement ps = conn.prepareStatement(sql)) {
+	        ps.setString(1, id);
+	        ps.setString(2, name);
+	        ps.setString(3, jumin);
+
+	        try (ResultSet rs = ps.executeQuery()) {
+	            return rs.next();
+	        }
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	        return false;
+	    }
 	}
 	
 	// 틀린횟수 조회
 	public int getLockCount(Connection conn, String id) {
-		// TODO Auto-generated method stub
-		return 0;
+		String sql = "SELECT lock_cnt FROM MEMBER WHERE member_id = ?";
+	    try (PreparedStatement ps = conn.prepareStatement(sql)) {
+	        ps.setString(1, id);
+	        try (ResultSet rs = ps.executeQuery()) {
+	            if (rs.next()) return rs.getInt("lock_cnt");
+	        }
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	    }
+	    return 0;
+	}
+	
+	// 틀린횟수 증가
+	public void incrementLockCount(Connection conn, String id) throws SQLException {
+		String sql = "UPDATE MEMBER SET lock_cnt = lock_cnt + 1 WHERE member_id = ?";
+		try (PreparedStatement ps = conn.prepareStatement(sql)) {
+			ps.setString(1, id);
+			ps.executeUpdate();
+		}
+	}
+	
+	// 틀린횟수 초기화
+	public void resetLockCount(Connection conn, String id) throws SQLException {
+	    String sql = "UPDATE MEMBER SET lock_cnt = 0 WHERE member_id = ?";
+	    try (PreparedStatement ps = conn.prepareStatement(sql)) {
+	        ps.setString(1, id);
+	        ps.executeUpdate();
+	    }
 	}
 	
 	// 잠금 상태 변경 'Y' -> 'N'
-	public void lockAccount(MemberDAO md, String id) {
-		// TODO Auto-generated method stub
-	}
-	
+	public void lockAccount(Connection conn, String id) throws SQLException {
+        String sql = "UPDATE MEMBER SET status = 'N' WHERE member_id = ?";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, id);
+            ps.executeUpdate();
+        }
+    }
+
 	public List<MemberVO> findAllMembers() {
         List<MemberVO> list = new ArrayList<>();
         String sql = "SELECT * FROM MEMBER ORDER BY ROLE DESC";

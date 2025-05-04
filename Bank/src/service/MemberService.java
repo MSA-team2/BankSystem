@@ -1,10 +1,12 @@
 package service;
 
 import java.sql.Connection;
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
 import dao.MemberDAO;
+import dbConn.util.CloseHelper;
 import dbConn.util.ConnectionHelper;
 import model.MemberVO;
 
@@ -13,26 +15,42 @@ public class MemberService {
 	
 	// 회원가입
 	public int insertMember(MemberVO member) {
-		Connection conn = ConnectionHelper.getConnection("mysql");
-		return md.insertMember(conn, member);
+		try (Connection conn = ConnectionHelper.getConnection("mysql")) {
+            return md.insertMember(conn, member);
+        } catch (SQLException e) {
+			e.printStackTrace();
+			return 0;
+		}
 	}
 
 	// 로그인
 	public MemberVO loginMember(String id, String pwd) {
-		Connection conn = ConnectionHelper.getConnection("mysql");
-		return md.loginMember(conn, id, pwd);
+		try (Connection conn = ConnectionHelper.getConnection("mysql")) {
+            return md.loginMember(conn, id, pwd);
+        } catch (SQLException e) {
+			e.printStackTrace();
+			return null;
+		}
 	}
 
 	// 아이디 찾기
 	public String findId(String name, String jumin) {
-		Connection conn = ConnectionHelper.getConnection("mysql");
-		return md.findMemberId(conn, name, jumin);
+		try (Connection conn = ConnectionHelper.getConnection("mysql")) {
+			return md.findMemberId(conn, name, jumin);
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return null;
+		}
 	}
 	
 	// 비밀번호 찾기 -> 새 비밀번호 변경
 	public int updatePwd(String id, String name, String jumin, String newPwd) {
-		Connection conn = ConnectionHelper.getConnection("mysql");
-		return md.updatePwd(conn, id, name, jumin, newPwd);
+		try (Connection conn = ConnectionHelper.getConnection("mysql")) {
+            return md.updatePwd(conn, id, name, jumin, newPwd);
+        } catch (SQLException e) {
+			e.printStackTrace();
+			return 0;
+		}
 	}
 
 	// 주민번호 유효성 체크
@@ -64,8 +82,12 @@ public class MemberService {
 	
 	// 아이디 중복 체크
 	public boolean checkId(String id) {
-        Connection conn = ConnectionHelper.getConnection("mysql");
-		return md.checkId(conn, id);
+		try (Connection conn = ConnectionHelper.getConnection("mysql")) {
+            return md.checkId(conn, id);
+        } catch (SQLException e) {
+			e.printStackTrace();
+			return true; // 중복
+		}
     }
 	
 	// 비밀번호 유효성 체크
@@ -85,30 +107,63 @@ public class MemberService {
 
 	// 전화번호 중복 체크
 	public boolean confirmPhone(String phone) {
-        Connection conn = ConnectionHelper.getConnection("mysql");
-		return md.confirmPhone(conn, phone);
+		try (Connection conn = ConnectionHelper.getConnection("mysql")) {
+            return md.confirmPhone(conn, phone);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return true;
+        }
     }
 	
 	// 비밀번호 변경시 입력 정보 확인
 	public boolean validateUserInfo(String id, String name, String jumin) {
-		Connection conn = ConnectionHelper.getConnection("mysql");
-		return md.validateUserInfo(conn, id, name, jumin);
+		try (Connection conn = ConnectionHelper.getConnection("mysql")) {
+            return md.validateUserInfo(conn, id, name, jumin);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
 	}
 	
 //	public void lockPwd(String id) {
-//		Connection conn = ConnectionHelper.getConnection("mysql");
-//		return md.lockPwd(conn, id);
+//	    Connection conn = null;
+//	    try {
+//	        conn = ConnectionHelper.getConnection("mysql");
+//	        conn.setAutoCommit(false);
+//
+//	        md.incrementLockCount(conn, id);
+//	        int count = md.getLockCount(conn, id);
+//	        if (count >= 5) {
+//	            md.lockAccount(conn, id);
+//	            System.out.println("❌ 비밀번호 5회 이상 틀려 계정이 잠금되었습니다.");
+//	        } else {
+//	            System.out.println("⚠️ 비밀번호 오류 횟수: " + count + "/5");
+//	        }
+//
+//	        conn.commit();
+//	    } catch (SQLException e) {
+//	        e.printStackTrace();
+//	        if (conn != null) {
+//	            try {
+//	                conn.rollback(); 
+//	            } catch (SQLException rollbackEx) {
+//	                rollbackEx.printStackTrace();
+//	            }
+//	        }
+//	    } finally {
+//	        CloseHelper.close(conn);
+//	    }
 //	}
 	
-	 public void lockPwd(String id) {
-		 Connection conn = ConnectionHelper.getConnection("mysql");
-	     md.incrementLockCount(conn, id);
-	     int count = md.getLockCount(conn, id);
-	     if (count >= 5) {
-	    	 md.lockAccount(md, id);
-	         System.out.println("비밀번호 5회 이상 틀려 계정이 잠금되었습니다.");
-		}
-	 }
-	
+	public int getLockCount(String id) {
+	    try (Connection conn = ConnectionHelper.getConnection("mysql")) {
+	        return md.getLockCount(conn, id);
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	        return -1;
+	    }
+	}
+
+
 	
 } // MemberService

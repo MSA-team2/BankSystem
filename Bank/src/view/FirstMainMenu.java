@@ -11,14 +11,27 @@ public class FirstMainMenu {
 	// 첫화면
 	public void mainMenu() {
 		while(true) {
-			System.out.println("\n======== 투게더 은행 ========");
-			System.out.println("\t1. 회원가입");
-			System.out.println("\t2. 로그인");
-			System.out.println("\t3. 아이디 찾기");			
-			System.out.println("\t4. 비밀번호 찾기");			
-			System.out.println("\t0. 종료");
-			System.out.println("===========================");
-			System.out.print("메뉴 선택: ");
+//			System.out.println("\n======== 투게더 은행 ========");
+//			System.out.println("\t1. 회원가입");
+//			System.out.println("\t2. 로그인");
+//			System.out.println("\t3. 아이디 찾기");			
+//			System.out.println("\t4. 비밀번호 찾기");			
+//			System.out.println("\t0. 종료");
+//			System.out.println("===========================");
+//			System.out.print("메뉴 선택: ");
+			
+			System.out.println("────────────────────────────");
+			System.out.println("      💼 TOGETHER BANK");
+			System.out.println("────────────────────────────");
+			System.out.println("    [1] 회원가입");
+			System.out.println("    [2] 로그인");
+			System.out.println("    [3] 아이디 찾기");
+			System.out.println("    [4] 비밀번호 찾기");
+			System.out.println("    [0] 종료");
+			System.out.println("────────────────────────────");
+			System.out.print(" 👉 메뉴를 선택하세요: ");
+
+			
 			int menu = sc.nextInt();
 			sc.nextLine();
 			
