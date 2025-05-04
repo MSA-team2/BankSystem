@@ -17,8 +17,12 @@ public class FirstMainMenu {
 			System.out.println("    [1] 회원가입");
 			System.out.println("    [2] 로그인");
 			System.out.println("    [3] 아이디 찾기");
+<<<<<<< HEAD
 			System.out.println("    [4] 비밀번호 재설정");
 			System.out.println("    [5] 관리자 문의");
+=======
+			System.out.println("    [4] 비밀번호 찾기");
+>>>>>>> ddd6d7a (git rebase --continue로그인 보안 강화: 계정 잠금 로직 수정 및 상태별 흐름 정리)
 			System.out.println("    [0] 종료");
 			System.out.println("────────────────────────────");
 			System.out.print(" 👉 메뉴를 선택하세요: ");
