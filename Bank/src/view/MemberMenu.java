@@ -10,6 +10,7 @@ import controller.MypageController;
 import controller.SessionManager;
 import controller.TransactionController;
 import service.MypageService;
+import service.TransactionService;
 
 public class MemberMenu {
 
@@ -19,6 +20,7 @@ public class MemberMenu {
 		// 직접 객체 생성 후 의존성 주입
 		MypageMenu mypageMenu = new MypageMenu();
 		AccountController account = new AccountController();
+		TransactionController tc = new TransactionController();
 		
 		System.out.println("===== 사용자 메뉴 =====");
 		System.out.print("1.마이페이지\n2.계좌개설\n3.거래내역\n4.입금\n5.출금\n6.이체\n7.로그아웃\n0.메인화면\n선택 : ");
@@ -41,22 +43,22 @@ public class MemberMenu {
 			}
 			case 3: {
 				// 거래 내역
-				TransactionController.transactionHistroy();
+				tc.transactionHistory();
 				break;
 			}
 			case 4: {
 				// 입금
-				TransactionController.deposit();
+				tc.deposit();
 				break;
 			}
 			case 5: {
 				// 출금
-				TransactionController.withdraw();
+				tc.withdraw();
 				break;
 			}
 			case 6: {
 				// 이체
-				TransactionController.transfer();
+				tc.transfer();
 				break;
 
 			}

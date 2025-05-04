@@ -5,6 +5,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Random;
+import java.util.Scanner;
 
 import controller.SessionManager;
 import dao.AccountDAO;
@@ -16,7 +17,7 @@ public class AccountService {
 	// 재할당 방지를 위해 final 키워드 사용
 	private final ProductDAO productDAO = new ProductDAO();
     private final AccountDAO accountDAO = new AccountDAO();
-    
+    private final Scanner sc = new Scanner(System.in);
     // 상품 관련하여 service가 필요하지 않을거 같아 한 service에서 몰아서 작성
     public List<ProductVO> getAllProducts() {
         return productDAO.getProductInfo();
@@ -68,4 +69,37 @@ public class AccountService {
     		return new BigDecimal("0");
     	}
     }
+
+	public boolean verifyPassword(String accountNo, String pwd) {
+		AccountVO account = accountDAO.getPwdAndStatus(accountNo);
+		if (account == null) {
+			System.out.println("해당 계좌가 존재하지 않습니다.");
+			return false;
+		}
+
+		if (account.getStatus() == 'N') {
+			System.out.println("해당 계좌는 잠겨 있습니다.");
+			return false;
+		}
+
+		int lockCnt = account.getLock_cnt();
+			if (!pwd.equals(account.getAccountPwd())) {
+				lockCnt++;
+				accountDAO.updateLockCnt(accountNo, lockCnt);
+
+				if (lockCnt == 5) {
+					accountDAO.lockAccount(accountNo);
+					System.out.println("비밀번호 5회 틀렸습니다. 계좌가 잠겼습니다.");
+					return false;
+				} else {
+					System.out.println("비밀번호가 틀렸습니다. 현재 " + lockCnt + "회 오류.");
+				}
+			} else {
+				accountDAO.resetLockCnt(accountNo);
+				return true;
+			}
+
+		return false;
+	}
+
 }

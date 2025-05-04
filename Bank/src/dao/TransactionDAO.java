@@ -7,9 +7,16 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
+import controller.SessionManager;
 import dbConn.util.ConnectionHelper;
 import dto.DailyTransferSummaryDto;
+import dto.TransactionDTO;
+import model.MemberVO;
+import model.TransactionHistoryVO;
 
 public class TransactionDAO {
 	
@@ -94,4 +101,114 @@ public class TransactionDAO {
         
         return dailyTransferSummaryDto;
     }
+	
+	public boolean deposit(TransactionDTO dto) {
+		 String sql = "UPDATE account SET balance = balance + ? WHERE account_no = ?";
+	        try (Connection conn = ConnectionHelper.getConnection("mysql");
+	        	PreparedStatement pstmt = conn.prepareStatement(sql)) {
+	            pstmt.setBigDecimal(1, dto.getAmount());
+	            pstmt.setString(2, dto.getAccountNo());
+	            return pstmt.executeUpdate() > 0;
+	        }catch(Exception e) {
+	        	e.printStackTrace();
+	        }
+		return false;
+	}
+	public boolean withdraw(TransactionDTO dto) {
+		String sql = "UPDATE account SET balance = balance - ? WHERE account_no = ?";
+		try (Connection conn = ConnectionHelper.getConnection("mysql");
+				PreparedStatement pstmt = conn.prepareStatement(sql)) {
+			pstmt.setBigDecimal(1, dto.getAmount());
+			pstmt.setString(2, dto.getAccountNo());
+			return pstmt.executeUpdate() > 0;
+		}catch(Exception e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
+	// 거래내역 저장 
+	public void saveTransaction(TransactionDTO transaction) {
+		String sql = "INSERT INTO TRANSACTION_HISTORY (account_no, transaction_type, amount, transaction_date, target_account) " +
+                "VALUES (?, ?, ?, NOW(), ?)";	
+		
+		 try (	Connection conn = ConnectionHelper.getConnection("mysql");
+	            PreparedStatement pstmt = conn.prepareStatement(sql)) {
+	            
+	            pstmt.setString(1, transaction.getAccountNo());
+	            pstmt.setString(2, transaction.getTransactionType());
+	            pstmt.setBigDecimal(3, transaction.getAmount());
+//	            pstmt.setObject(4, transaction.getTransactionDate());
+	            pstmt.setString(4, transaction.getTargetAccount());
+	            
+	            pstmt.executeUpdate();
+	            
+	        } catch (SQLException e) {
+	            e.printStackTrace();
+	        }
+		
+	}
+	
+	//거래내역 가져오기
+	public List<TransactionHistoryVO> getTransactionHistory(String accountNo) {
+	        List<TransactionHistoryVO> transactions = new ArrayList<>();
+	        String sql = "SELECT \n"
+					+ "t.transaction_date AS 날짜, \n"
+					+ "a.account_no AS 계좌번호,\n"
+					+ "p.product_name AS 상품명,\n"
+					+ "CASE \n"
+					+ "WHEN t.transaction_type = 'DEPOSIT' THEN '입금'\n"
+					+ "WHEN t.transaction_type = 'WITHDRAW' THEN '출금'\n"
+					+ "        WHEN t.transaction_type = 'TRANSFER' THEN '이체'\n"
+					+ "        ELSE t.transaction_type\n"
+					+ "    END AS 구분, \n"
+					+ "    t.amount AS 금액, \n"
+//					+ "		a.balance AS 잔액,\n"
+					+ "    CASE \n"
+					+ "        WHEN t.transaction_type = 'TRANSFER' THEN \n"
+					+ "            (SELECT m2.name \n"
+					+ "             FROM MEMBER m2 \n"
+					+ "             JOIN ACCOUNT a2 ON m2.member_no = a2.member_no \n"
+					+ "             WHERE a2.account_no = t.target_account)\n"
+					+ "        ELSE '본인'\n"
+					+ "    END AS 상대방\n"
+					+ "FROM \n"
+					+ "    TRANSACTION_HISTORY t\n"
+					+ "JOIN \n"
+					+ "    ACCOUNT a ON t.account_no = a.account_no\n"
+					+ "JOIN \n"
+					+ "    PRODUCT p ON a.product_id = p.product_id\n"
+					+ "JOIN \n"
+					+ "    MEMBER m ON a.member_no = m.member_no\n"
+					+ "WHERE \n"
+					+ "    m.member_no = ? and a.account_no = ?\n"
+					+ "ORDER BY \n"
+					+ "    t.transaction_date DESC";
+	        
+	        try (Connection conn = ConnectionHelper.getConnection("mysql");
+	             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+	    		MemberVO currentUser = SessionManager.getCurrentUser();
+	            pstmt.setInt(1, currentUser.getMemberNo());
+	            pstmt.setString(2, accountNo);
+	            ResultSet rs = pstmt.executeQuery();
+	            
+	            while (rs.next()) {
+	            	TransactionHistoryVO transaction = new TransactionHistoryVO(
+	            			rs.getObject("날짜", LocalDateTime.class),
+	            	        rs.getString("구분"),
+	            	        rs.getBigDecimal("금액"),
+	            	        rs.getString("상대방")
+	                );
+	                
+	                transactions.add(transaction);
+	            }
+	            
+	        } catch (SQLException e) {
+	            e.printStackTrace();
+	        }
+	        
+	        return transactions;
+	    }
+	
+	
+	
 }
