@@ -56,29 +56,39 @@ public class MemberService {
 	// 주민번호 유효성 체크
 	public boolean checkJumin(String jumin) {
 		if (!jumin.matches("\\d{6}-\\d{7}")) {
-            System.out.println("형식은 000000-0000000 이어야 합니다.");
+            System.out.println("⚠️ 주민번호 형식이 올바르지 않습니다.");
             return false;
         }
         jumin = jumin.replace("-", "");
         if (!jumin.matches("\\d{13}")) {
-            System.out.println("주민번호는 숫자 13자리여야 합니다.");
+            System.out.println("⚠️ 주민번호는 숫자 13자리여야 합니다.");
             return false;
         }
         char genderCode = jumin.charAt(6);
-        if (genderCode < '1' || genderCode > '4') {
-            System.out.println("성별코드가 잘못되었습니다.");
-            return false;
-        }
+//        if (genderCode < '1' || genderCode > '4') {
+//            System.out.println("성별코드가 잘못되었습니다.");
+//            return false;
+//        }
         try {
             String birth = jumin.substring(0, 6);
             String century = (genderCode == '1' || genderCode == '2') ? "19" : "20";
             LocalDate.parse(century + birth, DateTimeFormatter.ofPattern("yyyyMMdd"));
         } catch (Exception e) {
-            System.out.println("생년월일이 잘못되었습니다.");
+            System.out.println("⚠️ 생년월일이 올바르지 않습니다.");
             return false;
         }
         return true;
     }
+	
+	// 주민번호 중복 체크
+	public boolean confirmJumin(String jumin) {
+	    try (Connection conn = ConnectionHelper.getConnection("mysql")) {
+	        return md.confirmJumin(conn, jumin);
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	        return true;
+	    }
+	}
 	
 	// 아이디 중복 체크
 	public boolean checkId(String id) {
@@ -102,7 +112,11 @@ public class MemberService {
 	
 	// 전화번호 유효성 체크
 	public boolean checkPhone(String phone) {
-        return phone.matches("\\d{3}-\\d{4}-\\d{4}");
+		if (!phone.matches("\\d{3}-\\d{4}-\\d{4}")) {
+			System.out.println("⚠️ 전화번호 형식이 올바르지 않습니다.");
+			return false;
+		}
+		return true;
     }
 
 	// 전화번호 중복 체크

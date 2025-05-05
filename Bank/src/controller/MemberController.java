@@ -21,9 +21,15 @@ public class MemberController {
 
         String jumin;
         while (true) {
-            jumin = getInput("주민번호(ex 000123-1234567): ");
+            jumin = getInput("주민번호 (예:000123-1234567)");
             if (jumin == null) return;
-            if (ms.checkJumin(jumin)) break;
+            if (!ms.checkJumin(jumin)) continue;
+            
+            if (ms.confirmJumin(jumin)) {
+            	System.out.println("⚠️ 이미 가입된 주민 번호 입니다. 다시 입력해주세요");
+            	continue;
+            }
+            break;
         }
 
         String id;
@@ -41,15 +47,18 @@ public class MemberController {
         String pwd;
         String pwdConfirm;
         while (true) {
-            pwd = getInput("비밀번호(영문+숫자 8자리이상)");
+            pwd = getInput("비밀번호 (8자 이상, 영문+숫자 조합)");
             if (pwd == null) return;
             if (!ms.checkPwd(pwd)) continue;
 
             pwdConfirm = getInput("비밀번호 확인");
             if (pwdConfirm == null) return;
 
-            if (!ms.confirmPwd(pwd, pwdConfirm)) continue;
-            break;
+            if (!ms.confirmPwd(pwd, pwdConfirm)) {
+                System.out.println("❌ 비밀번호가 일치하지 않습니다. 다시 입력해주세요.");
+                continue;
+            }
+            break; // 확인 완료
         }
 
         String address = getInput("주소");
@@ -57,11 +66,11 @@ public class MemberController {
 
         String phone;
         while (true) {
-            phone = getInput("전화번호 입력(ex 010-1234-5678)");
+            phone = getInput("전화번호 (예:010-1234-5678)");
             if (phone == null) return;
             if (!ms.checkPhone(phone)) continue;
             if (ms.confirmPhone(phone)) {
-                System.out.println("⚠️ 이미 가입된 핸드폰 번호 입니다. 다른 번호를 입력해주세요");
+                System.out.println("⚠️ 이미 가입된 핸드폰 번호 입니다. 다시 입력해주세요");
             } else {
                 System.out.println("✔️ 사용 가능한 번호 입니다.");
                 break;
@@ -116,7 +125,7 @@ public class MemberController {
 	            System.out.println("⚠️ 비밀번호 오류 횟수: " + count + "/5");
 	        }
 
-	        System.out.print("다시 시도하시겠습니까? (Y/N): ");
+	        System.out.print("\n다시 시도하시겠습니까? (Y/N): ");
 	        String retry = sc.nextLine().trim().toUpperCase();
 	        if (!retry.equals("Y")) {
 	            break;
@@ -160,10 +169,11 @@ public class MemberController {
         
         // 입력받은 정보가 유효한지 먼저 검증
         if (!ms.validateUserInfo(id, name, jumin)) {
-            System.out.println("⚠️ 정보가 일치하지 않습니다.");
+            System.out.println("⚠️ 일치하는 정보가 없습니다.");
             return;
         }
-
+        System.out.println("✅ 입력하신 정보가 확인되었습니다.");
+        System.out.println("✏️ 새로운 비밀번호를 입력해주세요.");
         String newPwd;
         String newPwdConfirm;
         while (true) {
@@ -200,28 +210,6 @@ public class MemberController {
 		    }
 		}
 	}
-	
-	/*
-	 * public void inquiryLockedAccount() {
-    System.out.println("\n📩 [관리자 문의 - 계정 잠금 확인]");
-    System.out.print("🔐 확인할 아이디를 입력하세요: ");
-    String id = sc.nextLine().trim();
-
-    if (id.isEmpty()) {
-        System.out.println("⚠️ 아이디를 입력하지 않았습니다.\n");
-        return;
-    }
-
-    boolean isLocked = ms.isAccountLocked(id);
-    if (isLocked) {
-        System.out.println("✅ 해당 계정은 현재 잠금 상태입니다.");
-        System.out.println("   관리자에게 문의가 접수되었습니다.\n");
-    } else {
-        System.out.println("ℹ️ 해당 계정은 잠금 상태가 아닙니다.\n");
-    }
-}
-
-	 * */
 	
 	// 입력 정렬, 입력중 되돌아가기
 	public String getInput(String label) {

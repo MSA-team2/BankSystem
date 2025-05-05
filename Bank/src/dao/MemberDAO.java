@@ -135,6 +135,20 @@ public class MemberDAO {
             return 0;
         }
     }
+    
+    // 주민번호 중복 체크
+    public boolean confirmJumin(Connection conn, String jumin) {
+    	String sql = "SELECT 1 FROM MEMBER WHERE jumin = ?";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, jumin);
+            try (ResultSet rs = ps.executeQuery()) {
+                return rs.next();
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return true;
+	}
 
     // 아이디 중복 체크
     public boolean checkId(Connection conn, String id) {

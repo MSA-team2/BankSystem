@@ -11,13 +11,13 @@ public class FirstMainMenu {
 	// 첫화면
 	public void mainMenu() {
 		while(true) {
-			System.out.println("────────────────────────────");
+			System.out.println("\n────────────────────────────");
 			System.out.println("      💼 TOGETHER BANK");
 			System.out.println("────────────────────────────");
 			System.out.println("    [1] 회원가입");
 			System.out.println("    [2] 로그인");
 			System.out.println("    [3] 아이디 찾기");
-			System.out.println("    [4] 비밀번호 찾기");
+			System.out.println("    [4] 비밀번호 재설정");
 			System.out.println("    [5] 관리자 문의");
 			System.out.println("    [0] 종료");
 			System.out.println("────────────────────────────");
