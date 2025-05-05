@@ -415,6 +415,7 @@ public class MemberDAO {
         }
         return result;
     }
+
 	
 	/**
 	 * 어드민 잠금 계정 조회 메서드

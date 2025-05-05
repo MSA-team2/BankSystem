@@ -155,71 +155,71 @@ public class MemberController {
 	}
 	
 	// 비밀번호 찾기 -> 새 비밀번호 변경
-	public void findMemberPwd() {
-		System.out.println("\n─────── [비밀번호 찾기] ───────");
-		String id = getInput("아이디");
-        String name = getInput("이름");
+		public void findMemberPwd() {
+			System.out.println("\n─────── [비밀번호 찾기] ───────");
+			String id = getInput("아이디");
+	        String name = getInput("이름");
 
-        String jumin;
-        while (true) {
-            jumin = getInput("주민번호");
-            if (jumin == null) return;
-            if (ms.checkJumin(jumin)) break;
-        }
-        
-        // 입력받은 정보가 유효한지 먼저 검증
-        if (!ms.validateUserInfo(id, name, jumin)) {
-            System.out.println("⚠️ 일치하는 정보가 없습니다.");
-            return;
-        }
-        System.out.println("✅ 입력하신 정보가 확인되었습니다.");
-        System.out.println("✏️ 새로운 비밀번호를 입력해주세요.");
-        String newPwd;
-        String newPwdConfirm;
-        while (true) {
-            newPwd = getInput("새 비밀번호");
-            if (newPwd == null) return;
-            if (!ms.checkPwd(newPwd)) continue;
+	        String jumin;
+	        while (true) {
+	            jumin = getInput("주민번호");
+	            if (jumin == null) return;
+	            if (ms.checkJumin(jumin)) break;
+	        }
+	        
+	        // 입력받은 정보가 유효한지 먼저 검증
+	        if (!ms.validateUserInfo(id, name, jumin)) {
+	            System.out.println("⚠️ 일치하는 정보가 없습니다.");
+	            return;
+	        }
+	        System.out.println("✅ 입력하신 정보가 확인되었습니다.");
+	        System.out.println("✏️ 새로운 비밀번호를 입력해주세요.");
+	        String newPwd;
+	        String newPwdConfirm;
+	        while (true) {
+	            newPwd = getInput("새 비밀번호");
+	            if (newPwd == null) return;
+	            if (!ms.checkPwd(newPwd)) continue;
 
-            newPwdConfirm = getInput("새 비밀번호 확인");
-            if (newPwdConfirm == null) return;
-            if (!ms.confirmPwd(newPwd, newPwdConfirm)) {
-                System.out.println("❌ 비밀번호가 일치하지 않습니다. 다시 입력해주세요.");
-                continue;
-            }
-            break;
-        }
+	            newPwdConfirm = getInput("새 비밀번호 확인");
+	            if (newPwdConfirm == null) return;
+	            if (!ms.confirmPwd(newPwd, newPwdConfirm)) {
+	                System.out.println("❌ 비밀번호가 일치하지 않습니다. 다시 입력해주세요.");
+	                continue;
+	            }
+	            break;
+	        }
 
-        int result = ms.updatePwd(id, name, jumin, newPwd);
-        System.out.println(result > 0 ? "✔️ 비밀번호가 재설정되었습니다." : "⚠️ 비밀번호 변경에 실패했습니다.");
-	}
-	
-
-	// 잠금 계정 관리자 문의
-	public void isAccountLocked() {
-		System.out.println("\n──────── [관리자 문의] ────────");
-		String id;
-		while (true) {
-			id = getInput("🔐 확인할 아이디");
-			if (id == null) return;
-			
-			boolean isLocked = ms.isAccountLocked(id);
-		    if (isLocked) {
-		        System.out.println("🔒 해당 계정은 현재 잠금 상태입니다.");
-		        System.out.println("✅ 관리자에게 문의가 접수되었습니다.");
-		        return;
-		    } else {
-		        System.out.println("ℹ️ 해당 계정은 잠금 상태가 아닙니다.");
-		        return;
-		    }
+	        int result = ms.updatePwd(id, name, jumin, newPwd);
+	        System.out.println(result > 0 ? "✔️ 비밀번호가 재설정되었습니다." : "⚠️ 비밀번호 변경에 실패했습니다.");
 		}
-	}
-	
-	// 입력 정렬, 입력중 되돌아가기
-	public String getInput(String label) {
-	    System.out.printf("%-10s: ", label);  // 왼쪽 정렬 + 폭 고정
-	    String input = sc.nextLine().trim();
-	    return input.equals("0") ? null : input;
-	}
+		
+		// 잠금 계정 관리자 문의
+		public void isAccountLocked() {
+			System.out.println("\n──────── [관리자 문의] ────────");
+			String id;
+			while (true) {
+				id = getInput("🔐 확인할 아이디");
+				if (id == null) return;
+				
+				boolean isLocked = ms.isAccountLocked(id);
+			    if (isLocked) {
+			        System.out.println("🔒 해당 계정은 현재 잠금 상태입니다.");
+			        System.out.println("✅ 관리자에게 문의가 접수되었습니다.\n");
+			        return;
+			    } else {
+			        System.out.println("ℹ️ 해당 계정은 잠금 상태가 아닙니다.\n");
+			        return;
+			    }
+			}
+		}
+		
+		// 입력 정렬, 입력중 되돌아가기
+		public String getInput(String label) {
+		    System.out.printf("%-10s: ", label);  // 왼쪽 정렬 + 폭 고정
+		    String input = sc.nextLine().trim();
+		    return input.equals("0") ? null : input;
+		}
 
-} // MemberController
+
+	} // MemberController
