@@ -333,6 +333,94 @@ public class MemberDAO {
         return result;
     }
 	
+	/**
+	 * 어드민 잠금 계정 조회 메서드
+	 * @return List<MemberVO>
+	 */
+	public List<MemberVO> getLockedAccounts() {
+		List<MemberVO> list = new ArrayList<>();
+        String sql = "SELECT * FROM MEMBER WHERE STATUS = 'N'";
 
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
+        
+        try {
+        	conn = ConnectionHelper.getConnection("mysql");
+        	pstmt = conn.prepareStatement(sql);
+        	rs = pstmt.executeQuery();
+
+            while (rs.next()) {
+                MemberVO member = new MemberVO();
+                member.setMemberNo(rs.getInt("member_no"));
+                member.setName(rs.getString("name"));
+                member.setJumin(rs.getString("jumin"));
+                member.setMemberId(rs.getString("member_id"));
+                member.setPassword(rs.getString("password"));
+                member.setAddress(rs.getString("address"));
+                member.setPhone(rs.getString("phone"));
+                member.setStatus(rs.getString("status").charAt(0));
+                member.setLockCnt(rs.getInt("lock_cnt"));
+                member.setRole(rs.getInt("role"));
+                
+                list.add(member);
+            }
+        } catch(SQLException e) {
+        	e.printStackTrace();
+        } finally {
+        	try {
+        		if (rs != null) rs.close();
+        		if (pstmt != null) pstmt.close();
+                if (conn != null) conn.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+        }
+        return list;
+	}
+	
+	/**
+	 * 어드민 계정 상태 Y 변경 메서드
+	 * 
+	 * @param 회원번호
+	 * @return 업데이트
+	 */
+	public int updateAccountStatus(int memberNo, char status) {
+        String sql = "UPDATE MEMBER SET STATUS = ?, LOCK_CNT = 0 WHERE MEMBER_NO = ?";
+        
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+        int result = 0;
+        
+        try {
+        	conn = ConnectionHelper.getConnection("mysql");
+        	conn.setAutoCommit(false);
+        	pstmt = conn.prepareStatement(sql);
+        	
+        	pstmt.setString(1, String.valueOf(status));
+            pstmt.setInt(2, memberNo);
+            result = pstmt.executeUpdate();
+            
+            conn.commit();
+        } catch (SQLException e) {
+        	e.printStackTrace();
+            if (conn != null) {
+                try {
+                    conn.rollback();
+                    System.out.println("[!] 트랜잭션 롤백되었습니다.");
+                } catch (SQLException rollbackEx) {
+                    rollbackEx.printStackTrace();
+                }
+            }
+        } finally {
+            try {
+                if (pstmt != null) pstmt.close();
+                if (conn != null) conn.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        return result;
+    }
     
 } // MemberDAO

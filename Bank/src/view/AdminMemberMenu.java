@@ -26,6 +26,10 @@ public class AdminMemberMenu {
                 	adminMemberController.findAllMembers();
                 	adminMemberController.editMember();
                     break;
+                case "4":
+                	adminMemberController.findAllMembers();
+                	adminMemberController.manageLockedAccounts();
+                    break;
                 case "0":
                     System.out.println("회원 관리 메뉴를 종료합니다.");
                     return;
@@ -40,6 +44,7 @@ public class AdminMemberMenu {
         System.out.println("1. 전체 회원 조회");
         System.out.println("2. 회원 검색");
         System.out.println("3. 회원 정보 수정");
+        System.out.println("4. 잠금 계정 관리");
         System.out.println("0. 뒤로 가기");
     }
 }
