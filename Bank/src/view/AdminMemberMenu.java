@@ -16,13 +16,14 @@ public class AdminMemberMenu {
 
             switch (input) {
                 case "1":
-//                	adminMemberController.manageAccountLock();
                 	adminMemberController.findAllMembers();
                     break;
                 case "2":
+                	adminMemberController.findAllMembers();
                 	adminMemberController.findMember();
                     break;
                 case "3":
+                	adminMemberController.findAllMembers();
                 	adminMemberController.editMember();
                     break;
                 case "0":
