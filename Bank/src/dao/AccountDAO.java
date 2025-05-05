@@ -294,4 +294,44 @@ public class AccountDAO {
     public void resetLockCnt(String accountNo) {
         updateLockCnt(accountNo, 0);
     }
+    
+    /**
+     * 어드민에서 상품이 계좌에서 사용중인지 확인
+     * 
+     * @param productId
+     * @return
+     */
+    public boolean isProductInUse(int productId) {
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
+        boolean inUse = false;
+        
+        String sql = "SELECT COUNT(*) FROM ACCOUNT WHERE product_id = ?";
+        
+        try {
+            conn = ConnectionHelper.getConnection("mysql");
+            pstmt = conn.prepareStatement(sql);
+            
+            pstmt.setInt(1, productId);
+            
+            rs = pstmt.executeQuery();
+            
+            if (rs.next()) {
+                int count = rs.getInt(1);
+                inUse = (count > 0);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (rs != null) rs.close();
+                if (pstmt != null) pstmt.close();
+                if (conn != null) conn.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        return inUse;
+    }
 }

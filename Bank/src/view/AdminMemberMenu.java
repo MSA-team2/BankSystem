@@ -39,6 +39,6 @@ public class AdminMemberMenu {
         System.out.println("1. 전체 회원 조회");
         System.out.println("2. 회원 검색");
         System.out.println("3. 회원 정보 수정");
-        System.out.println("0. 이전 메뉴");
+        System.out.println("0. 뒤로 가기");
     }
 }
