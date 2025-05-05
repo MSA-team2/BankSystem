@@ -155,6 +155,7 @@ public class MemberService {
 //	    }
 //	}
 	
+	// 틀린횟수 조회
 	public int getLockCount(String id) {
 	    try (Connection conn = ConnectionHelper.getConnection("mysql")) {
 	        return md.getLockCount(conn, id);
@@ -163,7 +164,16 @@ public class MemberService {
 	        return -1;
 	    }
 	}
-
+	
+	// 잠금 계정 관리자 문의
+	public boolean isAccountLocked(String id) {
+		try (Connection conn = ConnectionHelper.getConnection("mysql")) {
+			return md.isAccountLocked(conn, id);
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return true;
+		}
+	}
 
 	
 } // MemberService
