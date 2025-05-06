@@ -10,6 +10,7 @@ import java.util.Scanner;
 import controller.SessionManager;
 import dao.AccountDAO;
 import dao.ProductDAO;
+import dto.AccountShowDTO;
 import model.AccountVO;
 import model.ProductVO;
 
@@ -21,6 +22,14 @@ public class AccountService {
     // 상품 관련하여 service가 필요하지 않을거 같아 한 service에서 몰아서 작성
     public List<ProductVO> getAllProducts() {
         return productDAO.getProductInfo();
+    }
+    // 상품 타입별로 정보 가져오기
+    public List<ProductVO> getProductbyType(int product_type) {
+    	return productDAO.getProductByType(product_type);
+    }
+    // 계정에 가입한 상품 유무 체크
+    public List<AccountShowDTO> checkRegistProduct(){
+    	return accountDAO.showMyAccounts();
     }
     
     public AccountVO createAccountNumber(int productId, BigDecimal deposit, BigDecimal balance, String password) {

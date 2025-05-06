@@ -228,4 +228,42 @@ public class ProductDAO {
 	    }
 	    return success;
 	}
+
+	public List<ProductVO> getProductByType(int product_type) {
+		Connection conn = ConnectionHelper.getConnection("mysql");
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		
+		String sql = "SELECT * FROM PRODUCT where product_type = ?";
+		
+		List<ProductVO> list = new ArrayList<ProductVO>();
+		ProductVO p = new ProductVO();
+		try {
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setInt(1, product_type);
+			rs = pstmt.executeQuery();
+			
+			while (rs.next()) {
+				p.setProductId(rs.getInt("product_id"));
+				p.setProductName(rs.getString("product_name"));
+				p.setProduct_type(rs.getInt("product_type"));
+				p.setInterestRate(rs.getBigDecimal("interest_rate"));
+				p.setPeriodMonths(rs.getInt("period_months"));
+				list.add(p);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			try {
+				if (conn != null)
+					conn.rollback();
+			} catch (Exception rollbackEx) {
+				rollbackEx.printStackTrace();
+			}
+		} finally {
+			CloseHelper.close(pstmt);
+			CloseHelper.close(conn);
+		}
+		return list;
+	}
+
 }
