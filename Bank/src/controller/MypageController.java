@@ -17,7 +17,6 @@ public class MypageController {
 
 	// 1 : (예금/적금) 중도해제
 	public void withdrawBeforeMaturity() {
-		// TODO
 		service.withdrawProduct(user);
 
 	}
