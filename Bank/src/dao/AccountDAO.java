@@ -217,6 +217,56 @@ public class AccountDAO {
 		return flag;
 	}
 	
+	public List<AccountShowDTO> showMyAccountDepositWithdraw() {
+		String sql = "select ROW_NUMBER() OVER (ORDER BY account_no) AS 번호, account_no, balance, p.product_name from account a\n"
+				+ "join member b on a.member_no = b.member_no\n"
+				+ "join product p on a.product_id = p.product_id\n"
+				+ "where p.product_type = 100 and a.member_no = ?;";
+		List<AccountShowDTO> list = new ArrayList<>();
+		MemberVO currentUser = SessionManager.getCurrentUser();
+		
+		try (Connection conn = ConnectionHelper.getConnection("mysql");
+				PreparedStatement pstmt = conn.prepareStatement(sql)) {
+			
+			pstmt.setInt(1, currentUser.getMemberNo());
+			ResultSet rs = pstmt.executeQuery();
+			
+			while (rs.next()) {
+				int accountNum = rs.getInt("번호");
+				String accountNo = rs.getString("account_no");
+				String productName = rs.getString("product_name");
+				long balance = rs.getLong("balance");
+				
+				list.add(new AccountShowDTO(accountNum, accountNo, productName, balance));
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return list;
+	}
+	public AccountShowDTO selectMyAccountDepositWithdraw(String account_no) {
+		String sql = "select ROW_NUMBER() OVER (ORDER BY account_no) AS 번호, account_no, balance, p.product_name from account a\n"
+				+ "join member b on a.member_no = b.member_no\n"
+				+ "join product p on a.product_id = p.product_id\n"
+				+ "where p.product_type = 100 and a.account_no = ?;";
+		AccountShowDTO dto = new AccountShowDTO();
+		
+		try (Connection conn = ConnectionHelper.getConnection("mysql");
+				PreparedStatement pstmt = conn.prepareStatement(sql)) {
+			pstmt.setString(1, account_no);
+			ResultSet rs = pstmt.executeQuery();
+			
+			if(rs.next()) {
+				dto.setAccountNum(rs.getInt("번호"));
+				dto.setAccountNo(rs.getString("account_no"));
+				dto.setBalance(rs.getLong("balance"));
+				dto.setProductName(rs.getString("product_name"));
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return dto;
+	}
 	public List<AccountShowDTO> showMyAccounts() {
 		String sql = "select ROW_NUMBER() OVER (ORDER BY account_no) AS 번호, account_no, balance, p.product_name from account a\n"
 				+ "join member b on a.member_no = b.member_no\n"
