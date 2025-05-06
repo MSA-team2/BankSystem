@@ -11,7 +11,7 @@ public class AdminMenu {
     public void start() {
         while (true) {
             printMenu();
-            System.out.print("원하는 메뉴를 선택하세요: ");
+            System.out.print("메뉴 선택 >> ");
             String input = sc.nextLine();
 
             switch (input) {
@@ -40,6 +40,6 @@ public class AdminMenu {
         System.out.println("1. 전체 계좌 조회");
         System.out.println("2. 계좌 잠금 관리");;
         System.out.println("3. 일일 거래량 조회");
-        System.out.println("0. 종료");
+        System.out.println("0. 뒤로 가기");
     }
 }

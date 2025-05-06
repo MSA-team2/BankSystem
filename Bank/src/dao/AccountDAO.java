@@ -15,6 +15,7 @@ import controller.SessionManager;
 import dbConn.util.CloseHelper;
 import dbConn.util.ConnectionHelper;
 import dto.AccountProductDto;
+import dto.AccountShowDTO;
 import dto.AccountSummaryDto;
 import model.AccountDTO;
 import model.AccountVO;
@@ -373,4 +374,123 @@ public class AccountDAO {
 		}
 		return list;
 	}
+}
+	
+	public List<AccountShowDTO> showMyAccounts() {
+		String sql = "select ROW_NUMBER() OVER (ORDER BY account_no) AS 번호, account_no, balance, p.product_name from account a\n"
+				+ "join member b on a.member_no = b.member_no\n"
+				+ "join product p on a.product_id = p.product_id\n"
+				+ "where a.member_no = ?;";
+		List<AccountShowDTO> list = new ArrayList<>();
+		MemberVO currentUser = SessionManager.getCurrentUser();
+		
+		try (Connection conn = ConnectionHelper.getConnection("mysql");
+				PreparedStatement pstmt = conn.prepareStatement(sql)) {
+			
+			pstmt.setInt(1, currentUser.getMemberNo());
+			ResultSet rs = pstmt.executeQuery();
+
+			while (rs.next()) {
+				
+				int accountNum = rs.getInt("번호");
+				String accountNo = rs.getString("account_no");
+	            String productName = rs.getString("product_name");
+	            long balance = rs.getLong("balance");
+				
+				list.add(new AccountShowDTO(accountNum, accountNo, productName, balance));
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return list;
+	}
+	
+	
+	public AccountVO getPwdAndStatus(String accountNo) {
+        String sql = "SELECT account_pwd, status, lock_cnt FROM account WHERE account_no = ?";
+        try (Connection conn = ConnectionHelper.getConnection("mysql");
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            
+        	pstmt.setString(1, accountNo);
+            ResultSet rs = pstmt.executeQuery();
+            if (rs.next()) {
+                AccountVO account = new AccountVO();
+                account.setAccountNo(accountNo);
+                account.setAccountPwd(rs.getString("account_pwd"));
+                account.setStatus(rs.getString("status").charAt(0));
+                account.setLock_cnt(rs.getInt("lock_cnt"));
+                return account;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public void updateLockCnt(String accountNo, int lockCnt) {
+        String sql = "UPDATE account SET lock_cnt = ? WHERE account_no = ?";
+        try (Connection conn = ConnectionHelper.getConnection("mysql");
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setInt(1, lockCnt);
+            pstmt.setString(2, accountNo);
+            pstmt.executeUpdate();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void lockAccount(String accountNo) {
+        String sql = "UPDATE account SET status = 'N' WHERE account_no = ?";
+        try (Connection conn = ConnectionHelper.getConnection("mysql");
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, accountNo);
+            pstmt.executeUpdate();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void resetLockCnt(String accountNo) {
+        updateLockCnt(accountNo, 0);
+    }
+    
+    /**
+     * 어드민에서 상품이 계좌에서 사용중인지 확인
+     * 
+     * @param productId
+     * @return
+     */
+    public boolean isProductInUse(int productId) {
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
+        boolean inUse = false;
+        
+        String sql = "SELECT COUNT(*) FROM ACCOUNT WHERE product_id = ?";
+        
+        try {
+            conn = ConnectionHelper.getConnection("mysql");
+            pstmt = conn.prepareStatement(sql);
+            
+            pstmt.setInt(1, productId);
+            
+            rs = pstmt.executeQuery();
+            
+            if (rs.next()) {
+                int count = rs.getInt(1);
+                inUse = (count > 0);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (rs != null) rs.close();
+                if (pstmt != null) pstmt.close();
+                if (conn != null) conn.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        return inUse;
+    }
 }
