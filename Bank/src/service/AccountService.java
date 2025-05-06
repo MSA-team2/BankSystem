@@ -10,6 +10,7 @@ import java.util.Scanner;
 import controller.SessionManager;
 import dao.AccountDAO;
 import dao.ProductDAO;
+import dto.AccountShowDTO;
 import model.AccountVO;
 import model.ProductVO;
 
@@ -22,6 +23,26 @@ public class AccountService {
     public List<ProductVO> getAllProducts() {
         return productDAO.getProductInfo();
     }
+    // 상품 타입별로 정보 가져오기
+    public List<ProductVO> getProductbyType(int product_type) {
+    	return productDAO.getProductByType(product_type);
+    }
+    // 계정에 가입한 상품 유무 체크
+    public List<AccountShowDTO> checkRegistProduct(){
+    	return accountDAO.showMyAccounts();
+    }
+    // 예금 상품 가입 시 출력할 보유 입출금 계좌
+    public List<AccountShowDTO> myDepositWithdrawAccount(){
+    	return accountDAO.showMyAccountDepositWithdraw();
+    }
+    // 예금 상품 가입 시 출력할 보유 입출금 계좌
+    public AccountShowDTO myDepositWithdrawAccountbalance(String account_no){
+    	return accountDAO.selectMyAccountDepositWithdraw(account_no);
+    }
+    // 사용자가 입력한 프로덕트 넘버에 따른 상품 정보 가져오기
+    public ProductVO getProduct_id(int product_no) {
+    	return productDAO.getProductById(product_no);
+    }
     
     public AccountVO createAccountNumber(int productId, BigDecimal deposit, BigDecimal balance, String password) {
     	ProductVO product = productDAO.getProductById(productId);
@@ -29,7 +50,7 @@ public class AccountService {
     	
     	String phoneTail = SessionManager.getCurrentUser().getPhone().substring(9);
         String randomNumber = String.format("%04d", new Random().nextInt(10000));
-        String prefix = productId == 1 ? "100" : (productId <= 3 || productId == 7) ? "200" : "300";
+        String prefix = Integer.toString(product.getProduct_type());  
         String accountNo = prefix + "-" + phoneTail + "-" + randomNumber;
 
         AccountVO dto = new AccountVO();
@@ -58,11 +79,11 @@ public class AccountService {
     	
     	BigDecimal percent = new BigDecimal("100");	// 연이율 계산용
     	
-    	if(product_type.equals("300")) {	// 적금 계산
+    	if(product_type.equals("200")) {	// 적금 계산
     		BigDecimal first = deposit.multiply(month).multiply(rate).divide(percent);
     		BigDecimal second = deposit.multiply(month);
     		return first.add(second);
-    	}else if(product_type.equals("200")) {	// 예금 계산
+    	}else if(product_type.equals("300")) {	// 예금 계산
     		BigDecimal first = balance.multiply(year).multiply(rate).divide(percent);
     		return first.add(balance);
     	}else {	// 입출금계좌는 불필요
