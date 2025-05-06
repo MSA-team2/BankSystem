@@ -102,38 +102,42 @@ public class TransactionDAO {
         return dailyTransferSummaryDto;
     }
 	
-	public boolean deposit(TransactionDTO dto) {
+	//입, 출, 이체
+	public boolean transfer(TransactionDTO dto) {
 		 String sql = "UPDATE account SET balance = balance + ? WHERE account_no = ?";
-	        try (Connection conn = ConnectionHelper.getConnection("mysql");
-	        	PreparedStatement pstmt = conn.prepareStatement(sql)) {
+	        Connection conn = null;
+	        PreparedStatement pstmt = null;
+		 	try {
+	        	conn = ConnectionHelper.getConnection("mysql");
+	        	pstmt = conn.prepareStatement(sql);
+	        	
 	            pstmt.setBigDecimal(1, dto.getAmount());
 	            pstmt.setString(2, dto.getAccountNo());
 	            return pstmt.executeUpdate() > 0;
-	        }catch(Exception e) {
-	        	e.printStackTrace();
-	        }
+			} catch (Exception e) {
+				e.printStackTrace();
+			} finally {
+				try {
+					if (pstmt != null)pstmt.close();
+					if (conn != null)conn.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
 		return false;
 	}
-	public boolean withdraw(TransactionDTO dto) {
-		String sql = "UPDATE account SET balance = balance - ? WHERE account_no = ?";
-		try (Connection conn = ConnectionHelper.getConnection("mysql");
-				PreparedStatement pstmt = conn.prepareStatement(sql)) {
-			pstmt.setBigDecimal(1, dto.getAmount());
-			pstmt.setString(2, dto.getAccountNo());
-			return pstmt.executeUpdate() > 0;
-		}catch(Exception e) {
-			e.printStackTrace();
-		}
-		return false;
-	}
+	
 	// 거래내역 저장 
 	public void saveTransaction(TransactionDTO transaction) {
 		String sql = "INSERT INTO TRANSACTION_HISTORY (account_no, transaction_type, amount, transaction_date, target_account) " +
                 "VALUES (?, ?, ?, NOW(), ?)";	
 		
-		 try (	Connection conn = ConnectionHelper.getConnection("mysql");
-	            PreparedStatement pstmt = conn.prepareStatement(sql)) {
-	            
+			Connection conn = null;
+			PreparedStatement pstmt = null;
+			try {
+				conn = ConnectionHelper.getConnection("mysql");
+				pstmt = conn.prepareStatement(sql);
+        	
 	            pstmt.setString(1, transaction.getAccountNo());
 	            pstmt.setString(2, transaction.getTransactionType());
 	            pstmt.setBigDecimal(3, transaction.getAmount());
@@ -144,7 +148,14 @@ public class TransactionDAO {
 	            
 	        } catch (SQLException e) {
 	            e.printStackTrace();
-	        }
+			} finally {
+				try {
+					if (pstmt != null)pstmt.close();
+					if (conn != null)conn.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
 		
 	}
 	
@@ -184,9 +195,13 @@ public class TransactionDAO {
 					+ "ORDER BY \n"
 					+ "    t.transaction_date DESC";
 	        
-	        try (Connection conn = ConnectionHelper.getConnection("mysql");
-	             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+	        Connection conn = null;
+	        PreparedStatement pstmt = null;
+	        try {
+	            conn = ConnectionHelper.getConnection("mysql");
+	            pstmt = conn.prepareStatement(sql);
 	    		MemberVO currentUser = SessionManager.getCurrentUser();
+	    		
 	            pstmt.setInt(1, currentUser.getMemberNo());
 	            pstmt.setString(2, accountNo);
 	            ResultSet rs = pstmt.executeQuery();
@@ -204,11 +219,85 @@ public class TransactionDAO {
 	            
 	        } catch (SQLException e) {
 	            e.printStackTrace();
-	        }
+	        } finally {
+				try {
+					if (pstmt != null)pstmt.close();
+					if (conn != null)conn.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
 	        
 	        return transactions;
 	    }
 	
+	//입, 출 계좌 확인
+	public boolean checkAccountNo(String accountNo) {
+		String sql = "select member_no, account_no from account a\n"
+				+ "join product p on a.product_id = p.product_id\n"
+				+ "where member_no = ? and account_no = ? and p.product_type = '100'";	
+		
+			Connection conn = null;
+			PreparedStatement pstmt = null;
+			try {
+				conn = ConnectionHelper.getConnection("mysql");
+				pstmt = conn.prepareStatement(sql);
+				
+				MemberVO currentUser = SessionManager.getCurrentUser();
+				pstmt.setInt(1, currentUser.getMemberNo());
+				pstmt.setString(2, accountNo);
+				ResultSet rs = pstmt.executeQuery();
+	         
+	         return rs.next();
+		 } catch (SQLException e) {
+//			e.printStackTrace();
+			return false;
+		}
+		
+	}
 	
+	//이체 할 계좌 확인
+	public boolean targetCheckAccountNo(String accountNo) {
+		String sql = "select account_no from account a\n"
+				+ "join product p on a.product_id = p.product_id\n"
+				+ "where account_no = ? and product_type = '100' or product_type = '200'";	
+		
+			Connection conn = null;
+			PreparedStatement pstmt = null;
+			try {
+				 conn = ConnectionHelper.getConnection("mysql");
+				 pstmt = conn.prepareStatement(sql);
+			 	
+				 pstmt.setString(1, accountNo);
+				 ResultSet rs = pstmt.executeQuery();
+	         
+	         return rs.next();
+		 } catch (SQLException e) {
+//			e.printStackTrace();
+			return false;
+		}
+		
+	}
+	
+	// 거래내역 계좌 확인
+	public boolean transactionCheckAccountNo(String accountNo) {
+		String sql = "select member_no, account_no from account\n"
+				+ "where member_no = ? and account_no = ?";	
+		
+		 try (	Connection conn = ConnectionHelper.getConnection("mysql");
+	            PreparedStatement pstmt = conn.prepareStatement(sql)){
+			 	
+			 MemberVO currentUser = SessionManager.getCurrentUser();
+	         pstmt.setInt(1, currentUser.getMemberNo());
+	         pstmt.setString(2, accountNo);
+			 ResultSet rs = pstmt.executeQuery();
+	         
+	         return rs.next();
+		 } catch (SQLException e) {
+//			e.printStackTrace();
+			return false;
+		}
+		
+	}
 	
 }
