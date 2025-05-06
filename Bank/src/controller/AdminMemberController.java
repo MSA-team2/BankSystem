@@ -16,6 +16,75 @@ public class AdminMemberController {
 	private final AdminMemberService adminMemberService = new AdminMemberService();
 	
 	/**
+	 * 잠금 회원 수정 메서드
+	 * 회원의 NO로 조회 후 상태 및 락카운트를 0으로 업데이트 합니다.
+	 */
+	public void manageLockedAccounts() {
+	    // 잠금 계정 목록 조회
+	    List<MemberVO> lockedAccounts = adminMemberService.getLockedAccounts();
+	    
+	    if (lockedAccounts.isEmpty()) {
+	        System.out.println("\n🔍 현재 잠금 상태인 계정이 없습니다.");
+	        return;
+	    }
+	    
+	    // 잠금 계정 목록 출력
+	    displayLockedAccounts(lockedAccounts);
+	    
+	    // 잠금 해제할 계정 선택
+	    System.out.print("\n🔓 잠금 해제할 회원 번호를 입력하세요 (0: 취소): ");
+	    int memberNo;
+	    try {
+	        memberNo = Integer.parseInt(sc.nextLine());
+	        if (memberNo == 0) {
+	            System.out.println("계정 잠금 해제를 취소합니다.");
+	            return;
+	        }
+	    } catch (NumberFormatException e) {
+	        System.out.println("❌ 유효하지 않은 회원 번호입니다.");
+	        return;
+	    }
+	    
+	    // 선택한 계정 잠금 해제
+	    boolean result = adminMemberService.unlockMember(memberNo);
+	    if (result) {
+	        System.out.println("\n✅ 계정 잠금이 성공적으로 해제되었습니다.");
+	        
+	        // 업데이트 후 남아있는 잠금 계정 확인
+	        List<MemberVO> remainingLockedAccounts = adminMemberService.getLockedAccounts();
+	        if (remainingLockedAccounts.isEmpty()) {
+	            System.out.println("🎉 더 이상 잠금 상태인 계정이 없습니다!");
+	        } else {
+	            System.out.println("\n📋 남아있는 잠금 계정 목록입니다:");
+	            displayLockedAccounts(remainingLockedAccounts);
+	        }
+	    } else {
+	        System.out.println("\n❌ 계정 잠금 해제에 실패했습니다. 회원 번호를 확인하세요.");
+	    }
+	}
+	
+	// 잠금 계정 목록 표시 메서드
+	private void displayLockedAccounts(List<MemberVO> accounts) {
+	    System.out.println("\n+----------------------------------------------------------+");
+	    System.out.println("|                  🔒 잠금 계정 목록 🔒                   |");
+	    System.out.println("+----------------------------------------------------------+");
+	    System.out.println("| 회원번호 | 이름      | 주민번호          | 전화번호        | 잠금횟수 |");
+	    System.out.println("+----------+-----------+------------------+----------------+----------+");
+	    
+	    for (MemberVO member : accounts) {
+	        System.out.printf("| %-8d | %-9s | %-16s | %-14s | %-8d |\n", 
+	                member.getMemberNo(),  // 여기서 회원번호가 필요합니다
+	                member.getName(),
+	                member.getJumin(),
+	                member.getPhone(),
+	                member.getLockCnt());
+	    }
+	    
+	    System.out.println("+----------+-----------+------------------+----------------+----------+");
+	    System.out.println("📊 총 " + accounts.size() + "개의 잠금 계정이 있습니다.");
+	}
+	
+	/**
 	 * 회원 정보 수정 메서드
 	 * 회원의 이름과 주민번호로 조회 후 전화번호, 주소 정보를 업데이트합니다.
 	 */

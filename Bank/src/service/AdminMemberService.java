@@ -10,7 +10,24 @@ import model.MemberVO;
 public class AdminMemberService {
 	private final MemberDAO memberDAO = new MemberDAO();
     private final AccountDAO accountDAO = new AccountDAO();
-
+    
+    /**
+     * 잠금 회원 잠금 해제 메서드
+     * @param memberNo
+     * @return true/false
+     */
+    public boolean unlockMember(int memberNo) {
+        return memberDAO.updateAccountStatus(memberNo, 'Y') > 0;
+    }
+    
+    /**
+     * 잠금 계정 조회 메서드
+     * @return 
+     */
+    public List<MemberVO> getLockedAccounts() {
+    	return memberDAO.getLockedAccounts();
+    }
+    
     public String updateMemberInfo(String name, String jumin, String phone, String address) {
         MemberVO member = memberDAO.findMemberByNameAndJumin(name, jumin);
         if (member == null) return "[!] 해당 회원을 찾을 수 없습니다.";
@@ -18,7 +35,7 @@ public class AdminMemberService {
         boolean updated = memberDAO.updateMemberInfo(member.getMemberNo(), phone, address) > 0;
         return updated ? "회원 정보가 수정되었습니다." : "회원 정보 수정에 실패했습니다.";
     }
-
+    
     public List<AccountVO> getAccountsByMember(int memberNo) {
         return accountDAO.findAccountsByMemberNo(memberNo);
     }
