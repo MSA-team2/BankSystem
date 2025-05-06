@@ -265,4 +265,112 @@ public class AccountDAO {
 		return list;
 
 	}
+
+	public List<AccountProductDto> findYegeumJeoggeumByMemberNO(int memberNo) {
+		List<AccountProductDto> list = new ArrayList<>();
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+
+		// 200 적금 | 300 예금
+		String sql = "SELECT A.account_no, P.product_name, P.interest_rate, A.maturity_date, A.balance "
+				+ "FROM ACCOUNT A " + "JOIN PRODUCT P ON A.product_id = P.product_id " + "WHERE A.member_no = ? "
+				+ "AND (P.product_type = 200 OR P.product_type = 300)";
+
+		try {
+
+			conn = ConnectionHelper.getConnection("mysql");
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setInt(1, memberNo);
+			rs = pstmt.executeQuery();
+
+			while (rs.next()) {
+				// 계좌번호, 상품이름, 이자율, 만기일, 잔액
+				String accountNo = rs.getString("account_no");
+				String productName = rs.getString("product_name");
+				Number interestRate = rs.getBigDecimal("interest_rate");
+				Date maturityDate = rs.getDate("maturity_date");
+				Number balance = rs.getBigDecimal("balance");
+
+				AccountProductDto dto = new AccountProductDto();
+				dto.setAccountNo(accountNo);
+				dto.setProductName(productName);
+				dto.setInterestRate(interestRate);
+				dto.setMaturityDate(maturityDate);
+				dto.setBalance(balance);
+
+				list.add(dto);
+
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			CloseHelper.close(pstmt);
+			CloseHelper.close(conn);
+		}
+		return list;
+
+	}
+
+	/**
+	 * 예금 적금 중도해지 중도해지 계좌의 금액을 입출금 계좌로 이체
+	 * 
+	 * @param accountNo
+	 * @param ibchulAccountNo 
+	 */
+	public void cancelAccount(String accountNo, String ibchulAccountNo) {
+		System.out.println("accountNo의 잔액을 ibChulAccountNo로 몽땅 이체하기");
+	}
+
+	/**
+	 *입/출금 계좌 찾기 
+	 * @param memberNo
+	 */
+	public List<AccountProductDto> finIbchulgeum(int memberNo) {
+		
+		List<AccountProductDto> list = new ArrayList<>();
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+
+		// 100 = 입출
+		String sql = "SELECT A.account_no, P.product_name, P.interest_rate, A.maturity_date, A.balance "
+				+ "FROM ACCOUNT A " + "JOIN PRODUCT P ON A.product_id = P.product_id " + "WHERE A.member_no = ? "
+				+ "AND P.product_type = 100";
+
+		try {
+
+			conn = ConnectionHelper.getConnection("mysql");
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setInt(1, memberNo);
+			rs = pstmt.executeQuery();
+
+			while (rs.next()) {
+				// 계좌번호, 상품이름, 이자율, 만기일, 잔액
+				String accountNo = rs.getString("account_no");
+				String productName = rs.getString("product_name");
+				Number interestRate = rs.getBigDecimal("interest_rate");
+				Date maturityDate = rs.getDate("maturity_date");
+				Number balance = rs.getBigDecimal("balance");
+
+				AccountProductDto dto = new AccountProductDto();
+				dto.setAccountNo(accountNo);
+				dto.setProductName(productName);
+				dto.setInterestRate(interestRate);
+				dto.setMaturityDate(maturityDate);
+				dto.setBalance(balance);
+
+				list.add(dto);
+
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			CloseHelper.close(pstmt);
+			CloseHelper.close(conn);
+		}
+		return list;
+	}
 }

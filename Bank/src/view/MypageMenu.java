@@ -17,9 +17,8 @@ public class MypageMenu {
 		if (SessionManager.isLoggedIn() == false) {
 			new FirstMainMenu().mainMenu();
 		} else {
-			MemberVO user = SessionManager.getCurrentUser();
 			// 개인신상, 계좌번호, 상품명, 원금, 이자율, 만기일, 총액 리스트로 뿌리기
-			controller.displayOwnedAccounts(user);
+			controller.displayOwnedAccounts();
 		}
 	}
 
