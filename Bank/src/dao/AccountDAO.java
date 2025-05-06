@@ -9,6 +9,7 @@ import java.sql.Statement;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import controller.SessionManager;
@@ -426,19 +427,34 @@ public class AccountDAO {
 		}
 		return dto;
 	}
-	public List<AccountShowDTO> showMyAccounts() {
-		String sql = "select ROW_NUMBER() OVER (ORDER BY account_no) AS 번호, account_no, balance, p.product_name from account a\n"
+	
+	public List<AccountShowDTO> showMyAccounts(List<String> productTypes) {
+		StringBuilder sql = new StringBuilder("select ROW_NUMBER() OVER (ORDER BY account_no) AS 번호, account_no, balance, p.product_name from account a\n"
 				+ "join member b on a.member_no = b.member_no\n"
 				+ "join product p on a.product_id = p.product_id\n"
-				+ "where a.member_no = ?;";
-		List<AccountShowDTO> list = new ArrayList<>();
-		MemberVO currentUser = SessionManager.getCurrentUser();
+				+ "where a.member_no = ?");
 		
-		try (Connection conn = ConnectionHelper.getConnection("mysql");
-				PreparedStatement pstmt = conn.prepareStatement(sql)) {
+		if (productTypes != null && !productTypes.isEmpty()) {
+	        sql.append(" AND p.product_type IN (");
+	        sql.append(String.join(", ", Collections.nCopies(productTypes.size(), "?")));
+	        sql.append(")");
+	    }
+		
+		List<AccountShowDTO> list = new ArrayList<>();
+		MemberVO currentUser = SessionManager.getCurrentUser();	
+		
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		try {
+			conn = ConnectionHelper.getConnection("mysql");
+			pstmt = conn.prepareStatement(sql.toString());
 			
 			pstmt.setInt(1, currentUser.getMemberNo());
-			ResultSet rs = pstmt.executeQuery();
+			for (int i = 0; i < productTypes.size(); i++) {
+	            pstmt.setString(i + 2, productTypes.get(i));
+	        }
+			rs = pstmt.executeQuery();
 
 			while (rs.next()) {
 				
@@ -451,6 +467,17 @@ public class AccountDAO {
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
+		} finally {
+			try {
+				if (rs != null) 
+					rs.close();
+				if (pstmt != null)
+					pstmt.close();
+				if (conn != null)
+					conn.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
 		}
 		return list;
 	}
