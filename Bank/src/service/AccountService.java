@@ -1,7 +1,6 @@
 package service;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Random;
@@ -28,8 +27,8 @@ public class AccountService {
     	return productDAO.getProductByType(product_type);
     }
     // 계정에 가입한 상품 유무 체크
-    public List<AccountShowDTO> checkRegistProduct(){
-    	return accountDAO.showMyAccounts();
+    public List<AccountShowDTO> checkRegistProduct(List<String> productTypes){
+    	return accountDAO.showMyAccounts(productTypes);
     }
     // 예금 상품 가입 시 출력할 보유 입출금 계좌
     public List<AccountShowDTO> myDepositWithdrawAccount(){
@@ -60,7 +59,7 @@ public class AccountService {
         dto.setBalance(balance);
         dto.setMemberNo(SessionManager.getCurrentUser().getMemberNo());
         dto.setCreateDate(LocalDateTime.now());
-        if(prefix.equals("300"))  dto.setDeposit_amount(deposit);
+        if(prefix.equals("200"))  dto.setDeposit_amount(deposit);
         if(prefix.equals("200") || prefix.equals("300")) {
         	dto.setMaturityDate(LocalDateTime.now().plusMonths(product.getPeriodMonths()));
         }

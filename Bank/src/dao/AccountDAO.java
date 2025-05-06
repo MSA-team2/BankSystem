@@ -5,7 +5,6 @@ import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -18,7 +17,6 @@ import dbConn.util.ConnectionHelper;
 import dto.AccountProductDto;
 import dto.AccountShowDTO;
 import dto.AccountSummaryDto;
-import model.AccountDTO;
 import model.AccountVO;
 import model.MemberVO;
 

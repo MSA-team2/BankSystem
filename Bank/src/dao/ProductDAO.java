@@ -10,7 +10,6 @@ import java.util.List;
 
 import dbConn.util.CloseHelper;
 import dbConn.util.ConnectionHelper;
-import dbConn.util.ConnectionSingletonHelper;
 import model.ProductVO;
 
 public class ProductDAO {
@@ -34,6 +33,8 @@ public class ProductDAO {
 				p.setProduct_type(rs.getInt("product_type"));
 				p.setInterestRate(rs.getBigDecimal("interest_rate"));
 				p.setPeriodMonths(rs.getInt("period_months"));
+				p.setMaxDepositAmount(rs.getBigDecimal("max_deposit_amount"));
+				p.setMaxMonthlyDeposit(rs.getBigDecimal("max_monthly_deposit"));
 				list.add(p);
 			}
 		} catch (Exception e) {
@@ -61,6 +62,8 @@ public class ProductDAO {
 				p.setProduct_type(rs.getInt("product_type"));
 				p.setInterestRate(rs.getBigDecimal("interest_rate"));
 				p.setPeriodMonths(rs.getInt("period_months"));
+				p.setMaxDepositAmount(rs.getBigDecimal("max_deposit_amount"));
+				p.setMaxMonthlyDeposit(rs.getBigDecimal("max_monthly_deposit"));
 			}
 		} catch (Exception e) {
 			e.printStackTrace();

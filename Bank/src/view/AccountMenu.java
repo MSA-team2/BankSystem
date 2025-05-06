@@ -15,15 +15,25 @@ public class AccountMenu {
 	public int productShow(List<ProductVO> list) {
 		System.out.println("===== 계좌 개설 =====");
 		System.out.println("=== 상품 선택 ===");
+		System.out.println("번호  상품명\t이자율\t 월납입한도 \t 최대예치한도");
 		for (ProductVO p : list) {
-			System.out.println(p.getProductId() + ". " + p.getProductName() + " (" + p.getInterestRate() + "%)");
+			if(p.getProduct_type() == 200) {	// 적금 출력
+				System.out.println(p.getProductId() + ". " + p.getProductName() + "\t(" + p.getInterestRate() + "%)  "
+						+ p.getMaxMonthlyDeposit()+"원");
+			}else if(p.getProduct_type() == 300) {	// 예금
+				System.out.println(p.getProductId() + ". " + p.getProductName() + "\t(" + p.getInterestRate() + "%)  "
+						+ "\t\t" + p.getMaxDepositAmount()+"원");
+			}else {	// 입출금
+				
+			System.out.println(p.getProductId() + ". " + p.getProductName() + "\t(" + p.getInterestRate() + "%)");
+			}
 		}
 		System.out.print("상품 번호 선택\n(0입력 시 메인메뉴로 이동합니다): ");
 		return sc.nextInt();
 	}
 	
 	public String myAccountShow(List<AccountShowDTO> list) {
-		System.out.println("번호  계좌번호\t잔액");
+		System.out.println("번호  계좌번호\t  잔액");
 		for (AccountShowDTO a : list) {
 			System.out.println(a.getAccountNum() + ". " + a.getAccountNo() + " " + a.getBalance());
 		}
@@ -50,8 +60,16 @@ public class AccountMenu {
         while (true) {
             System.out.print("비밀번호(4자리): ");
             String pwd1 = sc.next();
+            if(!pwd1.matches("\\d{4}")) {
+            	System.out.println("잘못된 형식의 비밀번호입니다. 숫자 4자리만 입력해주세요.");
+            	continue;
+            }
             System.out.print("비밀번호 확인: ");
             String pwd2 = sc.next();
+            if(!pwd2.matches("\\d{4}")) {
+            	System.out.println("잘못된 형식의 비밀번호입니다. 숫자 4자리만 입력해주세요.");
+            	continue;
+            }
             if (pwd1.equals(pwd2)) return pwd1;
             System.out.println("비밀번호 불일치. 다시 입력.");
         }

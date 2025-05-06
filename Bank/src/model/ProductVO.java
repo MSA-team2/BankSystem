@@ -15,5 +15,7 @@ public class ProductVO {
 	private int product_type;
 	private BigDecimal interestRate; // 이자율
 	private int periodMonths; // 가입기간
+	private BigDecimal maxDepositAmount;
+	private BigDecimal maxMonthlyDeposit;
 
 }
