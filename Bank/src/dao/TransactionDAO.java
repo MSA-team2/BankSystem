@@ -1,5 +1,6 @@
 package dao;
 
+import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.PreparedStatement;
@@ -143,7 +144,6 @@ public class TransactionDAO {
 	            pstmt.setBigDecimal(3, transaction.getAmount());
 //	            pstmt.setObject(4, transaction.getTransactionDate());
 	            pstmt.setString(4, transaction.getTargetAccount());
-	            
 	            pstmt.executeUpdate();
 	            
 	        } catch (SQLException e) {
@@ -160,7 +160,7 @@ public class TransactionDAO {
 	}
 	
 	//거래내역 가져오기
-	public List<TransactionHistoryVO> getTransactionHistory(String accountNo) {
+	public List<TransactionHistoryVO> TransactionHistory(String accountNo) {
 	        List<TransactionHistoryVO> transactions = new ArrayList<>();
 	        String sql = "SELECT \n"
 					+ "t.transaction_date AS 날짜, \n"
@@ -197,6 +197,7 @@ public class TransactionDAO {
 	        
 	        Connection conn = null;
 	        PreparedStatement pstmt = null;
+	        ResultSet rs = null;
 	        try {
 	            conn = ConnectionHelper.getConnection("mysql");
 	            pstmt = conn.prepareStatement(sql);
@@ -204,7 +205,7 @@ public class TransactionDAO {
 	    		
 	            pstmt.setInt(1, currentUser.getMemberNo());
 	            pstmt.setString(2, accountNo);
-	            ResultSet rs = pstmt.executeQuery();
+	            rs = pstmt.executeQuery();
 	            
 	            while (rs.next()) {
 	            	TransactionHistoryVO transaction = new TransactionHistoryVO(
@@ -221,6 +222,7 @@ public class TransactionDAO {
 	            e.printStackTrace();
 	        } finally {
 				try {
+					if (rs != null)rs.close();
 					if (pstmt != null)pstmt.close();
 					if (conn != null)conn.close();
 				} catch (SQLException e) {
@@ -231,6 +233,132 @@ public class TransactionDAO {
 	        return transactions;
 	    }
 	
+	//한 달 최대 적금납부금액
+	public BigDecimal maxMonthlyDeposit(String accountNo) throws SQLException {
+		String sql = "SELECT p.max_monthly_deposit\n"
+				+ "FROM account a\n"
+				+ "JOIN product p ON a.product_id = p.product_id\n"
+				+ "WHERE a.account_no = ?";
+			
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		try {
+			conn = ConnectionHelper.getConnection("mysql");
+			pstmt = conn.prepareStatement(sql);
+
+			pstmt.setString(1, accountNo);
+			rs = pstmt.executeQuery();
+
+			if (rs.next()) return rs.getBigDecimal(1);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				if (rs != null)rs.close();
+				if (pstmt != null)pstmt.close();
+				if (conn != null)conn.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+		return rs.getBigDecimal("0");
+	}
+	
+	// 한 달 적금 납부한 총액
+	public BigDecimal monthlyDepositAmount(String accountNo) throws SQLException {
+		String sql = "select sum(t.amount) \n"
+				+ "from transaction_history t\n"
+				+ "where t.account_no = ? \n"
+				+ "and t.transaction_type = 'TRANSFER'\n"
+				+ "and year(t.transaction_date) = year(curdate())\n"
+				+ "and month(t.transaction_date) = month(curdate());";
+		
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		try {
+			conn = ConnectionHelper.getConnection("mysql");
+			pstmt = conn.prepareStatement(sql);
+
+			pstmt.setString(1, accountNo);
+			rs = pstmt.executeQuery();
+
+			if (rs.next()) return rs.getBigDecimal(1);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				if (rs != null)rs.close();
+				if (pstmt != null)pstmt.close();
+				if (conn != null)conn.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+		return rs.getBigDecimal("0");
+	}
+	
+	// 이체 시, 상품타입을 가져와 검사함. 100 or 200 
+	public int productType(String accountNo) {
+		String sql = "select p.product_type from product p \n"
+				+ "join account a on p.product_id = a.product_id\n"
+				+ "where a.account_no = ?";
+		
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		try {
+			conn = ConnectionHelper.getConnection("mysql");
+			pstmt = conn.prepareStatement(sql);
+
+			pstmt.setString(1, accountNo);
+			rs = pstmt.executeQuery();
+
+			if (rs.next()) return rs.getInt("product_type");
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				if (rs != null)rs.close();
+				if (pstmt != null)pstmt.close();
+				if (conn != null)conn.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+		return 0;
+	}
+	
+	// 잔액 가져오기 
+	public BigDecimal balance(String accountNo) throws SQLException {
+		String sql = "select balance from account where account_no = ?";
+		
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		try {
+			conn = ConnectionHelper.getConnection("mysql");
+			pstmt = conn.prepareStatement(sql);
+
+			pstmt.setString(1, accountNo);
+			rs = pstmt.executeQuery();
+
+			if (rs.next()) return rs.getBigDecimal(1);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				if (rs != null)rs.close();
+				if (pstmt != null)pstmt.close();
+				if (conn != null)conn.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+		return rs.getBigDecimal("0");
+	}
+	
 	//입, 출 계좌 확인
 	public boolean checkAccountNo(String accountNo) {
 		String sql = "select member_no, account_no from account a\n"
@@ -239,6 +367,7 @@ public class TransactionDAO {
 		
 			Connection conn = null;
 			PreparedStatement pstmt = null;
+			ResultSet rs = null;
 			try {
 				conn = ConnectionHelper.getConnection("mysql");
 				pstmt = conn.prepareStatement(sql);
@@ -246,12 +375,20 @@ public class TransactionDAO {
 				MemberVO currentUser = SessionManager.getCurrentUser();
 				pstmt.setInt(1, currentUser.getMemberNo());
 				pstmt.setString(2, accountNo);
-				ResultSet rs = pstmt.executeQuery();
+				rs = pstmt.executeQuery();
 	         
 	         return rs.next();
 		 } catch (SQLException e) {
 //			e.printStackTrace();
 			return false;
+		} finally {
+			try {
+				if (rs != null)rs.close();
+				if (pstmt != null)pstmt.close();
+				if (conn != null)conn.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
 		}
 		
 	}
@@ -260,21 +397,30 @@ public class TransactionDAO {
 	public boolean targetCheckAccountNo(String accountNo) {
 		String sql = "select account_no from account a\n"
 				+ "join product p on a.product_id = p.product_id\n"
-				+ "where account_no = ? and product_type = '100' or product_type = '200'";	
+				+ "where account_no = ? and (product_type = '100' or product_type = '200')";	
 		
 			Connection conn = null;
 			PreparedStatement pstmt = null;
+			ResultSet rs = null;
 			try {
 				 conn = ConnectionHelper.getConnection("mysql");
 				 pstmt = conn.prepareStatement(sql);
 			 	
 				 pstmt.setString(1, accountNo);
-				 ResultSet rs = pstmt.executeQuery();
+				 rs = pstmt.executeQuery();
 	         
-	         return rs.next();
+	         return rs.next();	
 		 } catch (SQLException e) {
 //			e.printStackTrace();
 			return false;
+		} finally {
+			try {
+				if (rs != null)rs.close();
+				if (pstmt != null)pstmt.close();
+				if (conn != null)conn.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
 		}
 		
 	}
@@ -284,20 +430,31 @@ public class TransactionDAO {
 		String sql = "select member_no, account_no from account\n"
 				+ "where member_no = ? and account_no = ?";	
 		
-		 try (	Connection conn = ConnectionHelper.getConnection("mysql");
-	            PreparedStatement pstmt = conn.prepareStatement(sql)){
-			 	
-			 MemberVO currentUser = SessionManager.getCurrentUser();
-	         pstmt.setInt(1, currentUser.getMemberNo());
-	         pstmt.setString(2, accountNo);
-			 ResultSet rs = pstmt.executeQuery();
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		try {
+			conn = ConnectionHelper.getConnection("mysql");
+			pstmt = conn.prepareStatement(sql);
+
+			MemberVO currentUser = SessionManager.getCurrentUser();
+			pstmt.setInt(1, currentUser.getMemberNo());
+			pstmt.setString(2, accountNo);
+			rs = pstmt.executeQuery();
 	         
 	         return rs.next();
-		 } catch (SQLException e) {
+		 } catch (SQLException e) {	
 //			e.printStackTrace();
 			return false;
+		} finally {
+			try {
+				if (rs != null)rs.close();
+				if (pstmt != null)pstmt.close();
+				if (conn != null)conn.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
 		}
-		
 	}
 	
 }

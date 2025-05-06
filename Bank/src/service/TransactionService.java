@@ -1,6 +1,7 @@
 package service;
 
 
+import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.util.List;
 
@@ -31,13 +32,33 @@ public class TransactionService {
 		}
 		
 		// 모든 거래내역 가져오기
-		public List<TransactionHistoryVO> getTransactionHistory(String accountNo) {
-			return td.getTransactionHistory(accountNo);
+		public List<TransactionHistoryVO> TransactionHistory(String accountNo) {
+			return td.TransactionHistory(accountNo);
 		}
 		
 		// 내 계좌 보여주기
 		public List<AccountShowDTO> getMyAccounts(List<String> productTypes) {
 		    return ad.showMyAccounts(productTypes);
+		}
+		
+		//한 달 최대 적금납부금액
+		public BigDecimal maxMonthlyDeposit(String accountNo) throws SQLException {
+			return td.maxMonthlyDeposit(accountNo);
+		}
+		
+		// 한 달 적금 납부한 총액
+		public BigDecimal monthlyDepositAmount(String accountNo) throws SQLException {
+			return td.monthlyDepositAmount(accountNo);
+		}
+
+		// 상품 타입 가져오기 
+		public int productType(String accountNo) throws SQLException {
+			return td.productType(accountNo);
+		}
+		
+		// 잔액 가져오기 
+		public BigDecimal getbalance(String accountNo) throws SQLException {
+			return td.balance(accountNo);
 		}
 		
 		// 입, 출금 시 내 계좌 확인 
