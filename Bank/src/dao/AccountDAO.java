@@ -374,7 +374,7 @@ public class AccountDAO {
 		}
 		return list;
 	}
-}
+
 	
 	public List<AccountShowDTO> showMyAccountDepositWithdraw() {
 		String sql = "select ROW_NUMBER() OVER (ORDER BY account_no) AS 번호, account_no, balance, p.product_name from account a\n"
