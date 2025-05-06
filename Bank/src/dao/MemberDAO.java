@@ -7,6 +7,8 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.mindrot.jbcrypt.BCrypt;
+
 import dbConn.util.CloseHelper;
 import dbConn.util.ConnectionHelper;
 import model.MemberVO;
@@ -44,57 +46,74 @@ public class MemberDAO {
 	        	    int lockCnt = rs.getInt("lock_cnt");
 	        	    String status = rs.getString("status");
 	        	    
-	        	    // 비밀번호 틀린 경우
-	        	    if (!dbPwd.equals(pwd)) {
-	        	        incrementLockCount(conn, id);
-	        	        if (getLockCount(conn, id) >= 5) {
-	        	            lockAccount(conn, id);
-	        	            return new MemberVO(
-	        	                    rs.getInt("member_no"),
-	        	                    rs.getString("name"),
-	        	                    rs.getString("jumin"),
-	        	                    rs.getString("member_id"),
-	        	                    rs.getString("password"),
-	        	                    rs.getString("address"),
-	        	                    rs.getString("phone"),
-	        	                    'N', // 잠금 상태
-	        	                    lockCnt,
-	        	                    rs.getInt("role")
-	        	                );
-	        	        }
-	        	        return null;
-	        	    }
+	        	    // 잠금 상태
+	                if ("N".equals(status)) {
+	                    return new MemberVO(
+	                        rs.getInt("member_no"),
+	                        rs.getString("name"),
+	                        rs.getString("jumin"),
+	                        rs.getString("member_id"),
+	                        dbPwd,
+	                        rs.getString("address"),
+	                        rs.getString("phone"),
+	                        status.charAt(0),
+	                        lockCnt,
+	                        rs.getInt("role")
+	                    );
+	                }
 
-	        	    // 비밀번호는 맞았지만 잠금 계정
-	        	    if (lockCnt >= 5 || "N".equals(status)) {
-	        	        return new MemberVO(
-	        	            rs.getInt("member_no"),
-	        	            rs.getString("name"),
-	        	            rs.getString("jumin"),
-	        	            rs.getString("member_id"),
-	        	            rs.getString("password"),
-	        	            rs.getString("address"),
-	        	            rs.getString("phone"),
-	        	            status.charAt(0),
-	        	            lockCnt,
-	        	            rs.getInt("role")
-	        	        );
-	        	    }
+	                //비밀번호 불일치
+	                if (!BCrypt.checkpw(pwd, dbPwd)) {
+	                    incrementLockCount(conn, id); // lock_cnt 증가
+	                    if (getLockCount(conn, id) >= 5) {
+	                        lockAccount(conn, id); // 계정 잠금 처리
+	                        return new MemberVO(
+	                            rs.getInt("member_no"),
+	                            rs.getString("name"),
+	                            rs.getString("jumin"),
+	                            rs.getString("member_id"),
+	                            dbPwd,
+	                            rs.getString("address"),
+	                            rs.getString("phone"),
+	                            'N',
+	                            5,
+	                            rs.getInt("role")
+	                        );
+	                    }
+	                    return null;
+	                }
 
-	        	    // 로그인 성공
-	        	    resetLockCount(conn, id);
-	        	    return new MemberVO(
-	        	        rs.getInt("member_no"),
-	        	        rs.getString("name"),
-	        	        rs.getString("jumin"),
-	        	        rs.getString("member_id"),
-	        	        rs.getString("password"),
-	        	        rs.getString("address"),
-	        	        rs.getString("phone"),
-	        	        status.charAt(0),
-	        	        lockCnt,
-	        	        rs.getInt("role")
-	        	    );
+	                // lock_cnt가 5 이상 잠금 처리
+	                if (lockCnt >= 5) {
+	                    lockAccount(conn, id);
+	                    return new MemberVO(
+	                        rs.getInt("member_no"),
+	                        rs.getString("name"),
+	                        rs.getString("jumin"),
+	                        rs.getString("member_id"),
+	                        dbPwd,
+	                        rs.getString("address"),
+	                        rs.getString("phone"),
+	                        'N',
+	                        lockCnt,
+	                        rs.getInt("role")
+	                    );
+	                }
+
+	                // 로그인 성공 -> lock_cnt 초기화
+	                resetLockCount(conn, id);
+	                return new MemberVO(
+	                    rs.getInt("member_no"),
+	                    rs.getString("name"),
+	                    rs.getString("jumin"),
+	                    rs.getString("member_id"),
+	                    dbPwd,
+	                    rs.getString("address"),
+	                    rs.getString("phone"),
+	                    status.charAt(0),
+	                    0,
+	                    rs.getInt("role")
+	                );
 	        	}
 	        }
 	    }
@@ -121,11 +140,11 @@ public class MemberDAO {
 
 
 	// 비밀번호 찾기 -> 새 비밀번호 변경
-    public int updatePwd(Connection conn, String id, String name, String jumin, String newPwd) {
+    public int updatePwd(Connection conn, String id, String name, String jumin, String newHashedPwd) {
     	// update문 => 처리된 행수(int)
         String sql = "UPDATE MEMBER SET password = ? WHERE member_id = ? AND name = ? AND jumin = ?";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setString(1, newPwd);
+            ps.setString(1, newHashedPwd);
             ps.setString(2, id);
             ps.setString(3, name);
             ps.setString(4, jumin);

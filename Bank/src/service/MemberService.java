@@ -5,8 +5,9 @@ import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
+import org.mindrot.jbcrypt.BCrypt;
+
 import dao.MemberDAO;
-import dbConn.util.CloseHelper;
 import dbConn.util.ConnectionHelper;
 import model.MemberVO;
 
@@ -16,6 +17,10 @@ public class MemberService {
 	// 회원가입
 	public int insertMember(MemberVO member) {
 		try (Connection conn = ConnectionHelper.getConnection("mysql")) {
+			// 비밀번호 암호화
+			String hashedPwd = BCrypt.hashpw(member.getPassword(), BCrypt.gensalt());
+	        member.setPassword(hashedPwd);
+			
             return md.insertMember(conn, member);
         } catch (SQLException e) {
 			e.printStackTrace();
@@ -46,7 +51,8 @@ public class MemberService {
 	// 비밀번호 찾기 -> 새 비밀번호 변경
 	public int updatePwd(String id, String name, String jumin, String newPwd) {
 		try (Connection conn = ConnectionHelper.getConnection("mysql")) {
-            return md.updatePwd(conn, id, name, jumin, newPwd);
+			String hashedPwd = BCrypt.hashpw(newPwd, BCrypt.gensalt());
+            return md.updatePwd(conn, id, name, jumin, hashedPwd);
         } catch (SQLException e) {
 			e.printStackTrace();
 			return 0;

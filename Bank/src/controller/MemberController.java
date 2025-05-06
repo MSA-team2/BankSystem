@@ -183,7 +183,10 @@ public class MemberController {
 
             newPwdConfirm = getInput("새 비밀번호 확인");
             if (newPwdConfirm == null) return;
-            if (!ms.confirmPwd(newPwd, newPwdConfirm)) continue;
+            if (!ms.confirmPwd(newPwd, newPwdConfirm)) {
+                System.out.println("❌ 비밀번호가 일치하지 않습니다. 다시 입력해주세요.");
+                continue;
+            }
             break;
         }
 
