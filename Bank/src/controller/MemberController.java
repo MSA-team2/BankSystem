@@ -13,7 +13,8 @@ public class MemberController {
 
 	// 1. 회원가입
 	public void insertMember() {
-		System.out.println("\n───────── [회원가입] ─────────");
+//		System.out.println("\n───────── [회원가입] ─────────");
+		System.out.println("\n=========== [회원가입] ===========");
         System.out.println("※ 입력 중 '0'을 입력하면 메인메뉴로 돌아갑니다.");
 
         String name = getInput("이름");
@@ -92,7 +93,8 @@ public class MemberController {
 	
 	// 로그인
 	public void loginMember() {
-		System.out.println("\n────────── [로그인] ──────────");
+//		System.out.println("\n────────── [로그인] ──────────");
+		System.out.println("\n============ [로그인] ============");
 		while (true) {
 	        String id = getInput("아이디");
 	        String pwd = getInput("비밀번호");
