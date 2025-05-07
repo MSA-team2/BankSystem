@@ -23,8 +23,7 @@ public class AccountMenu {
 			}else if(p.getProduct_type() == 300) {	// 예금
 				System.out.println(p.getProductId() + ". " + p.getProductName() + "\t(" + p.getInterestRate() + "%)  "
 						+ "\t\t" + p.getMaxDepositAmount()+"원");
-			}else {	// 입출금
-				
+			}else if(p.getProduct_type() == 100){	// 입출금
 			System.out.println(p.getProductId() + ". " + p.getProductName() + "\t(" + p.getInterestRate() + "%)");
 			}
 		}
