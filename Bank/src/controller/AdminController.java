@@ -80,7 +80,7 @@ public class AdminController {
 	    System.out.println("🕒 조회 시간: " + java.time.LocalDateTime.now().format(java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
 	}
 
-	public void selectAllAccounts() {
+	public void getAllAccounts() {
 		List<AccountSummaryDto> list = adminService.getAllAccounts();
 		
 	    System.out.println("\n" +
@@ -142,34 +142,65 @@ public class AdminController {
 	}
 	
 	public void manageAccountLock() {
-        if (!SessionManager.isAdmin()) {
-            System.out.println("[!] 관리자만 접근할 수 있는 기능입니다.");
-            return;
-        }
+		if (!SessionManager.isAdmin()) {
+	        System.out.println("[!] 관리자만 접근할 수 있는 기능입니다.");
+	        return;
+	    }
 
-        System.out.println("===== 계좌 잠금 관리 =====");
-        System.out.print("회원 이름 : ");
-        String name = sc.nextLine();
-
-        System.out.print("주민번호 : ");
-        String jumin = sc.nextLine();
-        if (!Validator.isValidHyphenJumin(jumin)) {
-			System.out.println("올바른 주민번호 형식이 아닙니다.");
-			return;
-		}
-
-        System.out.print("잠금/해제할 계좌번호를 입력하세요: ");
-        String accountNo = sc.nextLine();
-
-        if (!Validator.isValidHyphenAccountNumber(accountNo)) {
-            System.out.println("[!] 잘못된 계좌번호 형식입니다. 예) 100-1234-5678");
-            return;
-        }
-
-        System.out.print("변경할 상태 (Y/N): ");
-        char status = sc.nextLine().toUpperCase().charAt(0);
-
-        String result = adminService.changeAccountStatus(name, jumin, accountNo, status);
-        System.out.println(result);
+	    // 헤더
+	    System.out.println("\n+--------------------------------------------+");
+	    System.out.println("|          🔒 계좌 잠금 관리 🔒             |");
+	    System.out.println("+--------------------------------------------+");
+	    
+	    // 회원 이름 입력
+	    System.out.print("👤 회원 이름: ");
+	    String name = sc.nextLine();
+	    
+	    // 계좌번호 입력
+	    System.out.print("💳 잠금/해제할 계좌번호를 입력하세요: ");
+	    String accountNo = sc.nextLine();
+	    
+	    if (!Validator.isValidHyphenAccountNumber(accountNo)) {
+	        System.out.println("❌ 잘못된 계좌번호 형식입니다. 예) 100-1234-5678");
+	        return;
+	    }
+	    
+	    // 변경할 상태 입력
+	    System.out.println("\n계좌 상태 선택:");
+	    System.out.println("┌─────────────────────────────┐");
+	    System.out.println("│  1. 🔓 잠금 해제 (Y)        │");
+	    System.out.println("│  2. 🔒 잠금 (N)             │");
+	    System.out.println("└─────────────────────────────┘");
+	    System.out.print("👉 선택: ");
+	    
+	    String statusChoice = sc.nextLine();
+	    char status;
+	    
+	    switch(statusChoice) {
+		    case "1": 
+		    case "Y":
+		    case "y":
+		        status = 'Y';
+		        break;
+		    case "2":
+		    case "N":
+		    case "n":
+		        status = 'N';
+		        break;
+	        default:
+	            System.out.println("❌ 잘못된 선택입니다. 작업을 취소합니다.");
+	            return;
+	    }
+	    
+	    // 서비스 메서드 호출 (주민번호 제거)
+	    String result = adminService.changeAccountStatus(name, accountNo, status);
+	    
+	    // 결과 출력
+	    if (result.startsWith("[!]")) {
+	        System.out.println("❌ " + result);
+	    } else {
+	        System.out.println("✅ " + result);
+	        System.out.println("📆 변경 시간: " + java.time.LocalDateTime.now().format(java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+	    }
     }
 }

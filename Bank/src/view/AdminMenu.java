@@ -16,9 +16,10 @@ public class AdminMenu {
 
             switch (input) {
                 case "1":
-                    adminController.selectAllAccounts();
+                    adminController.getAllAccounts();
                     break;
                 case "2":
+                	adminController.getAllAccounts();
                     adminController.manageAccountLock();
                     break;
                 case "3":

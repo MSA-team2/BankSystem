@@ -22,7 +22,7 @@ public class AdminMemberService {
     
     /**
      * 잠금 계정 조회 메서드
-     * @return 
+     * @return List<MemberVO>
      */
     public List<MemberVO> getLockedAccounts() {
     	return memberDAO.getLockedAccounts();

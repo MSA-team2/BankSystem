@@ -151,24 +151,29 @@ public class AdminProductController {
 	        interestRate = new BigDecimal("0.1");
 	    }
 	    
-	    // 가입 기간 선택
-	    System.out.println("\n⏱️ 가입 기간(개월) 선택:");
-	    System.out.println("┌─────────────────────────────┐");
-	    System.out.println("│  1. 12개월 (1년)            │");
-	    System.out.println("│  2. 24개월 (2년)            │");
-	    System.out.println("│  3. 36개월 (3년)            │");
-	    System.out.println("└─────────────────────────────┘");
-	    System.out.print("👉 선택: ");
-	    String periodChoice = sc.nextLine();
-	    
+	    // 가입 기간 선택 (입출금 계좌인 경우 스킵)
 	    int periodMonths;
-	    switch(periodChoice) {
-	        case "1": periodMonths = 12; break;
-	        case "2": periodMonths = 24; break;
-	        case "3": periodMonths = 36; break;
-	        default:
-	            System.out.println("⚠️ 잘못된 선택입니다. 12개월로 자동 설정합니다.");
-	            periodMonths = 12;
+	    if (productType == 100) { // 입출금 계좌
+	        periodMonths = 0; // 입출금 계좌는 가입 기간이 없음
+	        System.out.println("ℹ️ 입출금 계좌는 가입 기간이 없어 0개월로 자동 설정됩니다.");
+	    } else {
+	        System.out.println("\n⏱️ 가입 기간(개월) 선택:");
+	        System.out.println("┌─────────────────────────────┐");
+	        System.out.println("│  1. 12개월 (1년)            │");
+	        System.out.println("│  2. 24개월 (2년)            │");
+	        System.out.println("│  3. 36개월 (3년)            │");
+	        System.out.println("└─────────────────────────────┘");
+	        System.out.print("👉 선택: ");
+	        String periodChoice = sc.nextLine();
+	        
+	        switch(periodChoice) {
+	            case "1": periodMonths = 12; break;
+	            case "2": periodMonths = 24; break;
+	            case "3": periodMonths = 36; break;
+	            default:
+	                System.out.println("⚠️ 잘못된 선택입니다. 12개월로 자동 설정합니다.");
+	                periodMonths = 12;
+	        }
 	    }
 	    
 	    // 상품 유형별 추가 정보 입력
@@ -346,26 +351,31 @@ public class AdminProductController {
 	        }
 	    }
 	    
-	    // 새 가입 기간 선택
-	    System.out.println("\n📌 새 가입 기간(개월) 선택 [현재: " + product.getPeriodMonths() + "개월]:");
-	    System.out.println("┌─────────────────────────────┐");
-	    System.out.println("│  1. 12개월 (1년)            │");
-	    System.out.println("│  2. 24개월 (2년)            │");
-	    System.out.println("│  3. 36개월 (3년)            │");
-	    System.out.println("│  4. 변경하지 않음           │");
-	    System.out.println("└─────────────────────────────┘");
-	    System.out.print("👉 선택: ");
-	    String periodChoice = sc.nextLine();
-	    
+	    // 새 가입 기간 선택 (입출금 계좌인 경우 스킵)
 	    int periodMonths;
-	    switch(periodChoice) {
-	        case "1": periodMonths = 12; break;
-	        case "2": periodMonths = 24; break;
-	        case "3": periodMonths = 36; break;
-	        case "4":
-	        default:
-	            System.out.println("ℹ️ 가입기간을 유지합니다: " + product.getPeriodMonths() + "개월");
-	            periodMonths = product.getPeriodMonths();
+	    if (product.getProduct_type() == 100) { // 입출금 계좌
+	        periodMonths = 0;
+	        System.out.println("ℹ️ 입출금 계좌는 가입 기간이 없어 0개월로 자동 설정됩니다.");
+	    } else {
+	        System.out.println("\n📌 새 가입 기간(개월) 선택 [현재: " + product.getPeriodMonths() + "개월]:");
+	        System.out.println("┌─────────────────────────────┐");
+	        System.out.println("│  1. 12개월 (1년)            │");
+	        System.out.println("│  2. 24개월 (2년)            │");
+	        System.out.println("│  3. 36개월 (3년)            │");
+	        System.out.println("│  4. 변경하지 않음           │");
+	        System.out.println("└─────────────────────────────┘");
+	        System.out.print("👉 선택: ");
+	        String periodChoice = sc.nextLine();
+	        
+	        switch(periodChoice) {
+	            case "1": periodMonths = 12; break;
+	            case "2": periodMonths = 24; break;
+	            case "3": periodMonths = 36; break;
+	            case "4":
+	            default:
+	                System.out.println("ℹ️ 가입기간을 유지합니다: " + product.getPeriodMonths() + "개월");
+	                periodMonths = product.getPeriodMonths();
+	        }
 	    }
 	    
 	    // 상품 유형별 추가 정보 입력
