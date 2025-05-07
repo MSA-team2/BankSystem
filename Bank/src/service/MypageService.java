@@ -6,12 +6,14 @@ import java.util.List;
 import java.util.Scanner;
 
 import dao.AccountDAO;
+import dao.TransactionDAO;
 import dto.AccountProductDto;
 import model.MemberVO;
 
 public class MypageService {
 	// DAO 생성해서 사용하기
 	private final AccountDAO dao = new AccountDAO();
+	private final TransactionDAO transactionDao = new TransactionDAO();
 	Scanner sc = new Scanner(System.in);
 
 	// 개인신상
@@ -63,6 +65,8 @@ public class MypageService {
 	public void withdrawProduct(MemberVO user) {
 
 		while (true) {
+
+			// 적금 , 예금 만 리스트 뽑아서 보여주기
 			List<AccountProductDto> accounts = dao.findYegeumJeoggeumByMemberNO(user.getMemberNo());
 			if (accounts.isEmpty()) {
 				System.out.println("해지할 상품이 없습니다.");
@@ -139,7 +143,8 @@ public class MypageService {
 			}
 
 			AccountProductDto depositAccount = depositTargets.get(selectedDeposit - 1);
-			dao.cancelAccount(target.getAccountNo(), depositAccount.getAccountNo());
+			transactionDao.transferAllBalanceAndCloseAndDelete(target.getAccountNo(), depositAccount.getAccountNo(),
+					target.getBalance());
 			System.out.println("중도해지가 완료되었습니다. 입출금 계좌로 잔액이 이체되었습니다.");
 
 			// 중도해지 후 다시 목록 보기
@@ -147,83 +152,7 @@ public class MypageService {
 			String again = sc.nextLine().trim().toUpperCase();
 			if (!again.equals("Y"))
 				break;
-
 		}
-
-		
-
-//		// 적금 , 예금 만 리스트 뽑아서 보여주기
-//		List<AccountProductDto> accounts = dao.findYegeumJeoggeumByMemberNO(user.getMemberNo());
-//		if (accounts.isEmpty()) {
-//			System.out.println("해지할 상품이 없습니다.");
-//			return;
-//		}
-//
-//		int idx = 1;
-//		System.out.println("\n--- 해지 가능한 상품 ---");
-//		System.out.printf("%-5s %-20s %-20s %-8s %-15s %-15s\n", "번호", "계좌번호", "상품명", "이자율", "만기일", "잔액");
-//		for (AccountProductDto dto : accounts) {
-//
-//			String maturity = dto.getMaturityDate() != null ? dto.getMaturityDate().toString() : "없음";
-//
-//			System.out.printf("%-5d %-20s %-20s %6.2f%%   %-15s %,15d원\n", idx++, dto.getAccountNo(),
-//					dto.getProductName(), dto.getInterestRate().doubleValue(), // BigDecimal → double
-//					maturity, dto.getBalance().intValue());
-//		}
-//
-//		// 중도해지 메시지 보여주고 남은 돈 입출금으로 이체 -> 계좌 삭제
-//		System.out.print("해지할 상품의 번호를 적어주세요 (뒤로가기 0번) : ");
-//		int selectedYeJeok = sc.nextInt();
-//
-//		if (selectedYeJeok == 0) {
-//			displayUserInfo(user); // 이렇게 해도 가능해??????
-//		}
-//
-//		// 번호 유효성 검사
-//		if (selectedYeJeok < 1 || selectedYeJeok > accounts.size()) {
-//			System.out.println("유효하지 않은 선택입니다.");
-//			return;
-//		}
-//
-//		AccountProductDto selectedYeJeokAccount = accounts.get(selectedYeJeok - 1);
-//		System.out.println("선택한 계좌 : " + selectedYeJeokAccount.getAccountNo());
-//
-//		System.out.print("맞으면 1, 아니면 2 : ");
-//		int num = sc.nextInt();
-//
-//		if (num < 1 || num > 2) {
-//			System.out.println("올바른 번호를 입력해주세요.");
-//		}
-//
-//		if (num == 1) {
-//			System.out.println("중도해지의 경우 이자를 적용 받을 수 없습니다. 정말 해지하시겠습니까? 1:예 2:아니요.");
-//			int num2 = sc.nextInt();
-//
-//			if (num2 == 1) {
-//				List<AccountProductDto> ibchulList = dao.finIbchulgeum(user.getMemberNo());
-//
-//				int idx2 = 1;
-//				System.out.println("\n--- 이체 받을 입출금 계좌를 선택하세요  ---");
-//				System.out.printf("%-5s %-20s %-20s %-8s %-15s %-15s\n", "번호", "계좌번호", "상품명", "이자율", "만기일", "잔액");
-//				for (AccountProductDto dto : ibchulList) {
-//
-//					String maturity = dto.getMaturityDate() != null ? dto.getMaturityDate().toString() : "없음";
-//
-//					System.out.printf("%-5d %-20s %-20s %6.2f%%   %-15s %,15d원\n", idx2++, dto.getAccountNo(),
-//							dto.getProductName(), dto.getInterestRate().doubleValue(), // BigDecimal → double
-//							maturity, dto.getBalance().intValue());
-//				}
-//				int selectedIbchul = sc.nextInt();
-//
-//				if (selectedIbchul < 1 || selectedIbchul > ibchulList.size()) {
-//					System.out.println("올바른 번호를 입력해주세요.");
-//				}
-//
-//				AccountProductDto selectedIbchulAccount = ibchulList.get(selectedIbchul - 1);
-//
-//				dao.cancelAccount(selectedYeJeokAccount.getAccountNo(), selectedIbchulAccount.getAccountNo());
-//			}
-//		}
 
 	}
 
