@@ -13,7 +13,6 @@ public class MemberController {
 
 	// 1. 회원가입
 	public void insertMember() {
-//		System.out.println("\n───────── [회원가입] ─────────");
 		System.out.println("\n=========== [회원가입] ===========");
         System.out.println("※ 입력 중 '0'을 입력하면 메인메뉴로 돌아갑니다.");
 
@@ -93,7 +92,6 @@ public class MemberController {
 	
 	// 로그인
 	public void loginMember() {
-//		System.out.println("\n────────── [로그인] ──────────");
 		System.out.println("\n============ [로그인] ============");
 		while (true) {
 	        String id = getInput("아이디");
@@ -123,7 +121,7 @@ public class MemberController {
 	        if (count == 5) {
 	            System.out.println("❌ 비밀번호 5회 이상 틀려 계정이 잠금되었습니다.");
 	        } else {
-	            System.out.println("⚠️ 비밀번호 오류 횟수: " + count + "/5");
+	            System.out.println("ℹ️ 비밀번호 오류 횟수: " + count + "/5");
 	        }
 
 	        System.out.print("\n다시 시도하시겠습니까? (Y/N): ");
@@ -136,7 +134,7 @@ public class MemberController {
 
 	// 아이디 찾기
 	public void findMemberId() {
-		System.out.println("\n──────── [아이디 찾기] ────────");
+		System.out.println("\n========== [아이디 찾기] ==========");
 		String name = getInput("이름");
         if (name == null) return;
 
@@ -157,7 +155,7 @@ public class MemberController {
 	
 	// 비밀번호 찾기 -> 새 비밀번호 변경
 	public void findMemberPwd() {
-		System.out.println("\n─────── [비밀번호 찾기] ───────");
+		System.out.println("\n========= [비밀번호 찾기] =========");
 		String id = getInput("아이디");
         String name = getInput("이름");
 
@@ -197,10 +195,10 @@ public class MemberController {
 	
 	// 잠금 계정 관리자 문의
 	public void isAccountLocked() {
-		System.out.println("\n──────── [관리자 문의] ────────");
+		System.out.println("\n========== [관리자 문의] ==========");
 		String id;
 		while (true) {
-			id = getInput("🔐 확인할 아이디");
+			id = getInput("잠금 계정 아이디");
 			if (id == null) return;
 			
 			boolean isLocked = ms.isAccountLocked(id);
@@ -217,7 +215,7 @@ public class MemberController {
 	
 	// 입력 정렬, 입력중 되돌아가기
 	public String getInput(String label) {
-	    System.out.printf("%-10s: ", label);  // 왼쪽 정렬 + 폭 고정
+	    System.out.printf("%-5s: ", label);  // 왼쪽 정렬 + 폭 고정
 	    String input = sc.nextLine().trim();
 	    return input.equals("0") ? null : input;
 	}
