@@ -133,7 +133,7 @@ public class AccountService {
 					return false;
 				} else {	
 					if(!Validator.isValidNumber(pwd)) {
-						System.out.println("⚠️ 잘못된 금액 형식입니다. 숫자로만 입력해주세요."); 
+						System.out.println("⚠️ 잘못된 비밀번호 형식입니다. 숫자로만 입력해주세요."); 
 					}
 					System.out.println("❗ 비밀번호가 틀렸습니다. 현재 " + lockCnt + "/5회 오류.");
 				}
