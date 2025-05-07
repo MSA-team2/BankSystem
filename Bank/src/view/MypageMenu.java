@@ -27,14 +27,14 @@ public class MypageMenu {
 	}
 
 	public boolean etcMenu() {
-		System.out.print("\n1.예금/적금 중도해지\n2.회원탈퇴\n0.사용자 메뉴\n선택 : ");
+		System.out.print("\n1.예금/적금 중도해지\n2.계좌 잠김 문의\n0.사용자 메뉴\n선택 : ");
 
 		try {
 			int sel = Integer.parseInt(br.readLine());
 
 			switch (sel) {
 			case 1 -> controller.withdrawBeforeMaturity();
-			case 2 -> controller.deleteMemberProfile();
+			case 2 -> controller.accountLocktoAdmin();
 			case 0 -> {
 				return false; // 뒤로가기: false 반환
 			}

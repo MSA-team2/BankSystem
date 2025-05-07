@@ -157,9 +157,9 @@ public class MypageService {
 	}
 
 	// 2 : 회원탈퇴
-	public void deleteAccount() {
-		// TODO 회원 탈퇴 메서드 호출하기
-		System.out.println("TODO 회원 탈퇴 메서드 호출하기");
+	public void callAdmimAboutAccountLock() {
+		
+		System.out.println("관리자에게 문의 접수되었습니다.");
 
 	}
 
