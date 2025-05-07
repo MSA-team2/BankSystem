@@ -37,8 +37,12 @@ public class AccountController {
 				product = service.getAllProducts();
 			}
 			int product_no = view.productShow(product);
-			if (product_no == 0)
+			if (product_no == 0) {
 				member.MemberMainMenu();
+			}else if(!product.contains(product_no)) {
+				view.printMessage("\n⚠️ 보여지는 상품의 번호만 입력해주세요");
+				continue;
+			}
 
 			// 상품 타입 구해오는 메서드
 			ProductVO product_info = service.getProduct_id(product_no);
