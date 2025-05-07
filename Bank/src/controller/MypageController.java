@@ -1,12 +1,12 @@
 package controller;
 
-import model.MemberVO;
+import model.domain.Member;
 import service.MypageService;
 
 public class MypageController {
 
 	private final MypageService service = new MypageService();
-	MemberVO user = SessionManager.getCurrentUser();
+	Member user = SessionManager.getCurrentUser();
 
 
 	// 계좌번호, 상품명, 원금, 이자율, 만기일, 총액 리스트로 뿌리기

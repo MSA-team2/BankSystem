@@ -10,8 +10,8 @@ import dao.AccountDAO;
 import dao.TransactionDAO;
 import dto.AccountShowDTO;
 import dto.TransactionDTO;
-import model.MemberVO;
-import model.TransactionHistoryVO;
+import model.domain.Member;
+import model.domain.TransactionHistory;
 
 
 public class TransactionService {
@@ -32,7 +32,7 @@ public class TransactionService {
 		}
 		
 		// 모든 거래내역 가져오기
-		public List<TransactionHistoryVO> TransactionHistory(String accountNo) {
+		public List<TransactionHistory> TransactionHistory(String accountNo) {
 			return td.TransactionHistory(accountNo);
 		}
 		

@@ -6,19 +6,19 @@ import java.util.List;
 import java.util.Scanner;
 
 import dto.AccountShowDTO;
-import model.AccountVO;
-import model.ProductVO;
+import model.domain.Account;
+import model.domain.Product;
 
 public class AccountMenu {
 	private final Scanner sc = new Scanner(System.in);
 	
 	// 상품 정보 받아와 콘솔 표시
-	public int productShow(List<ProductVO> list) {
+	public int productShow(List<Product> list) {
 		System.out.println("============================= 🏦 계좌 개설 =============================");
 		System.out.println("============================= [ 📋 상품 선택 ]=============================");
 		System.out.println("\t번호  상품명\t이자율\t 월납입한도 \t 최대예치한도");
 		System.out.println("\t-----------------------------------------------------------");
-		for (ProductVO p : list) {
+		for (Product p : list) {
 			if(p.getProduct_type() == 200) {	// 적금 출력
 				System.out.printf("\t  " + p.getProductId() + " " + p.getProductName() + "\t(" + p.getInterestRate() + "%%)  %,d원 \n"
 						,p.getMaxMonthlyDeposit().longValue());
@@ -80,7 +80,7 @@ public class AccountMenu {
         }
     }
 	
-	public void successMakeAccount(AccountVO vo, BigDecimal balance) {
+	public void successMakeAccount(Account vo, BigDecimal balance) {
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy년 MM월 dd일");
 
 	    String createDate = vo.getCreateDate().format(formatter);

@@ -17,8 +17,8 @@ import dbConn.util.ConnectionHelper;
 import dto.AccountProductDto;
 import dto.AccountShowDTO;
 import dto.AccountSummaryDto;
-import model.AccountVO;
-import model.MemberVO;
+import model.domain.Account;
+import model.domain.Member;
 
 public class AccountDAO {
 
@@ -68,7 +68,7 @@ public class AccountDAO {
 		return list;
 	}
 
-	public AccountVO findByAccountNo(String accountNo) {
+	public Account findByAccountNo(String accountNo) {
 		String sql = "SELECT * FROM ACCOUNT WHERE ACCOUNT_NO = ?";
 		try (Connection conn = ConnectionHelper.getConnection("mysql");
 				PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -77,7 +77,7 @@ public class AccountDAO {
 			ResultSet rs = pstmt.executeQuery();
 
 			if (rs.next()) {
-				AccountVO account = new AccountVO();
+				Account account = new Account();
 				account.setAccountNo(rs.getString("account_no"));
 				account.setMemberNo(rs.getInt("member_no"));
 				account.setAccountPwd(rs.getString("account_pwd"));
@@ -127,8 +127,8 @@ public class AccountDAO {
 		return 0;
 	}
 
-	public List<AccountVO> findAccountsByMemberNo(int memberNo) {
-		List<AccountVO> list = new ArrayList<>();
+	public List<Account> findAccountsByMemberNo(int memberNo) {
+		List<Account> list = new ArrayList<>();
 		String sql = "SELECT * FROM account WHERE member_no = ?";
 		Connection conn = null;
 		PreparedStatement pstmt = null;
@@ -140,7 +140,7 @@ public class AccountDAO {
 			rs = pstmt.executeQuery();
 
 			while (rs.next()) {
-				AccountVO account = new AccountVO();
+				Account account = new Account();
 				account.setAccountNo(rs.getString("account_no"));
 				account.setMemberNo(rs.getInt("member_no"));
 				account.setAccountPwd(rs.getString("account_pwd"));
@@ -167,7 +167,7 @@ public class AccountDAO {
 		return list;
 	}
 
-	public boolean createAccount(AccountVO dto) {
+	public boolean createAccount(Account dto) {
 		Connection conn = null;
 		PreparedStatement pstmt = null;
 		boolean flag = false;
@@ -176,7 +176,7 @@ public class AccountDAO {
 				+ " balance, status, lock_cnt, created_date, deposit_amount, maturity_date) "
 				+ "VALUES (?, ?, ?, ?, ?, 'Y', 0, NOW(), ?, ?)";
 		try {
-			MemberVO currentUser = SessionManager.getCurrentUser();
+			Member currentUser = SessionManager.getCurrentUser();
 			conn = ConnectionHelper.getConnection("mysql");
 			conn.setAutoCommit(false);
 
@@ -372,7 +372,7 @@ public class AccountDAO {
 				+ "join product p on a.product_id = p.product_id\n"
 				+ "where p.product_type = 100 and a.member_no = ?;";
 		List<AccountShowDTO> list = new ArrayList<>();
-		MemberVO currentUser = SessionManager.getCurrentUser();
+		Member currentUser = SessionManager.getCurrentUser();
 		
 		try (Connection conn = ConnectionHelper.getConnection("mysql");
 				PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -430,7 +430,7 @@ public class AccountDAO {
 	    }
 		
 		List<AccountShowDTO> list = new ArrayList<>();
-		MemberVO currentUser = SessionManager.getCurrentUser();	
+		Member currentUser = SessionManager.getCurrentUser();	
 		
 		Connection conn = null;
 		PreparedStatement pstmt = null;
@@ -472,7 +472,7 @@ public class AccountDAO {
 	}
 	
 	
-	public AccountVO getPwdAndStatus(String accountNo) {
+	public Account getPwdAndStatus(String accountNo) {
         String sql = "SELECT account_pwd, status, lock_cnt FROM account WHERE account_no = ?";
         try (Connection conn = ConnectionHelper.getConnection("mysql");
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -480,7 +480,7 @@ public class AccountDAO {
         	pstmt.setString(1, accountNo);
             ResultSet rs = pstmt.executeQuery();
             if (rs.next()) {
-                AccountVO account = new AccountVO();
+                Account account = new Account();
                 account.setAccountNo(accountNo);
                 account.setAccountPwd(rs.getString("account_pwd"));
                 account.setStatus(rs.getString("status").charAt(0));

@@ -11,8 +11,8 @@ import dao.MemberDAO;
 import dao.TransactionDAO;
 import dto.AccountSummaryDto;
 import dto.DailyTransferSummaryDto;
-import model.AccountVO;
-import model.MemberVO;
+import model.domain.Account;
+import model.domain.Member;
 import util.Validator;
 
 public class AdminService {
@@ -131,11 +131,11 @@ public class AdminService {
      */
     public String changeAccountStatus(String name, String accountNo, char newStatus) {
         // 계좌 조회
-        AccountVO account = accountDAO.findByAccountNo(accountNo);
+        Account account = accountDAO.findByAccountNo(accountNo);
         if (account == null) return "[!] 계좌를 찾을 수 없습니다.";
         
         // 계좌 소유자 확인
-        MemberVO member = memberDAO.findMemberByNo(account.getMemberNo());
+        Member member = memberDAO.findMemberByNo(account.getMemberNo());
         if (member == null) return "[!] 계좌 소유자 정보를 찾을 수 없습니다.";
         
         // 이름 일치 확인

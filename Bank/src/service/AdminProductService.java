@@ -7,7 +7,7 @@ import java.util.HashMap;
 
 import dao.AccountDAO;
 import dao.ProductDAO;
-import model.ProductVO;
+import model.domain.Product;
 
 public class AdminProductService {
     private final ProductDAO productDAO = new ProductDAO();
@@ -22,17 +22,17 @@ public class AdminProductService {
     }
     
     // 관리자 모든 상품 조회
-    public List<ProductVO> getAllProducts() {
+    public List<Product> getAllProducts() {
         return productDAO.getProductInfo();
     }
     
     // 상품 ID로 상품 정보 조회
-    public ProductVO getProductById(int productId) {
+    public Product getProductById(int productId) {
         return productDAO.getProductById(productId);
     }
     
     // 관리자 상품 등록
-    public boolean addProduct(ProductVO product) {
+    public boolean addProduct(Product product) {
         // 데이터 유효성 검증
         if (!validateProduct(product)) {
             return false;
@@ -42,7 +42,7 @@ public class AdminProductService {
     }
     
     // 관리자 상품 수정
-    public boolean updateProduct(ProductVO product) {
+    public boolean updateProduct(Product product) {
         // 데이터 유효성 검증
         if (!validateProduct(product)) {
             return false;
@@ -63,7 +63,7 @@ public class AdminProductService {
     }
     
     // 상품 객체 유효성 검증
-    public boolean validateProduct(ProductVO product) {
+    public boolean validateProduct(Product product) {
         // 상품명 검증
         if (product.getProductName() == null || product.getProductName().trim().isEmpty()) {
             System.out.println("상품명은 비워둘 수 없습니다.");
@@ -104,7 +104,7 @@ public class AdminProductService {
     }
     
     // 상품 유형별 기본값 설정
-    public void setDefaultValues(ProductVO product) {
+    public void setDefaultValues(Product product) {
         // 상품 유형에 따른 기본값 설정
         switch (product.getProduct_type()) {
             case 100: // 입출금 계좌
@@ -214,7 +214,7 @@ public class AdminProductService {
     }
     
     // 상품 통계 정보 계산
-    public Map<String, Integer> calculateProductStats(List<ProductVO> products) {
+    public Map<String, Integer> calculateProductStats(List<Product> products) {
         Map<String, Integer> stats = new HashMap<>();
         
         int totalProducts = products.size();
@@ -222,7 +222,7 @@ public class AdminProductService {
         int depositCount = 0;
         int savingsCount = 0;
         
-        for (ProductVO p : products) {
+        for (Product p : products) {
             switch (p.getProduct_type()) {
                 case 100: 
                     checkingCount++; // 입출금
@@ -245,10 +245,10 @@ public class AdminProductService {
     }
     
     // ProductVO 객체 생성 헬퍼 메서드
-    public ProductVO createProductVO(int productId, String productName, int productType, 
+    public Product createProductVO(int productId, String productName, int productType, 
             BigDecimal interestRate, int periodMonths, BigDecimal maxDepositAmount, BigDecimal maxMonthlyDeposit) {
         
-        ProductVO product = new ProductVO();
+        Product product = new Product();
         product.setProductId(productId);
         product.setProductName(productName);
         product.setProduct_type(productType);
