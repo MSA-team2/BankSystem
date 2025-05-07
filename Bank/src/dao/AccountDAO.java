@@ -313,16 +313,7 @@ public class AccountDAO {
 
 	}
 
-	/**
-	 * 예금 적금 중도해지 중도해지 계좌의 금액을 입출금 계좌로 이체
-	 * 
-	 * @param accountNo
-	 * @param ibchulAccountNo 
-	 */
-	public void cancelAccount(String accountNo, String ibchulAccountNo) {
-		System.out.println("accountNo의 잔액을 ibChulAccountNo로 몽땅 이체하기");
-	}
-
+	
 	/**
 	 *입/출금 계좌 찾기 
 	 * @param memberNo
