@@ -77,8 +77,10 @@ public class AccountService {
 			randomNumber = String.format("%04d", new Random().nextInt(10000));
 			type = Integer.toString(product.getProduct_type());
 			accountNo = type + "-" + phoneTail + "-" + randomNumber;
-			Account allAccountNo = accountDAO.findByAccountNo(accountNo);
-			if (allAccountNo.getAccountNo() == null) break;
+
+			AccountVO allAccountNo = accountDAO.findByAccountNo(accountNo);
+			if (allAccountNo == null || allAccountNo.getAccountNo() == null) break;
+
 			else continue;
 		}
 		BigDecimal initialBalance = new BigDecimal("0");
