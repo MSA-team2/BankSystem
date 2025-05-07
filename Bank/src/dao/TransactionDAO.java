@@ -173,7 +173,7 @@ public class TransactionDAO {
 				+ "    CASE \n" + "        WHEN t.transaction_type = 'TRANSFER' THEN \n"
 				+ "            (SELECT m2.name \n" + "             FROM MEMBER m2 \n"
 				+ "             JOIN ACCOUNT a2 ON m2.member_no = a2.member_no \n"
-				+ "             WHERE a2.account_no = t.target_account)\n" + "        ELSE '본인'\n" + "    END AS 상대방\n"
+				+ "             WHERE a2.account_no = t.target_account)\n" +  "ELSE m.name\n" + "    END AS 상대방\n"
 				+ "FROM \n" + "    TRANSACTION_HISTORY t\n" + "JOIN \n"
 				+ "    ACCOUNT a ON t.account_no = a.account_no\n" + "JOIN \n"
 				+ "    PRODUCT p ON a.product_id = p.product_id\n" + "JOIN \n"
@@ -248,7 +248,7 @@ public class TransactionDAO {
 				e.printStackTrace();
 			}
 		}
-		return rs.getBigDecimal("0");
+		return BigDecimal.ZERO;
 	}
 
 	// 한 달 적금 납부한 총액
@@ -266,9 +266,10 @@ public class TransactionDAO {
 
 			pstmt.setString(1, accountNo);
 			rs = pstmt.executeQuery();
-
-			if (rs.next())
-				return rs.getBigDecimal(1);
+			if (rs.next()) {
+				BigDecimal result = rs.getBigDecimal(1);
+				return result != null ? result : BigDecimal.ZERO;
+			}
 		} catch (SQLException e) {
 			e.printStackTrace();
 		} finally {
@@ -283,7 +284,7 @@ public class TransactionDAO {
 				e.printStackTrace();
 			}
 		}
-		return rs.getBigDecimal("0");
+		return BigDecimal.ZERO;
 	}
 
 	// 이체 시, 상품타입을 가져와 검사함. 100 or 200
@@ -350,7 +351,7 @@ public class TransactionDAO {
 				e.printStackTrace();
 			}
 		}
-		return rs.getBigDecimal("0");
+		return BigDecimal.ZERO;
 	}
 
 	// 입, 출 계좌 확인
