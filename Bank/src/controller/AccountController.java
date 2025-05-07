@@ -20,7 +20,7 @@ public class AccountController {
 	// 계좌 개설 컨트롤러
 	public void insertAccount() {
 		if (!SessionManager.isLoggedIn()) {
-			System.out.println("로그인이 필요합니다.");
+			System.out.println("⚠️ 로그인이 필요합니다.");
 			return;
 		}
 		while (true) {
@@ -30,9 +30,8 @@ public class AccountController {
 			List<AccountShowDTO> list = service.checkRegistProduct(types);
 			List<ProductVO> product;
 			if (list.size() < 1) {
-				view.printMessage("가입 상품이 없어 입출금 상품만 출력됩니다.");
+				view.printMessage("⚠️ 가입 상품이 없어 입출금 상품만 출력됩니다.");
 				product = service.getProductbyType(100); // 입출금상품 타입 100번
-				System.out.println(product.toString());
 			} else {
 				// 개설 메뉴 들어오자마자 화면 출력 및 상품 선택 값 받아온다.
 				product = service.getAllProducts();
@@ -57,7 +56,7 @@ public class AccountController {
 				if (deposit.compareTo(BigDecimal.ZERO) == 0) {
 					member.MemberMainMenu();
 				} else if (deposit.compareTo(product_info.getMaxMonthlyDeposit()) > 0) { // 사용자의 월 납입금이 상품 최대 납입한도보다 클때
-					view.printMessage("상품의 월 납입한도보다 큽니다. 상품을 다시 선택합니다.");
+					view.printMessage("⚠️ 상품의 월 납입한도보다 큽니다. 상품을 다시 선택합니다.");
 					continue;
 				}
 			} else if (product_info.getProduct_type() == 300) { // 예금상품 가입 시
@@ -67,7 +66,7 @@ public class AccountController {
 					accountNo = view.myAccountShow(myAccount);
 					dto = service.myDepositWithdrawAccountbalance(accountNo);
 					if (dto.getAccountNo() == null) {
-						view.printMessage("존재하지 않는 계좌번호 입니다. 다시 입력해주세요");
+						view.printMessage("⚠️ 존재하지 않는 계좌번호 입니다. 다시 입력해주세요");
 						continue;
 					}
 					balance = view.inputDeposit();
@@ -75,10 +74,10 @@ public class AccountController {
 					if (balance.compareTo(BigDecimal.ZERO) == 0) {
 						member.MemberMainMenu();
 					} else if (balance.longValue() > dto.getBalance()) {
-						view.printMessage("선택한 계좌의 잔액이 부족합니다. 계좌를 다시 선택합니다.");
+						view.printMessage("⚠️ 선택한 계좌의 잔액이 부족합니다. 계좌를 다시 선택합니다.");
 						continue;
 					} else if (balance.compareTo(product_info.getMaxDepositAmount()) > 0) { // 사용자의 예치금이 상품 최대 예치한도보다 클때
-						view.printMessage("상품의 최대 예치 금액보다 큽니다. 계좌를 다시 선택합니다.");
+						view.printMessage("⚠️ 상품의 최대 예치 금액보다 큽니다. 계좌를 다시 선택합니다.");
 						continue;
 					} else {
 						break;
@@ -104,17 +103,17 @@ public class AccountController {
 				
 				boolean flag = service.transDeposit(depodto, withdto);
 				if(!flag) {
-					view.printMessage("예금 계좌 생성 중 이상이 생겨 상품 선택화면으로 돌아갑니다.");
+					view.printMessage("⚠️ 예금 계좌 생성 중 이상이 생겨 상품 선택화면으로 돌아갑니다.");
 					continue;
 				}
 			}
 			
 			if (account != null) {
-				view.successMakeAccount(account);
-				view.printMessage("\n메인 메뉴로 돌아갑니다.");
+				view.successMakeAccount(account, balance);
+				view.printMessage("\n✅ 메인 메뉴로 돌아갑니다.");
 				new MemberMenu().MemberMainMenu();
 			} else {
-				view.printMessage("계좌 생성 실패\n메인 메뉴로 돌아갑니다.");
+				view.printMessage("⚠️ 계좌 생성 실패\n메인 메뉴로 돌아갑니다.");
 				new MemberMenu().MemberMainMenu();
 			}
 		}
