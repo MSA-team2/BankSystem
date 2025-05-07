@@ -19,6 +19,8 @@ public class AdminController {
 	private final Scanner sc = new Scanner(System.in);
 
 	public void showDailyTransferHistory() {
+		System.out.println("\n============ [일일 거래량 조회] ============");
+		
 		System.out.print("📅 검색할 날짜를 입력해주세요 (예: 2025-03-15) >> ");
 	    String input = sc.nextLine();
 
@@ -28,14 +30,7 @@ public class AdminController {
 	    }
 
 	    DailyTransferSummaryDto summary = adminService.getDailyTransferSummary(LocalDate.parse(input));
-	    // 헤더
-	    System.out.println("\n+-------------------------------------------+");
-	    System.out.println("|          💰 일일 거래량 요약 💰         	  |");
-	    System.out.println("+---------------------------------------------+");
-	    
-	    // 날짜 정보
-	    System.out.println("\n📆 조회 날짜: " + summary.getDate());
-	    
+
 	    // 거래 정보 테이블
 	    System.out.println("\n+---------------+--------+--------------------+");
 	    System.out.println("| 거래 유형     | 건수   | 금액              	|");
@@ -66,6 +61,9 @@ public class AdminController {
 	    // 푸터
 	    System.out.println("+---------------+--------+-------------------+");
 	    
+	    // 날짜 정보
+	    System.out.println("\n📆 조회 날짜: " + summary.getDate());
+	    
 	    // 추가 정보
 	    System.out.println("\n💡 총 거래 건수: " + (summary.getDepositCount() + summary.getWithdrawCount()) + "건");
 	    
@@ -81,12 +79,9 @@ public class AdminController {
 	}
 
 	public void getAllAccounts() {
-		List<AccountSummaryDto> list = adminService.getAllAccounts();
+		System.out.println("\n============ [전체 계좌 조회] ============");
 		
-	    System.out.println("\n" +
-	            "+----------------------------------------------+\n" +
-	            "|          🏦 은행 계좌 관리 시스템 🏦         |\n" +
-	            "+----------------------------------------------+");
+		List<AccountSummaryDto> list = adminService.getAllAccounts();
 	    
 	    // 열 너비 정의
 	    String format = "| %-12s | %-10s | %-15s | %-12s | %-10s | %-18s |%n";
@@ -142,15 +137,12 @@ public class AdminController {
 	}
 	
 	public void manageAccountLock() {
+		System.out.println("\n============ [계좌 잠금 관리] ============");
+		
 		if (!SessionManager.isAdmin()) {
 	        System.out.println("[!] 관리자만 접근할 수 있는 기능입니다.");
 	        return;
 	    }
-
-	    // 헤더
-	    System.out.println("\n+--------------------------------------------+");
-	    System.out.println("|          🔒 계좌 잠금 관리 🔒             |");
-	    System.out.println("+--------------------------------------------+");
 	    
 	    // 회원 이름 입력
 	    System.out.print("👤 회원 이름: ");

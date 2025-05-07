@@ -13,12 +13,9 @@ public class AdminProductController {
 
 	// 모든 상품 조회
 	public void getAllProducts() {	
+		System.out.println("\n============ [모든 상품 조회] ============");
+		
 		List<ProductVO> findProducts = adminProductService.getAllProducts();
-	    
-		// 헤더
-	    System.out.println("\n+----------------------------------------------------------------------------+");
-	    System.out.println("|                        📋 전체 상품 조회 📋                              |");
-	    System.out.println("+----------------------------------------------------------------------------+");
 	    
 	    // 컬럼 헤더
 	    System.out.println("+---------+------------------+--------------+--------+--------------+--------------------+--------------------+");
@@ -101,10 +98,7 @@ public class AdminProductController {
 
 	// 상품 추가
 	public void addProduct() {
-		// 헤더
-	    System.out.println("\n+--------------------------------------------+");
-	    System.out.println("|          ✨ 새 금융 상품 등록 ✨           |");
-	    System.out.println("+--------------------------------------------+");
+		System.out.println("\n============ [상품 등록] ============");
 	    
 	    // 상품명 입력
 	    System.out.print("\n📝 상품명 입력: ");
@@ -271,10 +265,7 @@ public class AdminProductController {
 	
 	// 상품 수정
 	public void updateProduct() {
-		 // 헤더
-	    System.out.println("\n+--------------------------------------------+");
-	    System.out.println("|          🔄 금융 상품 정보 수정 🔄         |");
-	    System.out.println("+--------------------------------------------+");
+		System.out.println("\n============ [상품 수정] ============");
 	    
 	    // 수정할 상품 ID 입력
 	    System.out.print("\n🔍 수정할 상품의 ID를 입력하세요: ");
@@ -487,10 +478,7 @@ public class AdminProductController {
 
 	// 상품 삭제
 	public void deleteProduct() {
-		// 헤더
-	    System.out.println("\n+--------------------------------------------+");
-	    System.out.println("|          🗑️ 금융 상품 삭제 🗑️             |");
-	    System.out.println("+--------------------------------------------+");
+		System.out.println("\n============ [상품 삭제] ============");
 	    
 	    // 삭제할 상품 ID 입력
 	    System.out.print("\n🔍 삭제할 상품의 ID를 입력하세요: ");

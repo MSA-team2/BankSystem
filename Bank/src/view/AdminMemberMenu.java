@@ -11,7 +11,7 @@ public class AdminMemberMenu {
     public void start() {
         while (true) {
             printMenu();
-            System.out.print("메뉴 선택 >> ");
+            System.out.print(" 👉 메뉴를 선택하세요: ");
             String input = sc.nextLine();
 
             switch (input) {
@@ -40,11 +40,14 @@ public class AdminMemberMenu {
     }
 
     private void printMenu() {
-        System.out.println("\n===== 회원 관리 메뉴 =====");
-        System.out.println("1. 전체 회원 조회");
-        System.out.println("2. 회원 검색");
-        System.out.println("3. 회원 정보 수정");
-        System.out.println("4. 잠금 계정 관리");
-        System.out.println("0. 뒤로 가기");
+    	System.out.println("\n================================");
+        System.out.println("\t🛠️ 회원 관리 메뉴");
+        System.out.println("================================");
+        System.out.println("\t[1] 전체 회원 조회");
+        System.out.println("\t[2] 회원 정보 검색");
+        System.out.println("\t[3] 회원 정보 수정");
+        System.out.println("\t[4] 잠금 계정 관리");
+        System.out.println("\t[0] 뒤로 가기");
+        System.out.println("================================");
     }
 }
