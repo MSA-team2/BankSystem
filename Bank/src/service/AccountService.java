@@ -78,7 +78,7 @@ public class AccountService {
 			type = Integer.toString(product.getProduct_type());
 			accountNo = type + "-" + phoneTail + "-" + randomNumber;
 
-			AccountVO allAccountNo = accountDAO.findByAccountNo(accountNo);
+			Account allAccountNo = accountDAO.findByAccountNo(accountNo);
 			if (allAccountNo == null || allAccountNo.getAccountNo() == null) break;
 
 			else continue;
