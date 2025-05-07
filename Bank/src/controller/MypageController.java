@@ -22,9 +22,9 @@ public class MypageController {
 	}
 
 	// 2 : 회원탈퇴
-	public void deleteMemberProfile() {
+	public void accountLocktoAdmin() {
 		// TODO
-		service.deleteAccount();
+		service.callAdmimAboutAccountLock();
 
 	}
 
