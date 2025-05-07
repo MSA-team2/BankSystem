@@ -84,7 +84,7 @@ public class ProductDAO {
 	 * 어드민 상품 추가
 	 * 
 	 * @param Product
-	 * @return
+	 * @return true/false
 	 */
 	public boolean addPorduct(ProductVO product) {
 		Connection conn = null;
@@ -92,8 +92,8 @@ public class ProductDAO {
 		int rs = 0;
 		boolean success = false;
 		
-		String sql = "INSERT INTO PRODUCT (product_name, product_type, interest_rate, period_months) "
-				+ "VALUES (?, ?, ?, ?)";
+		String sql = "INSERT INTO PRODUCT (product_name, product_type, interest_rate, period_months, max_deposit_amount, max_monthly_deposit) "
+				+ "VALUES (?, ?, ?, ?, ?, ?)";
 		
 		try {
 			conn = ConnectionHelper.getConnection("mysql");
@@ -104,6 +104,8 @@ public class ProductDAO {
 			pstmt.setInt(2, product.getProduct_type());
 			pstmt.setBigDecimal(3, product.getInterestRate());
 			pstmt.setInt(4, product.getPeriodMonths());
+			pstmt.setBigDecimal(5, product.getMaxDepositAmount());
+	        pstmt.setBigDecimal(6, product.getMaxMonthlyDeposit());
 			rs = pstmt.executeUpdate();
 			
 			if (rs > 0) {
@@ -136,7 +138,7 @@ public class ProductDAO {
 	 * 어드민 상품 정보 수정
 	 * 
 	 * @param product
-	 * @return
+	 * @return true/false
 	 */
 	public boolean updateProduct(ProductVO product) {
 	    Connection conn = null;
@@ -144,7 +146,7 @@ public class ProductDAO {
 	    int rs = 0;
 	    boolean success = false;
 	    
-	    String sql = "UPDATE PRODUCT SET product_name = ?, interest_rate = ?, period_months = ? "
+	    String sql = "UPDATE PRODUCT SET product_name = ?, interest_rate = ?, period_months = ?, max_deposit_amount = ?, max_monthly_deposit = ? " 
 	            + "WHERE product_id = ?";
 	    
 	    try {
@@ -155,7 +157,9 @@ public class ProductDAO {
 	        pstmt.setString(1, product.getProductName());
 	        pstmt.setBigDecimal(2, product.getInterestRate());
 	        pstmt.setInt(3, product.getPeriodMonths());
-	        pstmt.setInt(4, product.getProductId());
+	        pstmt.setBigDecimal(4, product.getMaxDepositAmount());
+	        pstmt.setBigDecimal(5, product.getMaxMonthlyDeposit());
+	        pstmt.setInt(6, product.getProductId());     
 	        
 	        rs = pstmt.executeUpdate();
 	        
@@ -188,7 +192,7 @@ public class ProductDAO {
 	 * 어드민 상품 삭제
 	 * 
 	 * @param productId
-	 * @return
+	 * @return true/false
 	 */
 	public boolean deleteProduct(int productId) {
 	    Connection conn = null;

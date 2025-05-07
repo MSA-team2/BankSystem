@@ -24,10 +24,12 @@ public class AdminProductMenu {
                     adminProductController.getAllProducts();
                     break;
                 case "3":
+                	adminProductController.getAllProducts();
                     adminProductController.updateProduct();
                     adminProductController.getAllProducts();
                     break;
                 case "4":
+                	adminProductController.getAllProducts();
                     adminProductController.deleteProduct();
                     adminProductController.getAllProducts();
                     break;
