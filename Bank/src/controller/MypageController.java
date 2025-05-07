@@ -1,7 +1,6 @@
 package controller;
 
 import model.MemberVO;
-import view.FirstMainMenu;
 import service.MypageService;
 
 public class MypageController {
@@ -21,7 +20,7 @@ public class MypageController {
 
 	}
 
-	// 2 : 회원탈퇴
+	// 2 : 계정 잠김 관리자 문의  
 	public void accountLocktoAdmin() {
 		// TODO
 		service.callAdmimAboutAccountLock();

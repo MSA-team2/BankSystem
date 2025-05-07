@@ -19,7 +19,10 @@ public class MypageService {
 	// 개인신상
 	// 계좌번호, 상품명, 원금, 이자율, 만기일, 총액 리스트로 뿌리기
 	public void displayUserInfo(MemberVO user) {
-		System.out.println("===== 마이페이지 =====");
+		System.out.println("\n================================");
+		System.out.println("\t마이페이지");
+		System.out.println("================================");
+
 		System.out.println("이름 : " + user.getName());
 		System.out.println("전화번호 : " + user.getPhone());
 		System.out.println("주소 : " + user.getAddress());
@@ -30,34 +33,41 @@ public class MypageService {
 			return;
 		}
 
-		System.out.println("\n--- 보유 계좌 ---");
-		System.out.printf("%-20s %-24s %-9s %-15s %-10s %16s\n", "계좌번호", "상품명", "이자율", "만기일", "D-Day", "총액");
+		System.out.println("\n[ 💰 보유 계좌 ]");
+		System.out.printf("%-20s %-24s %-9s %-15s %-10s %20s\n", "계좌번호", "상품명", "이자율", "만기일", "D-Day", "총액");
+		System.out.println("─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────");
 
 		for (AccountProductDto dto : accounts) {
-			String maturityStr;
-			String dDayStr;
+		    String maturityStr;
+		    String dDayStr;
 
-			if (dto.getMaturityDate() != null) {
-				LocalDate maturityDate = dto.getMaturityDate().toLocalDate();
-				LocalDate today = LocalDate.now();
-				long days = ChronoUnit.DAYS.between(today, maturityDate);
+		    if (dto.getMaturityDate() != null) {
+		        LocalDate maturityDate = dto.getMaturityDate().toLocalDate();
+		        LocalDate today = LocalDate.now();
+		        long days = ChronoUnit.DAYS.between(today, maturityDate);
 
-				if (days > 0) {
-					dDayStr = "D-" + days;
-				} else if (days == 0) {
-					dDayStr = "D-day";
-				} else {
-					dDayStr = "D+" + Math.abs(days); // 이미 지난 경우
-				}
+		        if (days > 0) {
+		            dDayStr = "D-" + days;
+		        } else if (days == 0) {
+		            dDayStr = "D-day";
+		        } else {
+		            dDayStr = "D+" + Math.abs(days); // 이미 지난 경우
+		        }
 
-				maturityStr = maturityDate.toString();
-			} else {
-				maturityStr = "없음";
-				dDayStr = "-";
-			}
+		        maturityStr = maturityDate.toString();
+		    } else {
+		        maturityStr = "없음";
+		        dDayStr = "-";
+		    }
 
-			System.out.printf("%-20s %-24s %6.2f%%     %-15s %-10s %,15d원\n", dto.getAccountNo(), dto.getProductName(),
-					dto.getInterestRate().doubleValue(), maturityStr, dDayStr, dto.getBalance().intValue());
+		    // 컬럼 간격 조절
+		    System.out.printf("%-20s %-24s %8.2f%%   %-15s %-10s %,20d원\n", 
+		        dto.getAccountNo(), 
+		        dto.getProductName(), 
+		        dto.getInterestRate().doubleValue(), 
+		        maturityStr, 
+		        dDayStr, 
+		        dto.getBalance().intValue());
 		}
 	}
 
@@ -73,7 +83,8 @@ public class MypageService {
 				return;
 			}
 
-			System.out.println("\n--- 해지 가능한 상품 ---");
+			System.out.println("\n[ 🛈 해지 가능한 상품 ]");
+			System.out.println("─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────");
 			System.out.printf("%-5s %-20s %-20s %-8s %-15s %-15s\n", "번호", "계좌번호", "상품명", "이자율", "만기일", "잔액");
 			int idx = 1;
 			for (AccountProductDto dto : accounts) {
@@ -83,7 +94,7 @@ public class MypageService {
 						dto.getBalance().intValue());
 			}
 
-			System.out.print("해지할 상품의 번호를 입력하세요 (0. 뒤로가기): ");
+			System.out.print("\n👉 해지할 상품의 번호를 입력하세요 (0. 뒤로가기) : ");
 			int selected = sc.nextInt();
 			sc.nextLine(); // 버퍼 클리어
 
@@ -95,8 +106,8 @@ public class MypageService {
 			}
 
 			AccountProductDto target = accounts.get(selected - 1);
-			System.out.println("선택한 계좌: " + target.getAccountNo());
-			System.out.print("맞으면 1, 아니면 2: ");
+			System.out.println("▶️ 선택한 계좌: " + target.getAccountNo());
+			System.out.print("\n맞으면 1, 아니면 2 : ");
 			int confirm = sc.nextInt();
 			sc.nextLine();
 
@@ -105,7 +116,7 @@ public class MypageService {
 				continue;
 			}
 
-			System.out.println("중도해지 시 이자는 지급되지 않습니다. 해지하시겠습니까? (1: 예, 2: 아니요): ");
+			System.out.print("⚠️ 중도해지 시 이자는 지급되지 않습니다. 해지하시겠습니까? (1: 예, 2: 아니요): ");
 			int finalConfirm = sc.nextInt();
 			sc.nextLine();
 			if (finalConfirm != 1) {
@@ -119,7 +130,8 @@ public class MypageService {
 				return;
 			}
 
-			System.out.println("\n--- 이체받을 입출금 계좌 선택 ---");
+			System.out.println("\n[ 💲 이체받을 입출금 계좌 선택 ]");
+			System.out.println("─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────");
 			System.out.printf("%-5s %-20s %-20s %-8s %-15s %-15s\n", "번호", "계좌번호", "상품명", "이자율", "만기일", "잔액");
 			idx = 1;
 			for (AccountProductDto dto : depositTargets) {
@@ -129,7 +141,8 @@ public class MypageService {
 						dto.getBalance().intValue());
 			}
 
-			System.out.print("입금 계좌를 선택하세요 (0. 취소): ");
+			System.out.print("👉 입금 계좌를 선택하세요. (0. 뒤로가기) : ");
+
 			int selectedDeposit = sc.nextInt();
 			sc.nextLine();
 			if (selectedDeposit == 0) {
@@ -156,7 +169,7 @@ public class MypageService {
 
 	}
 
-	// 2 : 회원탈퇴
+	// 2 : 관리자 문의
 	public void callAdmimAboutAccountLock() {
 		
 		System.out.println("관리자에게 문의 접수되었습니다.");

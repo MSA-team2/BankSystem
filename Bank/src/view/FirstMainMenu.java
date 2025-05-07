@@ -4,10 +4,10 @@ import java.util.Scanner;
 import controller.MemberController;
 
 public class FirstMainMenu {
-	
+
 	private Scanner sc = new Scanner(System.in);
 	private MemberController mc = new MemberController();
-	
+
 	// 첫화면
 	public void mainMenu() {
 		while(true) {
@@ -24,7 +24,7 @@ public class FirstMainMenu {
 			System.out.print(" 👉 메뉴를 선택하세요: ");
 			int menu = sc.nextInt();
 			sc.nextLine();
-			
+
 			switch (menu) {
 			case 1: mc.insertMember(); break;
 			case 2: mc.loginMember();; break;
@@ -36,5 +36,5 @@ public class FirstMainMenu {
 			}
 		} // while
 	} // mainMenu()
-	
+
 }
