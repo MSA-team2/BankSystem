@@ -1,13 +1,13 @@
 package controller;
 
-import model.MemberVO;
+import model.domain.Member;
 
 public class SessionManager {
-    private static MemberVO currentUser = null;  // 현재 로그인한 사용자
+    private static Member currentUser = null;  // 현재 로그인한 사용자
     private static boolean isAdmin = false;  // 관리자 여부
 
     // 로그인 처리
-    public static void login(MemberVO member) {
+    public static void login(Member member) {
         currentUser = member;
         isAdmin = (member.getRole() == 1);  // role이 1이면 관리자
     }
@@ -29,7 +29,7 @@ public class SessionManager {
     }
 
     // 현재 사용자 정보 반환
-    public static MemberVO getCurrentUser() {
+    public static Member getCurrentUser() {
         return currentUser;
     }
 }

@@ -17,8 +17,8 @@ import dbConn.util.CloseHelper;
 import dbConn.util.ConnectionHelper;
 import dto.DailyTransferSummaryDto;
 import dto.TransactionDTO;
-import model.MemberVO;
-import model.TransactionHistoryVO;
+import model.domain.Member;
+import model.domain.TransactionHistory;
 
 public class TransactionDAO {
 
@@ -162,8 +162,8 @@ public class TransactionDAO {
 	}
 
 	// 거래내역 가져오기
-	public List<TransactionHistoryVO> TransactionHistory(String accountNo) {
-		List<TransactionHistoryVO> transactions = new ArrayList<>();
+	public List<TransactionHistory> TransactionHistory(String accountNo) {
+		List<TransactionHistory> transactions = new ArrayList<>();
 		String sql = "SELECT \n" + "t.transaction_date AS 날짜, \n" + "a.account_no AS 계좌번호,\n"
 				+ "p.product_name AS 상품명,\n" + "CASE \n" + "WHEN t.transaction_type = 'DEPOSIT' THEN '입금'\n"
 				+ "WHEN t.transaction_type = 'WITHDRAW' THEN '출금'\n"
@@ -186,14 +186,14 @@ public class TransactionDAO {
 		try {
 			conn = ConnectionHelper.getConnection("mysql");
 			pstmt = conn.prepareStatement(sql);
-			MemberVO currentUser = SessionManager.getCurrentUser();
+			Member currentUser = SessionManager.getCurrentUser();
 
 			pstmt.setInt(1, currentUser.getMemberNo());
 			pstmt.setString(2, accountNo);
 			rs = pstmt.executeQuery();
 
 			while (rs.next()) {
-				TransactionHistoryVO transaction = new TransactionHistoryVO(rs.getObject("날짜", LocalDateTime.class),
+				TransactionHistory transaction = new TransactionHistory(rs.getObject("날짜", LocalDateTime.class),
 						rs.getString("구분"), rs.getBigDecimal("금액"), rs.getString("상대방"));
 
 				transactions.add(transaction);
@@ -366,7 +366,7 @@ public class TransactionDAO {
 			conn = ConnectionHelper.getConnection("mysql");
 			pstmt = conn.prepareStatement(sql);
 
-			MemberVO currentUser = SessionManager.getCurrentUser();
+			Member currentUser = SessionManager.getCurrentUser();
 			pstmt.setInt(1, currentUser.getMemberNo());
 			pstmt.setString(2, accountNo);
 			rs = pstmt.executeQuery();
@@ -435,7 +435,7 @@ public class TransactionDAO {
 			conn = ConnectionHelper.getConnection("mysql");
 			pstmt = conn.prepareStatement(sql);
 
-			MemberVO currentUser = SessionManager.getCurrentUser();
+			Member currentUser = SessionManager.getCurrentUser();
 			pstmt.setInt(1, currentUser.getMemberNo());
 			pstmt.setString(2, accountNo);
 			rs = pstmt.executeQuery();

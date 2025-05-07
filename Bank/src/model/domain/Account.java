@@ -1,4 +1,4 @@
-package model;
+package model.domain;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -11,7 +11,7 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
-public class AccountVO {
+public class Account {
 	private String accountNo; // 계좌번호
 	private int memberNo; // 회원번호
 	private int product_id;	// 상품번호

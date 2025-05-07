@@ -1,4 +1,4 @@
-package model;
+package model.domain;
 import java.math.BigDecimal;
 
 import lombok.Getter;
@@ -8,7 +8,7 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
-public class ProductVO {
+public class Product {
 	public final String ClassName = "PRODUCT";
 	private int productId; // 상품번호
 	private String productName; // 상품명
