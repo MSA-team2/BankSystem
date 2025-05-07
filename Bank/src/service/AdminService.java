@@ -63,15 +63,21 @@ public class AdminService {
     public Map<String, Object> calculateAccountStats(List<AccountSummaryDto> accounts) {
         Map<String, Object> stats = new HashMap<>();
         
+        int vipCount = 0;
         BigDecimal totalBalance = BigDecimal.ZERO;
+        BigDecimal vipThreshold = new BigDecimal("10000000"); // 1천만원 이상 VIP
         
         for (AccountSummaryDto dto : accounts) {
+            if (dto.getBalance().compareTo(vipThreshold) >= 0 && dto.getStatus() == 'Y') {
+                vipCount++;
+            }
             if (dto.getStatus() == 'Y') {
                 totalBalance = totalBalance.add(dto.getBalance());
             }
         }
         
         stats.put("total", accounts.size());
+        stats.put("vipCount", vipCount);
         stats.put("totalBalance", totalBalance);
         
         return stats;

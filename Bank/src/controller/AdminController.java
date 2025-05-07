@@ -111,6 +111,7 @@ public class AdminController {
         
         // 통계 정보 출력
         System.out.println("📊 총 " + accounts.size() + "개의 계좌가 조회되었습니다.");
+        System.out.println("💎 VIP 계좌 수: " + stats.get("vipCount") + "개");
         System.out.println("💰 활성 계좌 총 잔액: " + String.format("%,d", ((BigDecimal)stats.get("totalBalance")).longValue()) + " 원");
         System.out.println("📆 조회 일시: " + java.time.LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
     }
