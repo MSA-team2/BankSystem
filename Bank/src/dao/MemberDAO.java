@@ -258,22 +258,29 @@ public class MemberDAO {
     }
 	
 	// 잠금 계정 관리자 문의
-	public boolean isAccountLocked(Connection conn, String id) {
-		String sql = "SELECT status, lock_cnt FROM MEMBER WHERE member_id = ?";
-        try (PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setString(1, id);
-            try (ResultSet rs = ps.executeQuery()) {
-                if (rs.next()) {
-                    String status = rs.getString("status");
-                    int lockCnt = rs.getInt("lock_cnt");
-                    return "N".equals(status) && lockCnt >= 5;
-                }
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return false;
+	public int checkAccountLockStatus(Connection conn, String id) {
+	    String sql = "SELECT status, lock_cnt FROM MEMBER WHERE member_id = ?";
+	    try (PreparedStatement ps = conn.prepareStatement(sql)) {
+	        ps.setString(1, id);
+	        try (ResultSet rs = ps.executeQuery()) {
+	            if (rs.next()) {
+	                String status = rs.getString("status");
+	                int lockCnt = rs.getInt("lock_cnt");
+	                if ("N".equals(status) && lockCnt >= 5) {
+	                    return 1; // 잠금 상태
+	                } else {
+	                    return 0; // 잠금 아님
+	                }
+	            } else {
+	                return -1; // 아이디 없음
+	            }
+	        }
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	        return -2; // 예외 발생
+	    }
 	}
+
 
 	public List<MemberVO> findAllMembers() {
         List<MemberVO> list = new ArrayList<>();
@@ -290,6 +297,7 @@ public class MemberDAO {
 
             while (rs.next()) {
                 MemberVO member = new MemberVO();
+                member.setMemberNo(rs.getInt("member_no"));
                 member.setName(rs.getString("name"));
                 member.setJumin(rs.getString("jumin"));
                 member.setMemberId(rs.getString("member_id"));
@@ -320,7 +328,7 @@ public class MemberDAO {
 	 * 
 	 * @param 이름
 	 * @param 주민번호
-	 * @return
+	 * @return 회원정보
 	 */
 	public MemberVO findMemberByNameAndJumin(String name, String jumin) {
         String sql = "SELECT * FROM MEMBER WHERE NAME = ? AND JUMIN = ?";
@@ -506,5 +514,51 @@ public class MemberDAO {
         }
         return result;
     }
+	
+	/**
+	 * 회원번호로 회원 정보 조회
+	 * @param memberNo 회원번호
+	 * @return 회원 정보
+	 */
+	public MemberVO findMemberByNo(int memberNo) {
+	    String sql = "SELECT * FROM MEMBER WHERE member_no = ?";
+	    
+	    Connection conn = null;
+	    PreparedStatement pstmt = null;
+	    ResultSet rs = null;
+	    MemberVO member = null;
+	    
+	    try {
+	        conn = ConnectionHelper.getConnection("mysql");
+	        pstmt = conn.prepareStatement(sql);
+	        pstmt.setInt(1, memberNo);
+	        rs = pstmt.executeQuery();
+	        
+	        if (rs.next()) {
+	            member = new MemberVO();
+	            member.setMemberNo(rs.getInt("member_no"));
+	            member.setName(rs.getString("name"));
+	            member.setJumin(rs.getString("jumin"));
+	            member.setMemberId(rs.getString("member_id"));
+	            member.setPassword(rs.getString("password"));
+	            member.setAddress(rs.getString("address"));
+	            member.setPhone(rs.getString("phone"));
+	            member.setStatus(rs.getString("status").charAt(0));
+	            member.setLockCnt(rs.getInt("lock_cnt"));
+	            member.setRole(rs.getInt("role"));
+	        }
+	    } catch(SQLException e) {
+	        e.printStackTrace();
+	    } finally {
+	        try {
+	            if(rs != null) rs.close();
+	            if(pstmt != null) pstmt.close();
+	            if(conn != null) conn.close();
+	        } catch (SQLException e) {
+	            e.printStackTrace();
+	        }
+	    }
+	    return member;
+	}
     
 } // MemberDAO

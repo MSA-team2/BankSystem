@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import dto.AccountShowDTO;
+import dto.TransactionDTO;
 import model.AccountVO;
 import model.ProductVO;
 import service.AccountService;
@@ -31,6 +32,7 @@ public class AccountController {
 			if (list.size() < 1) {
 				view.printMessage("가입 상품이 없어 입출금 상품만 출력됩니다.");
 				product = service.getProductbyType(100); // 입출금상품 타입 100번
+				System.out.println(product.toString());
 			} else {
 				// 개설 메뉴 들어오자마자 화면 출력 및 상품 선택 값 받아온다.
 				product = service.getAllProducts();
@@ -44,6 +46,8 @@ public class AccountController {
 
 			BigDecimal balance = new BigDecimal("0");
 			BigDecimal deposit = new BigDecimal("0");
+			String accountNo = "";
+			AccountShowDTO dto;
 			if (product_info.getProduct_type() == 100) { // 입출금 기본금입력
 				balance = view.inputInitialBalance();
 				if (balance.compareTo(BigDecimal.ZERO) == 0)
@@ -59,8 +63,6 @@ public class AccountController {
 			} else if (product_info.getProduct_type() == 300) { // 예금상품 가입 시
 				List<AccountShowDTO> myAccount = service.myDepositWithdrawAccount();
 
-				String accountNo;
-				AccountShowDTO dto;
 				while (true) {
 					accountNo = view.myAccountShow(myAccount);
 					dto = service.myDepositWithdrawAccountbalance(accountNo);
@@ -86,6 +88,27 @@ public class AccountController {
 			String password = view.inputPassword();
 
 			AccountVO account = service.createAccountNumber(product_no, deposit, balance, password);
+			// 여기서 예금상품 가입일때 입출금 계좌 출금, 예금계좌에 입금 적용되어야함
+			if(product_info.getProduct_type() == 300) {
+				TransactionDTO depodto = new TransactionDTO();
+				BigDecimal minus = new BigDecimal("-1");
+				depodto.setAccountNo(accountNo);
+				depodto.setAmount(balance.multiply(minus));
+				depodto.setTargetAccount(account.getAccountNo());
+				depodto.setTransactionType("출금");
+				TransactionDTO withdto = new TransactionDTO();
+				withdto.setAccountNo(account.getAccountNo());
+				withdto.setAmount(balance);
+				withdto.setTargetAccount(accountNo);
+				withdto.setTransactionType("입금");
+				
+				boolean flag = service.transDeposit(depodto, withdto);
+				if(!flag) {
+					view.printMessage("예금 계좌 생성 중 이상이 생겨 상품 선택화면으로 돌아갑니다.");
+					continue;
+				}
+			}
+			
 			if (account != null) {
 				view.successMakeAccount(account);
 				view.printMessage("\n메인 메뉴로 돌아갑니다.");

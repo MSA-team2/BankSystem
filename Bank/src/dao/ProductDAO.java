@@ -244,18 +244,20 @@ public class ProductDAO {
 		String sql = "SELECT * FROM PRODUCT where product_type = ?";
 		
 		List<ProductVO> list = new ArrayList<ProductVO>();
-		ProductVO p = new ProductVO();
 		try {
 			pstmt = conn.prepareStatement(sql);
 			pstmt.setInt(1, product_type);
 			rs = pstmt.executeQuery();
 			
 			while (rs.next()) {
+				ProductVO p = new ProductVO();
 				p.setProductId(rs.getInt("product_id"));
 				p.setProductName(rs.getString("product_name"));
 				p.setProduct_type(rs.getInt("product_type"));
 				p.setInterestRate(rs.getBigDecimal("interest_rate"));
 				p.setPeriodMonths(rs.getInt("period_months"));
+				p.setMaxDepositAmount(rs.getBigDecimal("max_deposit_amount"));
+				p.setMaxMonthlyDeposit(rs.getBigDecimal("max_monthly_deposit"));
 				list.add(p);
 			}
 		} catch (Exception e) {

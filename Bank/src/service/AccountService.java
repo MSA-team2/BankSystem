@@ -9,7 +9,9 @@ import java.util.Scanner;
 import controller.SessionManager;
 import dao.AccountDAO;
 import dao.ProductDAO;
+import dao.TransactionDAO;
 import dto.AccountShowDTO;
+import dto.TransactionDTO;
 import model.AccountVO;
 import model.ProductVO;
 
@@ -17,6 +19,7 @@ public class AccountService {
 	// 재할당 방지를 위해 final 키워드 사용
 	private final ProductDAO productDAO = new ProductDAO();
     private final AccountDAO accountDAO = new AccountDAO();
+    private final TransactionDAO transDAO = new TransactionDAO();
     private final Scanner sc = new Scanner(System.in);
     // 상품 관련하여 service가 필요하지 않을거 같아 한 service에서 몰아서 작성
     public List<ProductVO> getAllProducts() {
@@ -42,6 +45,19 @@ public class AccountService {
     public ProductVO getProduct_id(int product_no) {
     	return productDAO.getProductById(product_no);
     }
+    // 예금 상품 가입 시 입출금 계좌에서 예금 계좌로 돈 옮기는 작업
+    public boolean transDeposit(TransactionDTO depodto, TransactionDTO withdto) {
+    	boolean deposit = transDAO.transfer(depodto);
+    	boolean withdraw = transDAO.transfer(withdto);
+    	// 거래내역 저장하기
+    	if(deposit && withdraw) {
+    		transDAO.saveTransaction(depodto);
+    		transDAO.saveTransaction(withdto);
+    		return true;
+    	}
+    	else return false;
+    }
+    
     
     public AccountVO createAccountNumber(int productId, BigDecimal deposit, BigDecimal balance, String password) {
     	ProductVO product = productDAO.getProductById(productId);
@@ -49,23 +65,26 @@ public class AccountService {
     	
     	String phoneTail = SessionManager.getCurrentUser().getPhone().substring(9);
         String randomNumber = String.format("%04d", new Random().nextInt(10000));
-        String prefix = Integer.toString(product.getProduct_type());  
-        String accountNo = prefix + "-" + phoneTail + "-" + randomNumber;
-
+        String type = Integer.toString(product.getProduct_type());  
+        String accountNo = type + "-" + phoneTail + "-" + randomNumber;
+        BigDecimal initialBalance = new BigDecimal("0");
+        
         AccountVO dto = new AccountVO();
         dto.setAccountNo(accountNo);
         dto.setAccountPwd(password);
         dto.setProduct_id(productId);
-        dto.setBalance(balance);
         dto.setMemberNo(SessionManager.getCurrentUser().getMemberNo());
         dto.setCreateDate(LocalDateTime.now());
-        if(prefix.equals("200"))  dto.setDeposit_amount(deposit);
-        if(prefix.equals("200") || prefix.equals("300")) {
+        if(type.equals("100")) {
+        	dto.setBalance(balance);
+        }else if(type.equals("200") || type.equals("300")) {
+        	dto.setBalance(initialBalance);
         	dto.setMaturityDate(LocalDateTime.now().plusMonths(product.getPeriodMonths()));
         }
+        if(type.equals("200"))  dto.setDeposit_amount(deposit);
         // 이자 계산
         BigDecimal rate = product.getInterestRate();
-        dto.setMaturity_amount(calcMaturityAmount(balance, rate, deposit, prefix, product.getPeriodMonths()));
+        dto.setMaturity_amount(calcMaturityAmount(balance, rate, deposit, type, product.getPeriodMonths()));
         return accountDAO.createAccount(dto)?dto:null;
     }
     
