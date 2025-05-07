@@ -9,13 +9,13 @@ import org.mindrot.jbcrypt.BCrypt;
 
 import dao.MemberDAO;
 import dbConn.util.ConnectionHelper;
-import model.MemberVO;
+import model.domain.Member;
 
 public class MemberService {
 	private final MemberDAO md = new MemberDAO();
 	
 	// 회원가입
-	public int insertMember(MemberVO member) {
+	public int insertMember(Member member) {
 		try (Connection conn = ConnectionHelper.getConnection("mysql")) {
 			// 비밀번호 암호화
 			String hashedPwd = BCrypt.hashpw(member.getPassword(), BCrypt.gensalt());
@@ -28,7 +28,7 @@ public class MemberService {
 	}
 
 	// 로그인
-	public MemberVO loginMember(String id, String pwd) {
+	public Member loginMember(String id, String pwd) {
 		try (Connection conn = ConnectionHelper.getConnection("mysql")) {
             return md.loginMember(conn, id, pwd);
         } catch (SQLException e) {

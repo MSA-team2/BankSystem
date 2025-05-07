@@ -8,8 +8,8 @@ import java.util.Map;
 
 import dao.AccountDAO;
 import dao.MemberDAO;
-import model.AccountVO;
-import model.MemberVO;
+import model.domain.Account;
+import model.domain.Member;
 import util.Validator;
 
 public class AdminMemberService {
@@ -21,7 +21,7 @@ public class AdminMemberService {
         return memberDAO.updateAccountStatus(memberNo, 'Y') > 0;
     }
     
-    public List<MemberVO> getLockedAccounts() {
+    public List<Member> getLockedAccounts() {
         return memberDAO.getLockedAccounts();
     }
     
@@ -37,7 +37,7 @@ public class AdminMemberService {
             return "[!] 주민번호 형식이 올바르지 않습니다.";
         }
         
-        MemberVO member = memberDAO.findMemberByNameAndJumin(name, jumin);
+        Member member = memberDAO.findMemberByNameAndJumin(name, jumin);
         if (member == null) {
             return "[!] 해당 회원을 찾을 수 없습니다.";
         }
@@ -46,32 +46,32 @@ public class AdminMemberService {
         return updated ? "회원 정보가 성공적으로 수정되었습니다." : "회원 정보 수정에 실패했습니다.";
     }
     
-    public MemberVO findMemberByNameAndJumin(String name, String jumin) {
+    public Member findMemberByNameAndJumin(String name, String jumin) {
         return memberDAO.findMemberByNameAndJumin(name, jumin);
     }
     
-    public List<MemberVO> getAllMembers() {
+    public List<Member> getAllMembers() {
         return memberDAO.findAllMembers();
     }
     
     // 계좌 관련 메서드
-    public List<AccountVO> getAccountsByMember(int memberNo) {
+    public List<Account> getAccountsByMember(int memberNo) {
         return accountDAO.findAccountsByMemberNo(memberNo);
     }
     
-    public AccountVO getAccountInfo(String accountNo) {
+    public Account getAccountInfo(String accountNo) {
         return accountDAO.findByAccountNo(accountNo);
     }
     
     // 유틸리티 메서드
-    public Map<String, Integer> calculateMemberStats(List<MemberVO> members) {
+    public Map<String, Integer> calculateMemberStats(List<Member> members) {
         Map<String, Integer> stats = new HashMap<>();
         
         int totalMembers = members.size();
         int adminCount = 0;
         int lockedCount = 0;
         
-        for (MemberVO member : members) {
+        for (Member member : members) {
             if (member.getRole() == 1) {
                 adminCount++;
             }

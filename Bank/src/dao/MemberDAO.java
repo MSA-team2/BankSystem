@@ -11,12 +11,12 @@ import org.mindrot.jbcrypt.BCrypt;
 
 import dbConn.util.CloseHelper;
 import dbConn.util.ConnectionHelper;
-import model.MemberVO;
+import model.domain.Member;
 
 public class MemberDAO {
 
 	// 회원가입
-	public int insertMember(Connection conn, MemberVO member) {
+	public int insertMember(Connection conn, Member member) {
 		// insert => 처리된 행 수
 		String sql = "INSERT INTO MEMBER (name, jumin, member_id, password, address, phone)"
 					+ "VALUES (?, ?, ?, ?, ?, ?)";
@@ -35,7 +35,7 @@ public class MemberDAO {
     }
 	
 	// 로그인
-	public MemberVO loginMember(Connection conn, String id, String pwd) throws SQLException {
+	public Member loginMember(Connection conn, String id, String pwd) throws SQLException {
 		// select문 => ResultSet객체 => Member객체
 		String sql = "SELECT * FROM MEMBER WHERE member_id = ?";
 	    try (PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -48,7 +48,7 @@ public class MemberDAO {
 	        	    
 	        	    // 잠금 상태
 	                if ("N".equals(status)) {
-	                    return new MemberVO(
+	                    return new Member(
 	                        rs.getInt("member_no"),
 	                        rs.getString("name"),
 	                        rs.getString("jumin"),
@@ -67,7 +67,7 @@ public class MemberDAO {
 	                    incrementLockCount(conn, id); // lock_cnt 증가
 	                    if (getLockCount(conn, id) >= 5) {
 	                        lockAccount(conn, id); // 계정 잠금 처리
-	                        return new MemberVO(
+	                        return new Member(
 	                            rs.getInt("member_no"),
 	                            rs.getString("name"),
 	                            rs.getString("jumin"),
@@ -86,7 +86,7 @@ public class MemberDAO {
 	                // lock_cnt가 5 이상 잠금 처리
 	                if (lockCnt >= 5) {
 	                    lockAccount(conn, id);
-	                    return new MemberVO(
+	                    return new Member(
 	                        rs.getInt("member_no"),
 	                        rs.getString("name"),
 	                        rs.getString("jumin"),
@@ -102,7 +102,7 @@ public class MemberDAO {
 
 	                // 로그인 성공 -> lock_cnt 초기화
 	                resetLockCount(conn, id);
-	                return new MemberVO(
+	                return new Member(
 	                    rs.getInt("member_no"),
 	                    rs.getString("name"),
 	                    rs.getString("jumin"),
@@ -282,8 +282,8 @@ public class MemberDAO {
 	}
 
 
-	public List<MemberVO> findAllMembers() {
-        List<MemberVO> list = new ArrayList<>();
+	public List<Member> findAllMembers() {
+        List<Member> list = new ArrayList<>();
         String sql = "SELECT * FROM MEMBER ORDER BY ROLE DESC";
 
         Connection conn = null;
@@ -296,7 +296,7 @@ public class MemberDAO {
         	rs = pstmt.executeQuery();
 
             while (rs.next()) {
-                MemberVO member = new MemberVO();
+                Member member = new Member();
                 member.setMemberNo(rs.getInt("member_no"));
                 member.setName(rs.getString("name"));
                 member.setJumin(rs.getString("jumin"));
@@ -330,13 +330,13 @@ public class MemberDAO {
 	 * @param 주민번호
 	 * @return 회원정보
 	 */
-	public MemberVO findMemberByNameAndJumin(String name, String jumin) {
+	public Member findMemberByNameAndJumin(String name, String jumin) {
         String sql = "SELECT * FROM MEMBER WHERE NAME = ? AND JUMIN = ?";
         
         Connection conn = null;
         PreparedStatement pstmt = null;
         ResultSet rs = null;
-        MemberVO member = null;
+        Member member = null;
         
         try {
         	conn = ConnectionHelper.getConnection("mysql");
@@ -349,7 +349,7 @@ public class MemberDAO {
         	
         	
             if (rs.next()) {
-            	member = new MemberVO();
+            	member = new Member();
             	
             	member.setMemberNo(rs.getInt("member_no"));
                 member.setName(rs.getString("name"));
@@ -429,8 +429,8 @@ public class MemberDAO {
 	 * 어드민 잠금 계정 조회 메서드
 	 * @return List<MemberVO>
 	 */
-	public List<MemberVO> getLockedAccounts() {
-		List<MemberVO> list = new ArrayList<>();
+	public List<Member> getLockedAccounts() {
+		List<Member> list = new ArrayList<>();
         String sql = "SELECT * FROM MEMBER WHERE STATUS = 'N'";
 
         Connection conn = null;
@@ -443,7 +443,7 @@ public class MemberDAO {
         	rs = pstmt.executeQuery();
 
             while (rs.next()) {
-                MemberVO member = new MemberVO();
+                Member member = new Member();
                 member.setMemberNo(rs.getInt("member_no"));
                 member.setName(rs.getString("name"));
                 member.setJumin(rs.getString("jumin"));
@@ -520,13 +520,13 @@ public class MemberDAO {
 	 * @param memberNo 회원번호
 	 * @return 회원 정보
 	 */
-	public MemberVO findMemberByNo(int memberNo) {
+	public Member findMemberByNo(int memberNo) {
 	    String sql = "SELECT * FROM MEMBER WHERE member_no = ?";
 	    
 	    Connection conn = null;
 	    PreparedStatement pstmt = null;
 	    ResultSet rs = null;
-	    MemberVO member = null;
+	    Member member = null;
 	    
 	    try {
 	        conn = ConnectionHelper.getConnection("mysql");
@@ -535,7 +535,7 @@ public class MemberDAO {
 	        rs = pstmt.executeQuery();
 	        
 	        if (rs.next()) {
-	            member = new MemberVO();
+	            member = new Member();
 	            member.setMemberNo(rs.getInt("member_no"));
 	            member.setName(rs.getString("name"));
 	            member.setJumin(rs.getString("jumin"));

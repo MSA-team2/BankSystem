@@ -12,8 +12,8 @@ import dao.ProductDAO;
 import dao.TransactionDAO;
 import dto.AccountShowDTO;
 import dto.TransactionDTO;
-import model.AccountVO;
-import model.ProductVO;
+import model.domain.Account;
+import model.domain.Product;
 import util.Validator;
 
 public class AccountService {
@@ -24,12 +24,12 @@ public class AccountService {
 	private final Scanner sc = new Scanner(System.in);
 
 	// 상품 관련하여 service가 필요하지 않을거 같아 한 service에서 몰아서 작성
-	public List<ProductVO> getAllProducts() {
+	public List<Product> getAllProducts() {
 		return productDAO.getProductInfo();
 	}
 
 	// 상품 타입별로 정보 가져오기
-	public List<ProductVO> getProductbyType(int product_type) {
+	public List<Product> getProductbyType(int product_type) {
 		return productDAO.getProductByType(product_type);
 	}
 
@@ -49,7 +49,7 @@ public class AccountService {
 	}
 
 	// 사용자가 입력한 프로덕트 넘버에 따른 상품 정보 가져오기
-	public ProductVO getProduct_id(int product_no) {
+	public Product getProduct_id(int product_no) {
 		return productDAO.getProductById(product_no);
 	}
 
@@ -66,8 +66,8 @@ public class AccountService {
 			return false;
 	}
 
-	public AccountVO createAccountNumber(int productId, BigDecimal deposit, BigDecimal balance, String password) {
-		ProductVO product = productDAO.getProductById(productId);
+	public Account createAccountNumber(int productId, BigDecimal deposit, BigDecimal balance, String password) {
+		Product product = productDAO.getProductById(productId);
 		if (product == null)
 			return null;
 
@@ -77,13 +77,13 @@ public class AccountService {
 			randomNumber = String.format("%04d", new Random().nextInt(10000));
 			type = Integer.toString(product.getProduct_type());
 			accountNo = type + "-" + phoneTail + "-" + randomNumber;
-			AccountVO allAccountNo = accountDAO.findByAccountNo(accountNo);
+			Account allAccountNo = accountDAO.findByAccountNo(accountNo);
 			if (allAccountNo.getAccountNo() == null) break;
 			else continue;
 		}
 		BigDecimal initialBalance = new BigDecimal("0");
 
-		AccountVO dto = new AccountVO();
+		Account dto = new Account();
 		dto.setAccountNo(accountNo);
 		dto.setAccountPwd(password);
 		dto.setProduct_id(productId);
@@ -125,7 +125,7 @@ public class AccountService {
 	}
 
 	public boolean verifyPassword(String accountNo, String pwd) {
-		AccountVO account = accountDAO.getPwdAndStatus(accountNo);
+		Account account = accountDAO.getPwdAndStatus(accountNo);
 		if (account == null) {
 			System.out.println("⚠️ 계좌를 찾을 수 없습니다.");
 			return false;

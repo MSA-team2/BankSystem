@@ -1,4 +1,4 @@
-package model;
+package model.domain;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -11,7 +11,7 @@ import lombok.ToString;
 @ToString
 @AllArgsConstructor  // 모든 필드를 매개변수로 받는 생성자 자동 생성
 @NoArgsConstructor   // 기본 생성자도 추가
-public class MemberVO {
+public class Member {
 	private int memberNo; // 회원번호
 	private String name; // 이름
 	private String jumin; // 주민번호

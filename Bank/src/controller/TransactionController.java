@@ -12,7 +12,7 @@ import java.util.Scanner;
 
 import dto.AccountShowDTO;
 import dto.TransactionDTO;
-import model.TransactionHistoryVO;
+import model.domain.TransactionHistory;
 import service.AccountService;
 import service.TransactionService;
 import util.Validator;
@@ -308,7 +308,7 @@ public class TransactionController {
 			 }
 		 
 		 
-		 List<TransactionHistoryVO> TransactionList = ts.TransactionHistory(accountNo);
+		 List<TransactionHistory> TransactionList = ts.TransactionHistory(accountNo);
 		 DateTimeFormatter d_formatter = DateTimeFormatter.ofPattern("yyyy년 MM월 dd일 HH:mm:ss");
 		 
 		 if (TransactionList == null || TransactionList.isEmpty()) {
@@ -320,7 +320,7 @@ public class TransactionController {
 		 System.out.printf("%-22s %-6s %-12s %-10s%n", "날짜", "구분", "금액", "상대방");
 		 System.out.println("--------------------------------------------------------------");
 
-		 for (TransactionHistoryVO vo : TransactionList) {
+		 for (TransactionHistory vo : TransactionList) {
 		     String date = vo.getTransactionDate().format(d_formatter);
 		     String type = vo.getTransactionType();
 		     String amount = formatter.format(vo.getAmount()) + "원";

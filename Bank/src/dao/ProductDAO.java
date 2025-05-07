@@ -10,24 +10,24 @@ import java.util.List;
 
 import dbConn.util.CloseHelper;
 import dbConn.util.ConnectionHelper;
-import model.ProductVO;
+import model.domain.Product;
 
 public class ProductDAO {
 
 	// 상품정보
-	public List<ProductVO> getProductInfo() {
+	public List<Product> getProductInfo() {
 		Connection conn = ConnectionHelper.getConnection("mysql");
 		Statement stmt = null;
 		ResultSet rs = null;
 		
-		List<ProductVO> list = new ArrayList<ProductVO>();
+		List<Product> list = new ArrayList<Product>();
 		String sql = "SELECT * FROM PRODUCT";
 		try {
 			stmt = conn.createStatement();
 			rs = stmt.executeQuery(sql);
 
 			while (rs.next()) {
-				ProductVO p = new ProductVO();
+				Product p = new Product();
 				p.setProductId(rs.getInt("product_id"));
 				p.setProductName(rs.getString("product_name"));
 				p.setProduct_type(rs.getInt("product_type"));
@@ -43,14 +43,14 @@ public class ProductDAO {
 		return list;
 	}
 
-	public ProductVO getProductById(int productId) {
+	public Product getProductById(int productId) {
 		Connection conn = ConnectionHelper.getConnection("mysql");
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
 		
 		String sql = "SELECT * FROM PRODUCT where product_id = ?";
 		
-		ProductVO p = new ProductVO();
+		Product p = new Product();
 		try {
 			pstmt = conn.prepareStatement(sql);
 			pstmt.setInt(1, productId);
@@ -86,7 +86,7 @@ public class ProductDAO {
 	 * @param Product
 	 * @return true/false
 	 */
-	public boolean addPorduct(ProductVO product) {
+	public boolean addPorduct(Product product) {
 		Connection conn = null;
 		PreparedStatement pstmt = null;
 		int rs = 0;
@@ -140,7 +140,7 @@ public class ProductDAO {
 	 * @param product
 	 * @return true/false
 	 */
-	public boolean updateProduct(ProductVO product) {
+	public boolean updateProduct(Product product) {
 	    Connection conn = null;
 	    PreparedStatement pstmt = null;
 	    int rs = 0;
@@ -236,21 +236,21 @@ public class ProductDAO {
 	    return success;
 	}
 
-	public List<ProductVO> getProductByType(int product_type) {
+	public List<Product> getProductByType(int product_type) {
 		Connection conn = ConnectionHelper.getConnection("mysql");
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
 		
 		String sql = "SELECT * FROM PRODUCT where product_type = ?";
 		
-		List<ProductVO> list = new ArrayList<ProductVO>();
+		List<Product> list = new ArrayList<Product>();
 		try {
 			pstmt = conn.prepareStatement(sql);
 			pstmt.setInt(1, product_type);
 			rs = pstmt.executeQuery();
 			
 			while (rs.next()) {
-				ProductVO p = new ProductVO();
+				Product p = new Product();
 				p.setProductId(rs.getInt("product_id"));
 				p.setProductName(rs.getString("product_name"));
 				p.setProduct_type(rs.getInt("product_type"));

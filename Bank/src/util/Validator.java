@@ -5,6 +5,11 @@ import java.time.format.DateTimeParseException;
 
 public class Validator {
 	
+	public static boolean isValidNumber(String input) {
+        String pattern = "^[0-9]+$";
+        return input != null && input.matches(pattern);
+    }
+	
 	public static boolean isValidHyphenJumin(String input) {
 		/**
 		 * 하이픈이 포함된 6-7 형식의 주민번호 유효성 검사

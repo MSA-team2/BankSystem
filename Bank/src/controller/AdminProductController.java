@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 
-import model.ProductVO;
+import model.domain.Product;
 import service.AdminProductService;
 
 public class AdminProductController {
@@ -18,7 +18,7 @@ public class AdminProductController {
     public void getAllProducts() {    
         System.out.println("\n============ [모든 상품 조회] ============");
         
-        List<ProductVO> findProducts = adminProductService.getAllProducts();
+        List<Product> findProducts = adminProductService.getAllProducts();
         Map<String, Integer> stats = adminProductService.calculateProductStats(findProducts);
         
         displayProductList(findProducts);
@@ -53,7 +53,7 @@ public class AdminProductController {
         }
         
         // 상품 객체 생성
-        ProductVO product = adminProductService.createProductVO(0, productName, productType, interestRate, 
+        Product product = adminProductService.createProductVO(0, productName, productType, interestRate, 
                 periodMonths, maxDepositAmount, maxMonthlyDeposit);
         
         // 상품 정보 확인
@@ -84,7 +84,7 @@ public class AdminProductController {
         }
         
         // 기존 상품 정보 조회
-        ProductVO product = adminProductService.getProductById(productId);
+        Product product = adminProductService.getProductById(productId);
         if (product == null || product.getProductId() == 0) {
             displayWarning("해당 ID의 상품이 존재하지 않습니다. 수정을 취소합니다.");
             return;
@@ -117,7 +117,7 @@ public class AdminProductController {
         }
         
         // 상품 객체 업데이트
-        ProductVO updateProduct = adminProductService.createProductVO(productId, productName, product.getProduct_type(), 
+        Product updateProduct = adminProductService.createProductVO(productId, productName, product.getProduct_type(), 
                 interestRate, periodMonths, maxDepositAmount, maxMonthlyDeposit);
         
         // 수정 정보 확인
@@ -148,7 +148,7 @@ public class AdminProductController {
         }
         
         // 기존 상품 정보 조회
-        ProductVO product = adminProductService.getProductById(productId);
+        Product product = adminProductService.getProductById(productId);
         if (product == null || product.getProductId() == 0) {
             displayWarning("해당 ID의 상품이 존재하지 않습니다. 삭제를 취소합니다.");
             return;
@@ -330,14 +330,14 @@ public class AdminProductController {
     // ===== 화면 출력 메서드 =====
     
     // 상품 목록 표시
-    private void displayProductList(List<ProductVO> products) {
+    private void displayProductList(List<Product> products) {
         // 컬럼 헤더
         System.out.println("+---------+------------------+--------------+--------+--------------+--------------------+--------------------+");
         System.out.println("| 상품ID  | 상품명           | 상품유형     | 금리(%) | 가입기간(월) | 최대 예치금액      | 최대 월 납입액      |");
         System.out.println("+---------+------------------+--------------+--------+--------------+--------------------+--------------------+");
         
         // 데이터 출력
-        for (ProductVO p : products) {
+        for (Product p : products) {
             String productType = adminProductService.getProductTypeName(p.getProduct_type());
             String interestRate = String.format("%.2f%%", p.getInterestRate());
             
@@ -379,7 +379,7 @@ public class AdminProductController {
     }
     
  // 단일 상품 정보 출력 (이어서)
-    private void displayProductDetails(ProductVO product, String title) {
+    private void displayProductDetails(Product product, String title) {
         if (product == null) {
             System.out.println("❌ 상품 정보가 없습니다.");
             return;

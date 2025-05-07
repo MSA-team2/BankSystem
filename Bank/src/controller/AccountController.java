@@ -6,8 +6,8 @@ import java.util.List;
 
 import dto.AccountShowDTO;
 import dto.TransactionDTO;
-import model.AccountVO;
-import model.ProductVO;
+import model.domain.Account;
+import model.domain.Product;
 import service.AccountService;
 import view.AccountMenu;
 import view.MemberMenu;
@@ -28,7 +28,7 @@ public class AccountController {
 			// 입출금 통장이 있다면 일반 상품 선택으로 넘어가고, 없다면 입출금 계좌 개설
 			List<String> types = Arrays.asList("100", "200", "300");
 			List<AccountShowDTO> list = service.checkRegistProduct(types);
-			List<ProductVO> product;
+			List<Product> product;
 			if (list.size() < 1) {
 				view.printMessage("⚠️ 가입 상품이 없어 입출금 상품만 출력됩니다.");
 				product = service.getProductbyType(100); // 입출금상품 타입 100번
@@ -49,7 +49,7 @@ public class AccountController {
 			}
 
 			// 상품 타입 구해오는 메서드
-			ProductVO product_info = service.getProduct_id(product_no);
+			Product product_info = service.getProduct_id(product_no);
 
 			BigDecimal balance = new BigDecimal("0");
 			BigDecimal deposit = new BigDecimal("0");
@@ -94,7 +94,7 @@ public class AccountController {
 			}
 			String password = view.inputPassword();
 
-			AccountVO account = service.createAccountNumber(product_no, deposit, balance, password);
+			Account account = service.createAccountNumber(product_no, deposit, balance, password);
 			// 여기서 예금상품 가입일때 입출금 계좌 출금, 예금계좌에 입금 적용되어야함
 			if(product_info.getProduct_type() == 300) {
 				TransactionDTO depodto = new TransactionDTO();
