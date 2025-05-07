@@ -104,7 +104,7 @@ public class MemberController {
 	        // 로그인 성공
 	        if (member != null) {
 	            if (member.getStatus() == 'N') {
-	                System.out.println("❌ 해당 계정은 잠겨 있어 로그인할 수 없습니다. 관리자에게 문의바랍니다.");
+	            	System.out.println("❌ 비밀번호 5회 이상 틀려 계정이 잠금되었습니다. 관리자에게 문의바랍니다.");
 	                break;
 	            }
 	            SessionManager.login(member);
@@ -122,7 +122,7 @@ public class MemberController {
 	        System.out.println("⚠️ 아이디 또는 비밀번호가 올바르지 않습니다.");
 	        int count = ms.getLockCount(id);
 	        if (count == 5) {
-	            System.out.println("❌ 비밀번호 5회 이상 틀려 계정이 잠금되었습니다.");
+	            System.out.println("❌ 해당 계정은 잠겨 있어 로그인할 수 없습니다. 관리자에게 문의바랍니다.");
 	        } else {
 	            System.out.println("ℹ️ 비밀번호 오류 횟수: " + count + "/5");
 	        }
