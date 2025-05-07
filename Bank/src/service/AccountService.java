@@ -14,6 +14,7 @@ import dto.AccountShowDTO;
 import dto.TransactionDTO;
 import model.AccountVO;
 import model.ProductVO;
+import util.Validator;
 
 public class AccountService {
 	// 재할당 방지를 위해 final 키워드 사용
@@ -139,12 +140,15 @@ public class AccountService {
 		if (!pwd.equals(account.getAccountPwd())) {
 			lockCnt++;
 			accountDAO.updateLockCnt(accountNo, lockCnt);
-
+			
 			if (lockCnt == 5) {
 				accountDAO.lockAccount(accountNo);
 				System.out.println("❌ 비밀번호 5회 오류로 계좌가 잠겼습니다.");
 				return false;
-			} else {
+			} else {	
+				if(!Validator.isValidNumber(pwd)) {
+					System.out.println("⚠️ 잘못된 비밀번호 형식입니다. 숫자로만 입력해주세요."); 
+				}
 				System.out.println("❗ 비밀번호가 틀렸습니다. 현재 " + lockCnt + "/5회 오류.");
 			}
 		} else {
@@ -152,7 +156,7 @@ public class AccountService {
 			return true;
 		}
 
-		return false;
+	return false;
 	}
 
 }
