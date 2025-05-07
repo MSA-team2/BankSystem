@@ -63,9 +63,6 @@ public class TransactionController {
 		 while(true) {
 				a_input = getInput("💸 입금할 금액을 입력하세요 : ");
 				if(a_input == null) return;
-				if(!Validator.isValidNumber(a_input)) {
-					System.out.println("⚠️ 잘못된 금액 형식입니다. 숫자로만 입력해주세요."); continue;
-				}
 				amount = new BigDecimal(a_input);
 				if (amount.compareTo(BigDecimal.ZERO) < 0) {
 			           System.out.println("⚠️ 금액은 0보다 커야 합니다. 다시 입력해 주세요.");
@@ -132,9 +129,6 @@ public class TransactionController {
 		 while(true) {
 				a_input = getInput("💰 출금 금액 입력: ");
 				if(a_input == null) return;
-				if(!Validator.isValidNumber(a_input)) {
-					System.out.println("⚠️ 잘못된 금액 형식입니다. 숫자로만 입력해주세요."); continue;
-				}
 				amount = new BigDecimal(a_input);
 				if (amount.compareTo(BigDecimal.ZERO) < 0) {
 			           System.out.println("⚠️ 금액은 0보다 커야 합니다.");
@@ -208,16 +202,13 @@ public class TransactionController {
 		 }
 		
 		int productType = ts.productType(d_accountNo);
-		BigDecimal amount = BigDecimal.ZERO;
+		BigDecimal amount = new BigDecimal("0");
 		String a_input;
 		
 		if(productType == 100) {
 			while(true) {
 				a_input = getInput("💸 이체 금액 입력: ");
 				if(a_input == null) return;
-				if(!Validator.isValidNumber(a_input)) {
-					System.out.println("⚠️ 잘못된 금액 형식입니다. 숫자로만 입력해주세요."); continue;
-				}
 				amount = new BigDecimal(a_input);
 				if (amount.compareTo(BigDecimal.ZERO) < 0) {
 			           System.out.println("⚠️ 금액은 0보다 커야 합니다.");
@@ -244,9 +235,6 @@ public class TransactionController {
 			while(true) {
 				a_input = getInput("💸 이체 금액 입력: ");
 				if(a_input == null) return;
-				if(!Validator.isValidNumber(a_input)) {
-					System.out.println("⚠️ 잘못된 금액 형식입니다. 숫자로만 입력해주세요."); continue;
-				}
 				amount = new BigDecimal(a_input);
 				if(amount.compareTo(remainAmount) > 0) {
 					System.out.println("⚠️ 이체 가능 금액을 초과했습니다. 다시 입력해 주십시오."); continue;

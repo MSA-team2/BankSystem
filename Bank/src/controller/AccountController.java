@@ -36,10 +36,14 @@ public class AccountController {
 				// 개설 메뉴 들어오자마자 화면 출력 및 상품 선택 값 받아온다.
 				product = service.getAllProducts();
 			}
+			System.out.println(product.toString());
 			int product_no = view.productShow(product);
 			if (product_no == 0) {
 				member.MemberMainMenu();
-			}else if(!product.contains(product_no)) {
+			}
+			boolean validProductNo = product.stream()
+				    .anyMatch(p -> p.getProductId() == product_no);
+			if(!validProductNo) {
 				view.printMessage("\n⚠️ 보여지는 상품의 번호만 입력해주세요");
 				continue;
 			}
