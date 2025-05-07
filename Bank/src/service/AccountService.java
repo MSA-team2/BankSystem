@@ -112,12 +112,12 @@ public class AccountService {
 	public boolean verifyPassword(String accountNo, String pwd) {
 		AccountVO account = accountDAO.getPwdAndStatus(accountNo);
 		if (account == null) {
-			System.out.println("해당 계좌가 존재하지 않습니다.");
+			System.out.println("⚠️ 계좌를 찾을 수 없습니다.");
 			return false;
 		}
 
 		if (account.getStatus() == 'N') {
-			System.out.println("해당 계좌는 잠겨 있습니다.");
+			System.out.println("🔒 해당 계좌는 잠겨 있습니다.");
 			return false;
 		}
 
@@ -128,10 +128,10 @@ public class AccountService {
 
 				if (lockCnt == 5) {
 					accountDAO.lockAccount(accountNo);
-					System.out.println("비밀번호 5회 틀렸습니다. 계좌가 잠겼습니다.");
+					System.out.println("❌ 비밀번호 5회 오류로 계좌가 잠겼습니다.");
 					return false;
 				} else {
-					System.out.println("비밀번호가 틀렸습니다. 현재 " + lockCnt + "회 오류.");
+					System.out.println("❗ 비밀번호가 틀렸습니다. 현재 " + lockCnt + "/5회 오류.");
 				}
 			} else {
 				accountDAO.resetLockCnt(accountNo);

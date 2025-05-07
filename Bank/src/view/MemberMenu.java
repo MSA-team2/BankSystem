@@ -45,21 +45,25 @@ public class MemberMenu {
 				case 3: {
 					// 거래 내역
 					tc.transactionHistory();
+					MemberMainMenu();
 					break;
 				}
 				case 4: {
 					// 입금
 					tc.deposit();
+					MemberMainMenu();
 					break;
 				}
 				case 5: {
 					// 출금
 					tc.withdraw();
+					MemberMainMenu();
 					break;
 				}
 				case 6: {
 					// 이체
 					tc.transfer();
+					MemberMainMenu();
 					break;
 
 				}
