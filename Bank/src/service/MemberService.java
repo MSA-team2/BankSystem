@@ -185,14 +185,15 @@ public class MemberService {
 	}
 	
 	// 잠금 계정 관리자 문의
-	public boolean isAccountLocked(String id) {
-		try (Connection conn = ConnectionHelper.getConnection("mysql")) {
-			return md.isAccountLocked(conn, id);
-		} catch (SQLException e) {
-			e.printStackTrace();
-			return true;
-		}
+	public int isAccountLocked(String id) {
+	    try (Connection conn = ConnectionHelper.getConnection("mysql")) {
+	        return md.checkAccountLockStatus(conn, id);
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	        return -2;
+	    }
 	}
+
 
 	
 } // MemberService

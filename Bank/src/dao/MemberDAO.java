@@ -258,22 +258,29 @@ public class MemberDAO {
     }
 	
 	// 잠금 계정 관리자 문의
-	public boolean isAccountLocked(Connection conn, String id) {
-		String sql = "SELECT status, lock_cnt FROM MEMBER WHERE member_id = ?";
-        try (PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setString(1, id);
-            try (ResultSet rs = ps.executeQuery()) {
-                if (rs.next()) {
-                    String status = rs.getString("status");
-                    int lockCnt = rs.getInt("lock_cnt");
-                    return "N".equals(status) && lockCnt >= 5;
-                }
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return false;
+	public int checkAccountLockStatus(Connection conn, String id) {
+	    String sql = "SELECT status, lock_cnt FROM MEMBER WHERE member_id = ?";
+	    try (PreparedStatement ps = conn.prepareStatement(sql)) {
+	        ps.setString(1, id);
+	        try (ResultSet rs = ps.executeQuery()) {
+	            if (rs.next()) {
+	                String status = rs.getString("status");
+	                int lockCnt = rs.getInt("lock_cnt");
+	                if ("N".equals(status) && lockCnt >= 5) {
+	                    return 1; // 잠금 상태
+	                } else {
+	                    return 0; // 잠금 아님
+	                }
+	            } else {
+	                return -1; // 아이디 없음
+	            }
+	        }
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	        return -2; // 예외 발생
+	    }
 	}
+
 
 	public List<MemberVO> findAllMembers() {
         List<MemberVO> list = new ArrayList<>();
