@@ -158,7 +158,7 @@ public class MemberController {
 	
 	// 비밀번호 찾기 -> 새 비밀번호 변경
 	public void findMemberPwd() {
-		System.out.println("\n========= [비밀번호 찾기] =========");
+		System.out.println("\n========= [비밀번호 재설정] =========");
 		String id = getInput("아이디");
         String name = getInput("이름");
 
