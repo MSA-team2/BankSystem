@@ -130,6 +130,9 @@ public class TransactionController {
 				a_input = getInput("💰 출금 금액 입력: ");
 				if(a_input == null) return;
 				amount = new BigDecimal(a_input);
+				if(amount.compareTo(ts.getbalance(accountNo)) > 0) {
+					System.out.println("⚠️ 출금 계좌의 잔액을 초과했습니다. 다시 입력해 주십시오."); continue;
+				}
 				if (amount.compareTo(BigDecimal.ZERO) < 0) {
 			           System.out.println("⚠️ 금액은 0보다 커야 합니다.");
 			           continue;
@@ -210,6 +213,9 @@ public class TransactionController {
 				a_input = getInput("💸 이체 금액 입력: ");
 				if(a_input == null) return;
 				amount = new BigDecimal(a_input);
+				if(amount.compareTo(ts.getbalance(w_accountNo)) > 0) {
+					System.out.println("⚠️ 출금 계좌의 잔액을 초과했습니다. 다시 입력해 주십시오."); continue;
+				}
 				if (amount.compareTo(BigDecimal.ZERO) < 0) {
 			           System.out.println("⚠️ 금액은 0보다 커야 합니다.");
 			           continue;
