@@ -38,4 +38,9 @@ public class Validator {
             return false;
         }
     }
+    
+    public static boolean isValidNumber(String input) {
+    	String pattern = "^[0-9]+$";
+    	return input != null && input.matches(pattern);
+    }
 }
