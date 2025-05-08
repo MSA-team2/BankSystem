@@ -1,4 +1,4 @@
-package model;
+package model.domain;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -10,7 +10,7 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
-public class TransactionHistoryVO {
+public class TransactionHistory {
 	private int transactionId; // 거래ID
 	private String accountNo; // 계좌번호
 	private String transactionType; // 거래종류(입금/출금/이체)
@@ -18,8 +18,8 @@ public class TransactionHistoryVO {
 	private LocalDateTime transactionDate; // 거래일시
 	private String targetAccount; // 이체할 상대 계좌
 	
-	public TransactionHistoryVO() {}
-	public TransactionHistoryVO(LocalDateTime transactionDate, String transactionType, 
+	public TransactionHistory() {}
+	public TransactionHistory(LocalDateTime transactionDate, String transactionType, 
 			BigDecimal amount,  String targetAccount) {
 		this.transactionDate = transactionDate;
 		this.transactionType = transactionType;
@@ -27,7 +27,7 @@ public class TransactionHistoryVO {
 		this.targetAccount = targetAccount;
 	}
 	
-	public TransactionHistoryVO (String accountNo, String transactionType, 
+	public TransactionHistory (String accountNo, String transactionType, 
 			BigDecimal amount, LocalDateTime transactionDate, String targetAccount) {
 			this.accountNo = accountNo;
 			this.transactionType = transactionType;

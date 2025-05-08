@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 
-import model.MemberVO;
+import model.domain.Member;
 import service.AdminMemberService;
 import util.ConsoleUtils;
 import util.Validator;
@@ -23,7 +23,7 @@ public class AdminMemberController {
         System.out.println("\n============ [잠금 계정 관리] ============");
         
         // 잠금 계정 목록 조회
-        List<MemberVO> lockedAccounts = adminMemberService.getLockedAccounts();
+        List<Member> lockedAccounts = adminMemberService.getLockedAccounts();
         
         if (lockedAccounts.isEmpty()) {
             System.out.println("\n🔍 현재 잠금 상태인 계정이 없습니다.");
@@ -53,7 +53,7 @@ public class AdminMemberController {
             System.out.println("\n✅ 계정 잠금이 성공적으로 해제되었습니다.");
             
             // 업데이트 후 남아있는 잠금 계정 확인
-            List<MemberVO> remainingLockedAccounts = adminMemberService.getLockedAccounts();
+            List<Member> remainingLockedAccounts = adminMemberService.getLockedAccounts();
             if (remainingLockedAccounts.isEmpty()) {
                 System.out.println("🎉 더 이상 잠금 상태인 계정이 없습니다!");
             } else {
@@ -163,7 +163,7 @@ public class AdminMemberController {
         System.out.println("\n🔄 회원 정보를 검색 중입니다...");
         
         // 회원 정보 조회
-        MemberVO member = adminMemberService.findMemberByNameAndJumin(name, jumin);
+        Member member = adminMemberService.findMemberByNameAndJumin(name, jumin);
         if (member == null) {
             System.out.println("\n❌ 회원을 찾을 수 없습니다!");
             System.out.println("💡 이름과 주민번호가 정확한지 확인하세요.");
@@ -197,7 +197,7 @@ public class AdminMemberController {
     public void findAllMembers() {
         System.out.println("\n============ [전체 회원 조회] ============");
         
-        List<MemberVO> list = adminMemberService.getAllMembers();
+        List<Member> list = adminMemberService.getAllMembers();
         Map<String, Integer> stats = adminMemberService.calculateMemberStats(list);
 
         // 열 너비 정의 및 구분선
@@ -206,7 +206,7 @@ public class AdminMemberController {
         System.out.println("+----------+------+-------------------+---------------+-------------------------------------+--------------+----------+----------+");
 
         // 데이터 출력
-        for (MemberVO dto : list) {
+        for (Member dto : list) {
             // 주소가 너무 길 경우 줄이기
             String address = dto.getAddress();
             if (address.length() > 30) {
@@ -240,14 +240,14 @@ public class AdminMemberController {
     }
     
     // 헬퍼 메서드
-    private void displayLockedAccounts(List<MemberVO> accounts) {
+    private void displayLockedAccounts(List<Member> accounts) {
         System.out.println("\n+----------------------------------------------------------+");
         System.out.println("|                  🔒 잠금 계정 목록 🔒                   |");
         System.out.println("+----------------------------------------------------------+");
         System.out.println("| 회원번호 | 이름      | 주민번호          | 전화번호        | 잠금횟수 |");
         System.out.println("+----------+-----------+------------------+----------------+----------+");
         
-        for (MemberVO member : accounts) {
+        for (Member member : accounts) {
             System.out.printf("| %-8d | %-9s | %-16s | %-14s | %-8d |\n", 
                     member.getMemberNo(),
                     member.getName(),

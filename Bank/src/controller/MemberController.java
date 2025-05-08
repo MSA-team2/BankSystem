@@ -2,7 +2,7 @@ package controller;
 
 import java.util.Scanner;
 
-import model.MemberVO;
+import model.domain.Member;
 import service.MemberService;
 import view.AdminMainMenu;
 import view.MemberMenu;
@@ -80,7 +80,7 @@ public class MemberController {
             }
         }
         
-        MemberVO member = new MemberVO();
+        Member member = new Member();
         member.setName(name);
         member.setJumin(jumin);
         member.setMemberId(id);
@@ -100,7 +100,7 @@ public class MemberController {
 	        String id = getInput("아이디");
 	        String pwd = getInput("비밀번호");
 	        if (id == null || pwd == null) return;
-	        MemberVO member = ms.loginMember(id, pwd);
+	        Member member = ms.loginMember(id, pwd);
 	        // 로그인 성공
 	        if (member != null) {
 	            if (member.getStatus() == 'N') {
@@ -158,7 +158,7 @@ public class MemberController {
 	
 	// 비밀번호 찾기 -> 새 비밀번호 변경
 	public void findMemberPwd() {
-		System.out.println("\n========= [비밀번호 찾기] =========");
+		System.out.println("\n========= [비밀번호 재설정] =========");
 		String id = getInput("아이디");
         String name = getInput("이름");
 

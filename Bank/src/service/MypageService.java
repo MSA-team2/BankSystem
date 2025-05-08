@@ -9,7 +9,7 @@ import java.util.Scanner;
 import dao.AccountDAO;
 import dao.TransactionDAO;
 import dto.AccountProductDto;
-import model.MemberVO;
+import model.domain.Member;
 
 public class MypageService {
 	// DAO 생성해서 사용하기
@@ -19,7 +19,7 @@ public class MypageService {
 
 	// 개인신상
 	// 계좌번호, 상품명, 원금, 이자율, 만기일, 총액 리스트로 뿌리기
-	public void displayUserInfo(MemberVO user) {
+	public void displayUserInfo(Member user) {
 		System.out.println("\n================================");
 		System.out.println("\t🔹 마이페이지");
 		System.out.println("================================");
@@ -69,7 +69,7 @@ public class MypageService {
 	}
 
 	// 1 : (예금/적금) 중도해제
-	public void withdrawProduct(MemberVO user) {
+	public void withdrawProduct(Member user) {
 
 		while (true) {
 
