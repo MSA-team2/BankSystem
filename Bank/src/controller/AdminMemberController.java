@@ -22,6 +22,11 @@ public class AdminMemberController {
     public void manageLockedAccounts() {
         System.out.println("\n============ [잠금 계정 관리] ============");
         
+        if (!SessionManager.isAdmin()) {
+            System.out.println("[!] 관리자만 접근할 수 있는 기능입니다.");
+            return;
+        }
+        
         // 잠금 계정 목록 조회
         List<Member> lockedAccounts = adminMemberService.getLockedAccounts();
         
@@ -70,6 +75,11 @@ public class AdminMemberController {
      */
     public void editMember() {
         System.out.println("\n============ [회원 정보 수정] ============");
+        
+        if (!SessionManager.isAdmin()) {
+            System.out.println("[!] 관리자만 접근할 수 있는 기능입니다.");
+            return;
+        }
         
         // 회원 조회 정보 입력
         System.out.println("\n📝 회원 정보를 수정하려면 다음 정보를 입력하세요:");
@@ -144,6 +154,11 @@ public class AdminMemberController {
     public void findMember() {    
         System.out.println("\n============ [회원 정보 검색] ============");
         
+        if (!SessionManager.isAdmin()) {
+            System.out.println("[!] 관리자만 접근할 수 있는 기능입니다.");
+            return;
+        }
+        
         // 검색 정보 입력
         System.out.println("\n📋 회원을 검색하려면 다음 정보를 입력하세요:");
         
@@ -196,6 +211,11 @@ public class AdminMemberController {
      */
     public void findAllMembers() {
         System.out.println("\n============ [전체 회원 조회] ============");
+        
+        if (!SessionManager.isAdmin()) {
+            System.out.println("[!] 관리자만 접근할 수 있는 기능입니다.");
+            return;
+        }
         
         List<Member> list = adminMemberService.getAllMembers();
         Map<String, Integer> stats = adminMemberService.calculateMemberStats(list);

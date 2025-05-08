@@ -23,6 +23,11 @@ public class AdminController {
     public void showDailyTransferHistory() {
         System.out.println("\n============ [일일 거래량 조회] ============");
         
+        if (!SessionManager.isAdmin()) {
+            System.out.println("[!] 관리자만 접근할 수 있는 기능입니다.");
+            return;
+        }
+        
         System.out.print("📅 검색할 날짜를 입력해주세요 (예: 2025-03-15) >> ");
         String input = sc.nextLine();
 
@@ -81,6 +86,11 @@ public class AdminController {
      */
     public void getAllAccounts() {
         System.out.println("\n============ [전체 계좌 조회] ============");
+        
+        if (!SessionManager.isAdmin()) {
+            System.out.println("[!] 관리자만 접근할 수 있는 기능입니다.");
+            return;
+        }
         
         List<AccountSummaryDto> accounts = adminService.getAllAccounts();
         Map<String, Object> stats = adminService.calculateAccountStats(accounts);

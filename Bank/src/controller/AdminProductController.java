@@ -18,6 +18,11 @@ public class AdminProductController {
     public void getAllProducts() {    
         System.out.println("\n============ [모든 상품 조회] ============");
         
+        if (!SessionManager.isAdmin()) {
+            System.out.println("[!] 관리자만 접근할 수 있는 기능입니다.");
+            return;
+        }
+        
         List<Product> findProducts = adminProductService.getAllProducts();
         Map<String, Integer> stats = adminProductService.calculateProductStats(findProducts);
         
@@ -29,6 +34,11 @@ public class AdminProductController {
     // 상품 추가
     public void addProduct() {
         System.out.println("\n============ [상품 등록] ============");
+        
+        if (!SessionManager.isAdmin()) {
+            System.out.println("[!] 관리자만 접근할 수 있는 기능입니다.");
+            return;
+        }
         
         // 상품 정보 입력 받기
         String productName = inputProductName(null);
@@ -76,6 +86,11 @@ public class AdminProductController {
     // 상품 수정
     public void updateProduct() {
         System.out.println("\n============ [상품 수정] ============");
+        
+        if (!SessionManager.isAdmin()) {
+            System.out.println("[!] 관리자만 접근할 수 있는 기능입니다.");
+            return;
+        }
         
         // 수정할 상품 ID 입력
         Integer productId = inputProductId("수정");
@@ -140,6 +155,11 @@ public class AdminProductController {
     // 상품 삭제
     public void deleteProduct() {
         System.out.println("\n============ [상품 삭제] ============");
+        
+        if (!SessionManager.isAdmin()) {
+            System.out.println("[!] 관리자만 접근할 수 있는 기능입니다.");
+            return;
+        }
         
         // 삭제할 상품 ID 입력
         Integer productId = inputProductId("삭제");
